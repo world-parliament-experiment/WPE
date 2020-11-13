@@ -1,0 +1,93 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <!-- ##### Breadcrumb Area Start ##### -->
+    <section class="breadcrumb-area bg-img bg-overlay"
+             style="background-image: url('https://via.placeholder.com/1920x850');">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="breadcrumb-content">
+                        <h2>{{ page_title() }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Breadcrumb Area End ##### -->
+    {{ apy_breadcrumb_trail_render() }}
+    <!-- ##### Login Area Start ##### -->
+
+    <div class="admin-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="login-content bg-white p-30 mb-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h5>{{ page_title() }}</h5>
+                        </div>
+
+                        <table id="categories" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+
+                            </tr>
+                            </thead>
+
+
+                            <tbody>
+                            {% for category in categories %}
+                                <tr>
+
+                                    <td>
+                                        <a href="{{ path('admin_category_edit', { 'id': category.id }) }}">{{ category.id }}</a>
+                                    </td>
+                                    <td>{{ category.name }}</td>
+                                    <td>{{ category.description|striptags|truncate(50, true) }}</td>
+
+                                </tr>
+
+                            {% endfor %}
+                            </tbody>
+
+                            <tfoot>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+
+                            </tr>
+                            </tfoot>
+
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Login Area End ##### -->
+
+{% endblock body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/DataTables/datatables.min.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/plugins/DataTables/datatables.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#categories').DataTable();
+        });
+    </script>
+
+{% endblock %}

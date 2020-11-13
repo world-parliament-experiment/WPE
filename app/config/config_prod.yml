@@ -1,0 +1,29 @@
+imports:
+    - { resource: config.yml }
+
+#doctrine:
+#    orm:
+#        metadata_cache_driver: apc
+#        result_cache_driver: apc
+#        query_cache_driver: apc
+
+monolog:
+    handlers:
+        main:
+            type: fingers_crossed
+            action_level: error
+            handler: nested
+        nested:
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            level: debug
+        console:
+            type: console
+            process_psr_3_messages: false
+
+ewz_recaptcha:
+    public_key:  6LdVH7oUAAAAAOZI-mtHmkE-To3YaZiOcVUyK-uC
+    private_key: 6LdVH7oUAAAAAAXVyHNMI9JeU0YGMVp2AQHsf1Jl
+    # Not needed as "%kernel.default_locale%" is the default value for the locale key
+    locale_key:  "%kernel.default_locale%"
+    locale_from_request: true

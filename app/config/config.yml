@@ -1,0 +1,156 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
+
+framework:
+    #esi: ~
+    translator:
+        fallbacks: ["%locale%"]
+        paths:
+            - "%kernel.root_dir%/Resources/translations/"
+    secret: '%secret%'
+    router:
+        resource: '%kernel.project_dir%/app/config/routing.yml'
+        strict_requirements: ~
+    form: ~
+    csrf_protection: ~
+    validation: { enable_annotations: true }
+    # serializer: { enable_annotations: true }
+    default_locale: '%locale%'
+    trusted_hosts: ~
+    session:
+        # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
+        handler_id: session.handler.native_file
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+    fragments: ~
+    http_method_override: true
+    assets:
+        version: 20191009
+        version_format: "%%s?version=%%s"
+    php_errors:
+        log: true
+    templating:
+        engines: ['twig']
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    form_themes:
+        - 'bootstrap_4_layout.html.twig'
+        - 'Widget/form.html.twig'
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver:   pdo_pgsql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
+                mapping_types:
+                    _text: string
+
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        dql:
+            numeric_functions:
+                Random: AppBundle\Doctrine\DQL\RandomFunction
+        mappings:
+            gedmo_loggable:
+                type: annotation
+                prefix: Gedmo\Loggable\Entity
+                dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"
+                alias: GedmoLoggable # (optional) it will default to the name set for the mappingmapping
+                is_bundle: false
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    spool: { type: memory }
+
+sensio_framework_extra:
+    router:
+        annotations: false
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            sluggable: true
+            blameable: true
+            timestampable: true
+            loggable: true
+fos_user:
+    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    firewall_name: main
+    user_class: AppBundle\Entity\User
+    service:
+        mailer: fos_user.mailer.twig_swift
+    group:
+        group_class: AppBundle\Entity\Group
+        form:
+            type: AppBundle\Form\GroupForm
+    from_email:
+        address: "support@tgde.org"
+        sender_name: "tgde-Support"
+    profile:
+        form:
+            type: AppBundle\Form\ProfileForm
+    registration:
+        confirmation:
+            enabled: true
+            template: '@FOSUser\Registration\email.txt.twig'
+        form:
+            type: AppBundle\Form\RegistrationForm
+    resetting:
+        email:
+            template: '@FOSUser\Resetting\email.txt.twig'
+
+apy_breadcrumb_trail:
+    template: Helpers/breadcrumbtrail.html.twig
+
+knp_menu:
+    # use "twig: false" to disable the Twig extension and the TwigRenderer
+    twig:
+
+        template: 'Menu/menu.html.twig'
+
+    #  if true, enables the helper for PHP templates
+    templating: false
+    # the renderer to use, list is also available by default
+    default_renderer: twig
+
+fos_ck_editor:
+    base_path: "/assets/plugins/ckeditor"
+    js_path:   "/assets/plugins/ckeditor/ckeditor.js"
+    jquery_path: "/assets/plugins/ckeditor/adapters/jquery.js"
+    jquery: true
+    configs:
+        my_config:
+            toolbar: basic
+
+fos_js_routing:
+    routes_to_expose: [ '' ]
+
+ayrel_seo:
+    default:
+        title: 'The World Parliament Experiment | {{ _route }}'
+        description: 'A World Parliament is possible, if YOU join it'
+#    strategy: 'twig'

@@ -1,0 +1,103 @@
+{% extends 'bootstrap_4_layout.html.twig' %}
+
+{#{% block form_label_class -%}#}
+{#    col-md-12 col-sm-12#}
+{#{%- endblock form_label_class %}#}
+
+{#{% block form_group_class -%}#}
+{#    col-md-12 col-sm-12#}
+{#{%- endblock form_group_class %}#}
+
+{% block form_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    <{{ element|default('div') }} class="form-group">
+    {{- form_label(form) -}}
+    {% if help|default %}
+        {%- set attr = attr|merge({'aria-describedby': 'help-block-'~id }) -%}
+    {% endif %}
+    {{- form_widget(form, {'attr': attr}) -}}
+    {% if help|default %}
+        <small id="help-block-{{ id }}" class="form-text text-muted">{{ translation_domain is same as(false) ? help : help|trans({}, translation_domain) }}</small>
+    {% endif %}
+    </{{ element|default('div') }}>
+{%- endblock form_row %}
+
+{# from https://gist.github.com/ptrm04/b348805aa394d63395cfd30a2598ba2d# #}
+
+{% block checkbox_widget -%}
+    {%- set parent_label_class = parent_label_class|default(label_attr.class|default('')) -%}
+    {%- if 'checkbox-custom' in parent_label_class -%}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' custom-control-input')|trim}) -%}
+        <div class="custom-control custom-checkbox{{ 'checkbox-inline' in parent_label_class ? ' custom-control-inline' }}">
+            {{ block('checkbox_widget_base') }}
+        </div>
+    {%- else -%}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-check-input')|trim}) -%}
+        {{ block('checkbox_widget_base') }}
+    {%- endif -%}
+{%- endblock checkbox_widget %}
+
+{%- block checkbox_widget_base -%}
+    <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+{%- endblock checkbox_widget_base -%}
+
+{% block checkbox_label %}
+    {# {% block _user_registration_form_termsAccepted_label %} - use this if you need it for just a single field, amend accordingly to your form type/field #}
+    {#- pulled from bootstrap_4_layout.html.twig and appended |raw to the end of label line -#}
+    {% set is_parent_custom = parent_label_class is defined and ('checkbox-custom' in parent_label_class or 'radio-custom' in parent_label_class) %}
+    {% set is_custom = label_attr.class is defined and ('checkbox-custom' in label_attr.class or 'radio-custom' in label_attr.class) %}
+    {%- if is_parent_custom or is_custom -%}
+        {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' custom-control-label')|trim}) -%}
+    {%- else %}
+        {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' form-check-label')|trim}) -%}
+    {%- endif %}
+    {%- if not compound -%}
+        {% set label_attr = label_attr|merge({'for': id}) %}
+    {%- endif -%}
+    {%- if required -%}
+        {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) -%}
+    {%- endif -%}
+    {%- if parent_label_class is defined -%}
+        {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ parent_label_class)|replace({'checkbox-inline': '', 'radio-inline': '', 'checkbox-custom': '', 'radio-custom': ''})|trim}) -%}
+    {%- endif -%}
+    {%- if label is not same as(false) and label is empty -%}
+        {%- if label_format is not empty -%}
+            {%- set label = label_format|replace({
+                '%name%': name,
+                '%id%': id,
+            }) -%}
+        {%- else -%}
+            {%- set label = name|humanize -%}
+        {%- endif -%}
+    {%- endif -%}
+    <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+    {{- label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)) -}}
+    {{- form_errors(form) -}}
+    </label>
+{% endblock %}
+
+{%- block button_widget -%}
+    {%- if label is empty -%}
+        {%- if label_format is not empty -%}
+            {% set label = label_format|replace({
+                '%name%': name,
+                '%id%': id,
+            }) %}
+        {%- elseif label is same as(false) -%}
+            {% set translation_domain = false %}
+        {%- else -%}
+            {% set label = name|humanize %}
+        {%- endif -%}
+    {%- endif -%}
+    <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>
+        {% if icon_before is defined and icon_before is not null %}
+            <i class="{{ icon_before }}"></i>
+        {% endif %}
+        {{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}</button>
+        {% if icon_after is defined and icon_after is not null %}
+            <i class="{{ icon_after }}"></i>
+        {% endif %}
+{%- endblock button_widget -%}
+

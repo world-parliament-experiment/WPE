@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Current Initiatives', background: asset('assets/img/header/current_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <div class="wpe-content-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="default-content bg-white mb-30 p-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h6>Current Initiatives</h6>
+                        </div>
+
+                        {% for category in initiatives %}
+
+                            <h2>{{ category.name }}</h2>
+                            <table class="table table-categories table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Creator</th>
+                                    <th>Date</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                {% for initiative in category.initiatives %}
+
+                                    <tr>
+                                        <td>
+                                            <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                        </td>
+                                        <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                        <td>{{ initiative.createdAt|date('Y-m-d H:i') }}</td>
+                                        <td class="text-center">
+                                            {% if initiative.voteStatus == 'now' %}
+                                                <span class="badge badge-danger"> NOW </span>
+                                            {% elseif initiative.voteStatus == 'soon' %}
+                                                <span class="badge badge-warning"> SOON </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                {% endfor %}
+                                </tbody>
+
+                            </table>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/DataTables/datatables.min.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/plugins/DataTables/datatables.min.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('.table-categories').DataTable({
+                "searching": false,
+                "ordering": true,
+                "paging": false,
+                "info": false,
+                "order": [[0, "asc"]],
+                "columns": [
+                    { "width": "55%" },
+                    { "width": "25%" },
+                    { "width": "15%" },
+                    { "width": "5%", "orderable": false }
+                ]
+            });
+        });
+    </script>
+
+{% endblock %}

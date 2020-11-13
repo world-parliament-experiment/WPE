@@ -1,0 +1,32 @@
+<div class="hero-area owl-carousel">
+
+    <!-- Single Blog Post -->
+
+    {% for vote in votes %}
+
+        <div class="hero-blog-post bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <!-- Post Content -->
+                        <div class="post-content text-center">
+                            <div class="post-meta" data-animation="fadeInUp" data-delay="100ms">
+                                <a href="#">{{ vote.createdAt|date("F jS, Y") }}</a>
+                                <a href="{{ path('category_type', {id: vote.category.id, slug:vote.category.slug, type:vote.typename|lower}) }}">{{ vote.category.name }}</a>
+                            </div>
+                            <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="post-title" data-animation="fadeInUp" data-delay="300ms">{{ vote.title }}</a>
+                            <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="vote-play" data-animation="bounceIn" data-delay="500ms">
+                              <span class="fa-layers fa-fw fa-4x">
+                                <i class="fas fa-inverse fa-certificate"></i>
+                                <span class="fa-layers-text" data-fa-transform="shrink-12 rotate--30"style="font-weight:900">VOTE</span>
+                              </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+
+</div>

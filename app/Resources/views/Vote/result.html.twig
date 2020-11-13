@@ -1,0 +1,212 @@
+{% extends 'base.html.twig' %}
+
+{% import 'Widget/macros.html.twig' as m %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Results', background: asset('assets/img/header/statistics_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <section class="wpe-content-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+
+                    <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
+
+                        {% if future.state is defined and future.state == 2 %}
+                            <div class="section-heading">
+                                <h5>Voting to be a Current Vote</h5>
+                            </div>
+
+                            <div id="chartdiv_future" style="width: 100%; height: 400px;"></div>
+                        {% endif %}
+
+                        {% if current.state is defined and current.state == 2 %}
+                            <div class="section-heading">
+                                <h5>Voting to be part of Program</h5>
+                            </div>
+
+                            <div id="chartdiv_current" style="width: 100%; height: 400px;"></div>
+                        {% endif %}
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script src="{{ asset('assets/plugins/underscore/underscore.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/vote.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/plugins/amcharts4/core.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/plugins/amcharts4/charts.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/plugins/amcharts4/themes/animated.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            {% if future.state is defined and future.state == 2 %}
+            function future() {
+
+                if ($('#chartdiv_future').length) {
+
+                    am4core.useTheme(am4themes_animated);
+
+                    var chart = am4core.create("chartdiv_future", am4charts.XYChart3D);
+
+                    chart.dataSource.url = Routing.generate('initiative_result_data_future', {
+                        'id': {{ initiative.id }},
+                        'slug': '{{ initiative.slug }}'
+                    });
+                    chart.dataSource.parser = new am4core.JSONParser();
+                    chart.dataSource.parser.options.emptyAs = 0;
+                    chart.dataSource.events.on("error", function (ev) {
+                        console.log("Oopsy! Something went wrong");
+                    });
+
+                    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+                    // Create axes
+                    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+                    categoryAxis.dataFields.category = "vote";
+                    categoryAxis.renderer.grid.template.location = 0;
+                    categoryAxis.renderer.minGridDistance = 30;
+
+                    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+                    valueAxis.title.text = "Voters";
+                    valueAxis.title.fontWeight = 800;
+
+                    var axisBreak = valueAxis.axisBreaks.create();
+                    axisBreak.startValue = {{ future.quorumAxisBreakMin }};
+                    axisBreak.endValue = {{ future.quorumAxisBreakMax }};
+                    axisBreak.breakSize = 0.025;
+
+
+                    var series = chart.series.push(new am4charts.ColumnSeries3D());
+                    series.dataFields.valueY = "voters";
+                    series.dataFields.categoryX = "vote";
+                    series.columns.template.width = am4core.percent(20);
+                    series.columns.template.strokeWidth = 2;
+                    series.dataFields.dummyData = "breakdown";
+                    series.tooltipText = "[bold white font-size: 20px]{vote}[/]\ntotal: [bold]{voters}[/]\ndirect: [bold]{dummyData.direct}[/]\ndelegated: [bold]{dummyData.delegated}[/]";
+                    series.clustered = false;
+
+                    var series2 = chart.series.push(new am4charts.ColumnSeries3D());
+                    series2.dataFields.valueY = "quorum";
+                    series2.dataFields.categoryX = "vote";
+                    series2.columns.template.width = am4core.percent(30);
+                    series2.columns.template.fillOpacity = 0.6;
+                    series2.columns.template.strokeOpacity = 1;
+                    series2.columns.template.strokeWidth = 2;
+                    series2.dataFields.dummyData = "breakdown";
+                    series2.tooltipText = "[bold white font-size: 20px]Quorum[/]\nvotes needed: [bold]{valueY}[/]";
+                    series2.clustered = false;
+
+                    var series3 = chart.series.push(new am4charts.ColumnSeries3D());
+                    series3.dataFields.valueY = "eligible";
+                    series3.dataFields.categoryX = "vote";
+                    series3.columns.template.width = am4core.percent(30);
+                    series3.columns.template.fillOpacity = 0.6;
+                    series3.columns.template.strokeOpacity = 1;
+                    series3.columns.template.strokeWidth = 2;
+                    series3.dataFields.dummyData = "breakdown";
+                    series3.tooltipText = "[bold white font-size: 20px]Citizens[/]\ntotal: [bold black]{eligible}[/]";
+                    series3.clustered = false;
+
+                    chart.cursor = new am4charts.XYCursor();
+                    chart.cursor.lineX.disabled = true;
+                    chart.cursor.lineY.disabled = true;
+                }
+            }
+
+            future();
+
+            {% endif %}
+
+            {% if current.state is defined and current.state == 2 %}
+            function current() {
+
+                if ($('#chartdiv_current').length) {
+
+                    am4core.useTheme(am4themes_animated);
+
+                    var chart = am4core.create("chartdiv_current", am4charts.PieChart3D);
+
+                    chart.dataSource.url = Routing.generate('initiative_result_data_current', {
+                        'id': {{ initiative.id }},
+                        'slug': '{{ initiative.slug }}'
+                    });
+                    chart.dataSource.parser = new am4core.JSONParser();
+                    chart.dataSource.parser.options.emptyAs = 0;
+                    chart.dataSource.events.on("error", function (ev) {
+                        console.log("Oopsy! Something went wrong");
+                    });
+
+                    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+                    chart.innerRadius = am4core.percent(30);
+                    chart.depth = 60;
+
+                    // Add and configure Series
+                    var pieSeries = chart.series.push(new am4charts.PieSeries3D());
+
+                    pieSeries.colors.list = [
+                        am4core.color("#54c292"),
+                        am4core.color("#fffe5e"),
+                        am4core.color("#ff738f")
+                    ];
+
+                    pieSeries.dataFields.value = "voters";
+                    pieSeries.dataFields.depthValue = "voters";
+                    pieSeries.dataFields.category = "vote";
+                    // pieSeries.dataFields.value = "litres";
+                    // pieSeries.dataFields.category = "country";
+                    pieSeries.slices.template.stroke = am4core.color("#fff");
+                    pieSeries.slices.template.strokeWidth = 2;
+                    pieSeries.slices.template.strokeOpacity = 1;
+                    // pieSeries.slices.template.cornerRadius = 5;
+                    // pieSeries.colors.step = 3;
+
+                    pieSeries.slices.template.propertyFields.dummyData = "breakdown";
+                    pieSeries.slices.template.tooltipText = "[bold white font-size: 20px]{vote} ({value.percent.formatNumber('#.#')}%)[/]\ntotal:[bold]{voters}[/]\ndirect: [bold]{dummyData.direct}[/]\ndelegated: [bold]{dummyData.delegated}[/]";
+
+                    pieSeries.slices.template.configField = "config";
+
+                    // Disabling labels and ticks on inner circle
+                    // pieSeries.labels.template.disabled = true;
+                    // pieSeries.ticks.template.disabled = true;
+
+                    // Disable sliding out of slices
+                    pieSeries.slices.template.states.getKey("hover").properties.shiftRadius = 0;
+                    pieSeries.slices.template.states.getKey("hover").properties.scale = 1.1;
+
+
+                    // This creates initial animation
+                    pieSeries.hiddenState.properties.opacity = 1;
+                    pieSeries.hiddenState.properties.endAngle = -90;
+                    pieSeries.hiddenState.properties.startAngle = -90;
+                }
+            }
+
+            current();
+            {% endif %}
+
+
+        });
+    </script>
+
+{% endblock %}

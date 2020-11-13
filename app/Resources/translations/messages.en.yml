@@ -1,0 +1,200 @@
+vote:
+    future:
+        button:
+            vote_yes: I want this to be a future vote
+    current:
+        button:
+            vote_yes: Yes
+            vote_abstention: Abstention
+            vote_no: No
+initiative:
+    edit:
+        title: Title
+        category: Category
+        description: Description
+        type: Type
+        state: State
+        slug: Slug
+        duration: Duration
+        created_at: Created At
+        created_by: Created By
+        updated_at: Updated At
+        updated_by: Updated By
+    button:
+        submit: Save Initiative
+        delete: Delete Initiative
+        overview: Overview
+        publish: Publish!
+        draft: Save as Draft
+    show:
+        name: Delete Initiative
+        description: Overview
+    flash:
+        edit: Your initiative is successfully updated
+        publish: Your initiative is successfully saved as draft
+        draft: Your initiative is published now
+        delete: Your initiative is successfully deleted
+
+comment:
+  edit:
+    message: Message
+    note: Note
+    field: Field
+    new_value: New Value
+    updated_at: Updated At
+    updated_by: Updated By
+    changes_caption: Changed Field Values
+    submit: Save Comment
+  button:
+    submit: Save Comment
+    overview: Overview
+    delete: Delete Comment
+
+delegation:
+    button:
+        submit: Save Delegation
+
+category:
+    edit:
+        name: Name
+        description: Description
+        submit: Save Category
+    button:
+        delete: Delete Category
+        overview: Overview
+    new:
+        name: Delete Category
+        description: Overview
+        submit: Save Category
+    show:
+        name: Name
+        description: Description
+
+user:
+    button:
+        delete: Delete
+        overview: Overview
+        save: Save
+
+    label:
+        roles: All roles
+        groups: Groups
+        userroles: User roles
+        enabled: Enabled
+    edit:
+        submit: Update
+    profile:
+        username: Username
+        city: City
+        country: Country
+        gender: Gender
+        description: Description
+
+menu:
+    start:
+        label: Start
+    assembly:
+        label: Assembly
+    parliament:
+      label: Parliament
+    home:
+        label: Home
+    future:
+        label: Future
+    current:
+        label: Current
+    past:
+        label: Past
+    program:
+        label: Program
+    user:
+        label: User
+        profile: Profile
+        login: Login
+        logout: Logout
+        password: Change Password
+        register: Register
+        delegation: Change Delegation
+        initiatives: Own Initiatives
+        create: Create Initiative
+        avatar: Change Avatar
+        friends: Friends
+        favourites: Favourites
+    admin:
+        label: Administration
+        initiative: Initiatives
+        user: Users
+        category: Categories
+        comment: Comments
+
+breadcrumb:
+    admin:
+        label: Administration
+        category:
+            label: Categories
+            edit:
+                label: Edit Category
+            new:
+                label: Create Category
+        comment:
+            label: Comments
+            edit:
+                label: Edit Comment
+    assembly:
+        label: General Assembly
+    legal:
+        label: Legal Notice
+    rules:
+        label: Rules
+    disclaimer:
+        label: Terms & Conditions
+    privacy:
+        label: Privacy
+    faq:
+        label: FAQ
+    parliament:
+      label: Virtual Parliament
+    profile:
+      label: Profile
+      avatar:
+        label: Avatar
+      delegation:
+        label: Delegations
+      favourite:
+        label: Favourites
+      friend:
+        label: Friends
+      initiative:
+        label: Your Initiatives
+        edit:
+          label: Edit Initiative
+        create:
+          label: Create Initiative
+    current:
+        label: Current
+    future:
+        label: Future
+    past:
+        label: Past
+    program:
+        label: Program
+    search:
+        label: Search
+
+page:
+    admin:
+        categories: Categories
+        category:
+            new: Create Category
+            edit: Edit Category
+        comments: Comments
+        comment:
+            edit: Edit Comment
+
+quicksearch:
+    query: Query string
+    page_title: Search Initiatives
+    no_matches: no initiatives with this title or description found
+    token_error: Token Error
+    button:
+        submit: search

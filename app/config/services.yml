@@ -1,0 +1,125 @@
+# Learn more about services, parameters and containers at
+# https://symfony.com/doc/current/service_container.html
+parameters:
+    #parameter_name: value
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    # makes classes in src/AppBundle available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    AppBundle\:
+        resource: '../../src/AppBundle/*'
+        # you can exclude directories or files
+        # but if a service is unused, it's removed anyway
+        exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
+
+    # controllers are imported separately to make sure they're public
+    # and have a tag that allows actions to type-hint services
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    # add more services, or override services that need manual wiring
+    # AppBundle\Service\ExampleService:
+    #     arguments:
+    #         $someArgument: 'some_value'
+
+    AppBundle\Util\UserManipulator:
+        public: true
+        arguments:
+            - "@fos_user.user_manager"
+            - "@event_dispatcher"
+            - "@request_stack"
+
+    AppBundle\Menu\MenuBuilder:
+        arguments: ["@knp_menu.factory", '@security.authorization_checker']
+        tags:
+            - { name: knp_menu.menu_builder, method: createMainMenu, alias: main } # The alias is what is used to retrieve the menu
+
+    AppBundle\Form\ProfileForm:
+        tags:
+            - { name: form.type, alias: app_user_profile }
+
+    AppBundle\Form\RegistrationForm:
+        tags:
+            - { name: form.type, alias: app_user_registration }
+
+    AppBundle\Twig\PageExtension:
+        public: false
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Twig\WidgetExtension:
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    Twig\Extensions\TextExtension:
+        tags:
+            - { name: twig.extension }
+
+    Twig\Extensions\DateExtension:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\EventListener\ResponseListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, priority: -1001 }
+
+    AppBundle\Annotation\Page:
+        public: false
+
+    AppBundle\EventListener\PageListener:
+        public: false
+        autowire: true
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: -1}
+
+    AppBundle\Form\DelegationForm:
+        public: false
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@security.token_storage"
+
+    AppBundle\Security\InitiativeVoter:
+        public: false
+        arguments:
+            - '@security.access.decision_manager'
+        tags:
+            - { name: security.voter }
+
+    AppBundle\DataFixtures\ORM\:
+        resource: '../../src/AppBundle/DataFixtures/ORM/'
+        tags: ['doctrine.fixture.orm']
+
+    AppBundle\EventSubscriber\AfterRegistrationSubscriber:
+        tags:
+            - { name: kernel.event_subscriber}
+
+    AppBundle\EventSubscriber\AfterProfileUpdateSubscriber:
+        arguments:
+            - '@router'
+        tags:
+            - { name: kernel.event_subscriber}
+
+    AppBundle\Form\Extension\IconButtonTypeExtension:
+        autowire: true
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\ButtonType }
+
+    AppBundle\Form\Extension\HelpTypeExtension:
+        autowire: true
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }

@@ -1,0 +1,82 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'User Profile', background: asset('assets/img/header/profile_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+<!-- ##### Login Area Start ##### -->
+<div class="wpe-content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 ">
+                <div class="default-content bg-white mb-30 p-30 box-shadow">
+                    <!-- Section Title -->
+                    <!-- Section Title -->
+                    <div class="section-heading">
+                        <h5>User Profile</h5>
+                    </div>
+
+                    <div class="post-author d-flex align-items-center">
+
+                        <div class="blog-thumb mb-30">
+                            <img src=" {{ path('user_profile_avatar', {'id': user.id}) }}" alt="user avatar" class="post-author-thumb" />
+                        </div>
+
+                        <div class="post-author-desc pl-4">
+
+                            <a href="{{ path('user_profile_show', { 'id':user.id }) }}" class="author-name">{{ user.username }}</a>
+
+                            {% if app.user and app.user.id != user.id %}
+                                {% if user.isFriend(app.user) %}
+                                    <a href="#" title="Remove as friend" data-user-id="{{ user.id }}" class="btn btn-friend btn-sm"><i class="friend fas fa-heart" aria-hidden="true"></i></a>
+                                {% else %}
+                                    <a href="#" title="Add as friend" data-user-id="{{ user.id }}" class="btn btn-friend btn-sm"><i class="friend far fa-heart" aria-hidden="true"></i></a>
+                                {% endif %}
+                            {% endif %}
+
+                            <p>
+                                {% autoescape false %}
+                                    {{ user.description}}
+                                {% endautoescape %}
+                            </p>
+
+                            <dl class="dl-horizontal p-30">
+
+                                <dt>{{ 'user.profile.gender'|trans }}</dt>
+                                <dd>{{ user.gender }}</dd>
+                                <dt>{{ 'user.profile.country'|trans }}</dt>
+                                <dd><span class="flag-icon flag-icon-{{ user.country|lower }}" title="{{ user.country }} "></span>
+                                <dt>{{ 'user.profile.city'|trans }}</dt>
+                                <dd>{{ user.city }}</dd>
+
+                            </dl>
+
+                        </div>
+                    </div>
+
+                    {{ include ("User/listprofile.html.twig", {initiatives: initiativesActive, title: 'Active Initiatives'}, with_context = false) }}
+
+                    {{ include ("User/listprofile.html.twig", {initiatives: initiativesFinished, title: 'Finished Initiatives'}, with_context = false) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- ##### Login Area End ##### -->
+
+{% endblock body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('assets/plugins/flag-icon/css/flag-icon.min.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/DataTables/datatables.min.css') }}"/>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
