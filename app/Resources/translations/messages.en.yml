@@ -100,13 +100,13 @@ menu:
     home:
         label: Home
     future:
-        label: Future
+        label: Initiatives
     current:
-        label: Current
+        label: Current Votes
     past:
-        label: Past
+        label: Rejected
     program:
-        label: Program
+        label: Adopted
     user:
         label: User
         profile: Profile
