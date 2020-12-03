@@ -121,7 +121,7 @@ menu:
         login: Login
         logout: Logout
         password: Change Password
-        register: egister
+        register: Register
         delegation: Change Delegation
         initiatives: Own Initiatives
         create: Create Initiative
