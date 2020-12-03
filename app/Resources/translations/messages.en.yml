@@ -107,6 +107,14 @@ menu:
         label: Rejected Initiatives
     program:
         label: Approved Initiatives
+    new:
+        label: New Initiatives
+    nngoing:
+        label: Ongoing Votes
+    nejected:
+        label: Rejected Initiatives
+    adopted:
+        label: Adopted Initiatives
     user:
         label: User
         profile: Profile
