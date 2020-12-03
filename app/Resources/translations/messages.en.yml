@@ -109,9 +109,9 @@ menu:
         label: Approved Initiatives
     new:
         label: New Initiatives
-    nngoing:
+    ongoing:
         label: Ongoing Votes
-    nejected:
+    rejected:
         label: Rejected Initiatives
     adopted:
         label: Adopted Initiatives
