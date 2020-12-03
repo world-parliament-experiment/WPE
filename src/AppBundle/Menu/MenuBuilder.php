@@ -34,7 +34,7 @@ class MenuBuilder
             ->setExtra("icon", "fas fa-users fa-fw");
         $menu->addChild('Parliament', array("route" => "parliament", "label" => "menu.parliament.label" ))
             ->setExtra("icon", "fas fa-users fa-fw");
-        $menu->addChild('Future', array("route" => "category_index", 'routeParameters' => array('type' => 'future'),"label" => "user.new.label" ))
+        $menu->addChild('Future', array("route" => "category_index", 'routeParameters' => array('type' => 'future'),"label" => "menu.new.label" ))
             ->setExtra("icon", "fas fa-vote-yea fa-fw");
         $menu->addChild('Ongoing Votes', array("route" => "category_index", 'routeParameters' => array('type' => 'current'),"label" => "menu.ongoing.label" ))
             ->setExtra("icon", "fas fa-vote-yea fa-fw");
