@@ -34,13 +34,13 @@ class MenuBuilder
             ->setExtra("icon", "fas fa-users fa-fw");
         $menu->addChild('Parliament', array("route" => "parliament", "label" => "menu.parliament.label" ))
             ->setExtra("icon", "fas fa-users fa-fw");
-        $menu->addChild('Future', array("route" => "category_index", 'routeParameters' => array('type' => 'new'),"label" => "menu.future.label" ))
+        $menu->addChild('Future', array("route" => "category_index", 'routeParameters' => array('type' => 'future'),"label" => "menu.future.label" ))
             ->setExtra("icon", "fas fa-vote-yea fa-fw");
-        $menu->addChild('Ongoing Votes', array("route" => "category_index", 'routeParameters' => array('type' => 'ongoing'),"label" => "menu.current.label" ))
+        $menu->addChild('Ongoing Votes', array("route" => "category_index", 'routeParameters' => array('type' => 'current'),"label" => "menu.current.label" ))
             ->setExtra("icon", "fas fa-vote-yea fa-fw");
-        $menu->addChild('Past', array("route" => "category_index", 'routeParameters' => array('type' => 'rejected'),"label" => "menu.past.label" ))
+        $menu->addChild('Past', array("route" => "category_index", 'routeParameters' => array('type' => 'past'),"label" => "menu.past.label" ))
             ->setExtra("icon", "fas fa-book-open fa-fw");
-        $menu->addChild('Program', array("route" => "category_index", 'routeParameters' => array('type' => 'approved'),"label" => "menu.program.label" ))
+        $menu->addChild('Program', array("route" => "category_index", 'routeParameters' => array('type' => 'program'),"label" => "menu.program.label" ))
             ->setExtra("icon", "fas fa-book-open fa-fw");
 
         if ($this->authorizationChecker->isGranted('ROLE_SUPERADMIN')) {
