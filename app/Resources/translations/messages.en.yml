@@ -100,13 +100,13 @@ menu:
     home:
         label: Home
     future:
-        label: Future
+        label: New Initiatives
     current:
-        label: Current
+        label: Ongoing Votes
     past:
-        label: Past
+        label: Rejected Initiatives
     program:
-        label: Program
+        label: Approved Initiatives
     user:
         label: User
         profile: Profile
