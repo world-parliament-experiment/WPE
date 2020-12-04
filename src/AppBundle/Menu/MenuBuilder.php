@@ -38,10 +38,11 @@ class MenuBuilder
             ->setExtra("icon", "fas fa-vote-yea fa-fw");
         $menu->addChild('Ongoing Votes', array("route" => "category_index", 'routeParameters' => array('type' => 'current'), "label" => "menu.ongoing.label" ))
             ->setExtra("icon", "fas fa-vote-yea fa-fw");
-        $menu->addChild('Past', array("route" => "category_index", 'routeParameters' => array('type' => 'past'), "label" => "menu.rejected.label" ))
+        /*$menu->addChild('Past', array("route" => "category_index", 'routeParameters' => array('type' => 'past'), "label" => "menu.rejected.label" ))
             ->setExtra("icon", "fas fa-book-open fa-fw");
         $menu->addChild('Program', array("route" => "category_index", 'routeParameters' => array('type' => 'program'), "label" => "menu.adopted.label" ))
             ->setExtra("icon", "fas fa-book-open fa-fw");
+        */
 
         if ($this->authorizationChecker->isGranted('ROLE_SUPERADMIN')) {
 
