@@ -1,18 +1,18 @@
 <?php
 
-// src/Command/ScraperCommand.php
-
 namespace AppBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+//use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use AppBundle\Entity\Initiative;
+use AppBundle\Enum\InitiativeEnum;
 
 class ScraperCommand extends Command
 {
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'app:scrape';
+    protected static $defaultName = 'tgde:scrape';
 
     protected function configure()
     {
@@ -23,18 +23,18 @@ class ScraperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $initiative = new Initiative();
+        $scraped_initiative = new Initiative();
 
-        $initiative->setState(InitiativeEnum::STATE_DRAFT);
-        $initiative->setType(InitiativeEnum::TYPE_FUTURE);
-        $initiative->setTitle("A new Initiative");
-        $initiative->setDescription("This is an initiave to populate the global voting platform aka World Parliament Experiment with scraped data of real-world parliamentary bodies");
-        $initiative->setCreatedBy("TheArchitectOfTheGods");
-        $initiative->setDuration("7");
+        $scraped_initiative->setState(InitiativeEnum::STATE_DRAFT);
+        $scraped_initiative->setType(InitiativeEnum::TYPE_FUTURE);
+        $scraped_initiative->setTitle("A new Initiative");
+        $scraped_initiative->setDescription("This is an initiave to populate the global voting platform aka World Parliament Experiment with scraped data of real-world parliamentary bodies");
+        $scraped_initiative->setCreatedBy("TheArchitectOfTheGods");
+        $scraped_initiative->setDuration("7");
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em;
 
-        $em->persist($initiative);
+        $em->persist($scraped_initiative);
         $em->flush();
 
 
@@ -43,7 +43,7 @@ class ScraperCommand extends Command
 
         // return this if there was no problem running the command
         // (it's equivalent to returning int(0))
-        //return Command::SUCCESS;
+        return int(0);
 
         // or return this if some error happened during the execution
         // (it's equivalent to returning int(1))
