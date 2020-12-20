@@ -13,6 +13,7 @@ class ScraperCommand extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'tgde:scrape';
+    private $em;
 
     protected function configure()
     {
@@ -25,7 +26,7 @@ class ScraperCommand extends Command
     {
         $scraped_initiative = new Initiative();
 
-        $scraped_initiative->setState(InitiativeEnum::STATE_DRAFT);
+        $scraped_initiative->setState(InitiativeEnum::STATE_ACTIVE);
         $scraped_initiative->setType(InitiativeEnum::TYPE_FUTURE);
         $scraped_initiative->setTitle("A new Initiative");
         $scraped_initiative->setDescription("This is an initiave to populate the global voting platform aka World Parliament Experiment with scraped data of real-world parliamentary bodies");
