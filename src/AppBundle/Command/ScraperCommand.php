@@ -8,13 +8,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Entity\Initiative;
 use AppBundle\Enum\InitiativeEnum;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class ScraperCommand extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'tgde:scrape';
-    private $em;
 
+    public function __construct(EntityManagerInterface $em)
+    {
+        parent::__construct();
+        $this->em = $em;
+    }
+    
     protected function configure()
     {
         $this
@@ -24,20 +31,19 @@ class ScraperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $scraped_initiative = new Initiative();
+        $initiative = new Initiative();
 
-        $scraped_initiative->setState(InitiativeEnum::STATE_ACTIVE);
-        $scraped_initiative->setType(InitiativeEnum::TYPE_FUTURE);
-        $scraped_initiative->setTitle("A new Initiative");
-        $scraped_initiative->setDescription("This is an initiave to populate the global voting platform aka World Parliament Experiment with scraped data of real-world parliamentary bodies");
-        $scraped_initiative->setCreatedBy("TheArchitectOfTheGods");
-        $scraped_initiative->setDuration("7");
+        $initiative->setState(InitiativeEnum::STATE_ACTIVE);
+        $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+        $initiative->setTitle("A new Initiative");
+        $initiative->setDescription("This is an initiave to populate the global voting platform aka World Parliament Experiment with scraped data of real-world parliamentary bodies");
+        $initiative->setCreatedBy("TheArchitectOfTheGods");
+        $initiative->setDuration("7");
 
-        $em = $this->em;
+        $this->em->persist($initiative);
+        $this->em->flush();
 
-        $em->persist($scraped_initiative);
-        $em->flush();
-
+        return new Response('Saved new initiave with id '.$initiative->getId());
 
         // this method must return an integer number with the "exit status code"
         // of the command. You can also use these constants to make code more readable
