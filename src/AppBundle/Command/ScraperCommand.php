@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Entity\Initiative;
+use AppBundle\Entity\Category;
 use AppBundle\Enum\InitiativeEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,16 +33,24 @@ class ScraperCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $initiative = new Initiative();
+        
+
+        // return new Response('TEST');
 
         $initiative->setState(InitiativeEnum::STATE_ACTIVE);
         $initiative->setType(InitiativeEnum::TYPE_FUTURE);
         $initiative->setTitle("A new Initiative");
         $initiative->setDescription("This is an initiave to populate the global voting platform aka World Parliament Experiment with scraped data of real-world parliamentary bodies");
-        $initiative->setCreatedBy("TheArchitectOfTheGods");
+        //$initiative->setCreatedBy("@User");
         $initiative->setDuration("7");
+        
+        $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('name' => "Security Policy"));
+        $initiative->setCategory($category);
 
         $this->em->persist($initiative);
         $this->em->flush();
+
+        $output->writeln('Saved new initiave with id '.$initiative->getId());
 
         return new Response('Saved new initiave with id '.$initiative->getId());
 

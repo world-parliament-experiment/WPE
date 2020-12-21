@@ -77,9 +77,10 @@ EOT
         $password = $input->getArgument('password');
         $inactive = $input->getOption('inactive');
         $superadmin = $input->getOption('super-admin');
+        $consents = 1;
 
         $manipulator = $this->getContainer()->get('AppBundle\Util\UserManipulator');
-        $manipulator->create($username, $firstname, $lastname, $password, $email, !$inactive, $superadmin);
+        $manipulator->create($username, $firstname, $lastname, $password, $email, !$inactive, $superadmin, $consents);
 
         $output->writeln(sprintf('Created user <comment>%s</comment>', $username));
     }

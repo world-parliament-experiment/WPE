@@ -53,9 +53,9 @@ doctrine:
         default_connection: default
         connections:
             default:
-                server_version: 7.4.3
+                server_version: 12.5
                 driver:   pdo_pgsql
-                host:     "%database_host%"
+                host:     localhost
                 port:     "%database_port%"
                 dbname:   "%database_name%"
                 user:     "%database_user%"
