@@ -69,7 +69,7 @@ class ScraperCommand extends Command
             
             $initiative->setCategory($category);
             
-            //$desc = nl2br($desc);
+            
             //regular expression to identify URLs in the description
             $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
             if(preg_match($reg_exUrl, $desc, $url)) {
@@ -77,7 +77,7 @@ class ScraperCommand extends Command
             // make the urls in the descriptions hyper links
                 $desc = preg_replace($reg_exUrl, '<a href="'.$url[0].'" rel="nofollow">'.$url[0].'</a>', $desc);
             }
-
+            $desc = str_replace("\\n", "<br />", ($desc));
             $initiative->setDescription($desc);
             
             $this->em->persist($initiative);
