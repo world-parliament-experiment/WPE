@@ -61,15 +61,17 @@ class ScraperCommand extends Command
 
             $initiative->setState(InitiativeEnum::STATE_ACTIVE);
             $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+            $initiative->setCategory($category);
+
+            //title
+            $title = str_replace("'", "", ($title));
             $initiative->setTitle($title);
         
+            //CreatedBy and Duration
             $initiative->setCreatedBy($user);
             $initiative->setDuration("7");
 
-            
-            $initiative->setCategory($category);
-            
-            
+            //Description
             //regular expression to identify URLs in the description
             $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
             if(preg_match($reg_exUrl, $desc, $url)) {
@@ -78,6 +80,7 @@ class ScraperCommand extends Command
                 $desc = preg_replace($reg_exUrl, '<a href="'.$url[0].'" rel="nofollow">'.$url[0].'</a>', $desc);
             }
             $desc = str_replace("\\n", "<br />", ($desc));
+            $desc = str_replace("'", "", ($desc));
             $initiative->setDescription($desc);
             
             $this->em->persist($initiative);
@@ -86,7 +89,7 @@ class ScraperCommand extends Command
             echo $title."\n";
             echo $desc."\n";
             $output->writeln('Saved new initiave with id '.$initiative->getId());
-        }
+        } 
 
 /*         $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
         foreach ($del_initiatives as $deletion) {
@@ -94,8 +97,8 @@ class ScraperCommand extends Command
             $this->em->flush();
             echo ('Deleted initiave with id '.$deletion->getId());
             // return new Response;
-        }
- */
+        } */
+
         // return new Response('Saved new initiave with id '.$initiative->getId());
 
         // this method must return an integer number with the "exit status code"
