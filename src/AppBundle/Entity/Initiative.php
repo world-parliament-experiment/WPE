@@ -52,7 +52,7 @@ class Initiative
     protected $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="initiative")
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="initiative", cascade={"remove"})
      * @ORM\OrderBy({"createdAt" = "ASC"})
      */
     protected $comments;
@@ -84,7 +84,7 @@ class Initiative
 
     /**
      * @Assert\NotBlank(message="Description for the initiative is mandatory")
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true, unique=true)
      * @Gedmo\Versioned()
      * @JMSSerializer\Expose
      * @JMSSerializer\Type("string")

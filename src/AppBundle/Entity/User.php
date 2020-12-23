@@ -99,7 +99,7 @@ class User extends BaseUser
     protected $city;
 
     /**
-     * @ORM\Column(type="smallint", options={"default": 0})
+     * @ORM\Column(type="smallint", options={"default": 0}, nullable=true)
      */
 
     protected $consents;

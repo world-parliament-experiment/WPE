@@ -1,0 +1,13 @@
+diff.ago.year: 'a year ago|%count% years ago'
+diff.ago.month: 'a month ago|%count% months ago'
+diff.ago.day: 'a day ago|%count% days ago'
+diff.ago.hour: 'a hour ago|%count% hours ago'
+diff.ago.minute: 'a minute ago|%count% minutes ago'
+diff.ago.second: 'a second ago|%count% seconds ago'
+diff.empty: now
+diff.in.year: 'in a year|in %count% years'
+diff.in.month: 'in a month|in %count% months'
+diff.in.day: 'in a day|in %count% days'
+diff.in.hour: 'in a hour|in %count% hours'
+diff.in.minute: 'in a minute|in %count% minutes'
+diff.in.second: 'in a second|in %count% seconds'

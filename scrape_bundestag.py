@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # To run this, you can install BeautifulSoup
 # https://pypi.python.org/pypi/beautifulsoup4
 
@@ -11,6 +12,7 @@ import urllib.error
 from bs4 import BeautifulSoup
 import ssl
 import sys
+#import numpy as np
 
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
@@ -20,6 +22,7 @@ ctx.verify_mode = ssl.CERT_NONE
 c_count = 9
 list_of_contents = []
 refs = []
+output = []
 
 # URl needs to be dynamic
 import datetime
@@ -39,32 +42,60 @@ while count < c_count:
     section = soup.find("div", {'class': 'col-xs-12'})
     tds = section.findAll('td')
     for td in tds:
-        list_of_contents.append(td.getText().strip('zum Artikel'))
+        list_of_contents.append(td.getText().strip())
         for links in td.findAll('a'):
             href = links.get('href')
             if href != '#': 
-                refs.append(href) 
+               refs.append(href) 
     count = count + 1
 
+#list_of_contents = np.array(list_of_contents)
 
 uzeit = list_of_contents[0::4]
 topicno = list_of_contents[1::4]
 topiclist = list_of_contents[2::4]
 status = list_of_contents[3::4]
-url = refs[0::1]
+url = refs[:]
 
-print(*topiclist, sep="\n")
+#remove empty lines
+topiclist = ("\n".join(str(item) for item in topiclist))
+lines = topiclist.split("\n")
+non_empty_lines = [line for line in lines if line.strip() != ""]
+
+topiclist = ""
+
+for line in non_empty_lines:
+      topiclist += line + "\n"
+
+topiclist = topiclist.split("zum Artikel")
+for topics in topiclist: 
+    topics = topics.replace("Sitzungseröffnung"," ")
+    topics = topics.replace("Sitzungsende"," ")
+    topics = topics.replace("Drucksache"," Drucksache")
+    topics = topics.split("\n")
+    headers = topics[1]
+    contents = topics[2]
+    output.append(headers.strip())
+    output.append(contents.strip())
+
+print(output)
+
 #print(topicno)
 #print(status)
-#print(subject)
-print(url) 
-    
+#print(url)
+#print(uzeit) 
+#list_of_contents.remove("\n")
+#list_of_contents.remove(" ")
+
+
 #print(list_of_contents)
 
+#print(topiclist)
+
 f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-f.write("\n".join(str(item) for item in topiclist))
+f.write("\n".join(str(item) for item in output))
 f.close
 
-f = open('BT_Tagesordnung.txt', 'a')
-f.write("\n".join(str(item) for item in url))
-f.close
+#f = open('BT_Tagesordnung.txt', 'a')
+#f.write("\n".join(str(item) for item in url))
+#f.close

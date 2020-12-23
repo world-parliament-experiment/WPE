@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @author Matthieu Bontemps <matthieu@knplabs.com>
@@ -25,6 +26,14 @@ use Symfony\Component\Console\Question\Question;
  */
 class CreateUserCommand extends ContainerAwareCommand
 {
+    
+    public function __construct(EntityManagerInterface $em)
+    {
+        parent::__construct();
+        $this->em = $em;
+    }
+
+    
     /**
      * {@inheritdoc}
      */
@@ -77,10 +86,13 @@ EOT
         $password = $input->getArgument('password');
         $inactive = $input->getOption('inactive');
         $superadmin = $input->getOption('super-admin');
-        $consents = 1;
+        
+        $user= $this->em->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => "fjast"));
+        $consents = $user->getConsents();
+        $output->writeln('Consents:'.$consents);
 
         $manipulator = $this->getContainer()->get('AppBundle\Util\UserManipulator');
-        $manipulator->create($username, $firstname, $lastname, $password, $email, !$inactive, $superadmin, $consents);
+        $manipulator->create($username, $firstname, $lastname, $password, $email, $consents, !$inactive, $superadmin);
 
         $output->writeln(sprintf('Created user <comment>%s</comment>', $username));
     }
