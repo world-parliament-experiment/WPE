@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 import ssl
 import datetime
 
+
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
@@ -23,7 +24,7 @@ list_of_contents = []
 
 
 count = -1
-while count < 0:
+while count < 2:
     year = today.year + count
     url = 'https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-'+str(year)
     try:
@@ -38,17 +39,17 @@ while count < 0:
 
     section = soup.find("div", {'class': 'field-items'})
     trs = section.findAll('tr')
-    
+
     for tr in trs:
         tds = tr.findAll('td')
         title = []
         contents = []
-        for td in tds:
-            if td.find('a') is not None:            
-                contents.append(td.getText().strip())
-                contents.append(td.find('a').get('href'))
-            else:
-                contents.append(td.getText().strip())
+        for id, td in enumerate(tds):          
+                if td.find('a') is not None and id == 0: 
+                    contents.append(td.getText().strip())
+                    contents.append(td.find('a').get('href'))
+                else:
+                    contents.append(td.getText().split("\n")[0])
         contents.reverse()
         title = contents[0]
         desc = contents[3] + " \n" + contents[0] + " \n" + contents[2] + " \n" + contents[1]

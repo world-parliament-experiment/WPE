@@ -55,6 +55,7 @@ class ScraperCommand extends Command
         $user= $this->em->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => "fjast"));
         $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('name' => "Security Policy"));
         
+        
         foreach ($NewEntry as $title => $desc) {
             
             $initiative = new Initiative();
@@ -81,14 +82,30 @@ class ScraperCommand extends Command
             }
             $desc = str_replace("\\n", "<br />", ($desc));
             $desc = str_replace("'", "", ($desc));
-            $initiative->setDescription($desc);
             
-            $this->em->persist($initiative);
-            $this->em->flush();
+            $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('description' => $desc)); //existing initiatives
             
-            echo $title."\n";
-            echo $desc."\n";
-            $output->writeln('Saved new initiave with id '.$initiative->getId());
+            if(!is_null($checkdata)) {
+                $duplicate = $checkdata->getDescription();
+            } else {
+                $duplicate = "";
+            }
+            
+            
+            if ($desc == $duplicate ) {
+                // echo $checkdata->getDescription()."\n";
+                continue;
+            } else {
+                $initiative->setDescription($desc);
+                $this->em->persist($initiative);
+                $this->em->flush();
+                                
+                echo $title."\n";
+                echo $desc."\n";
+                $output->writeln('Saved new initiave with id '.$initiative->getId());            
+                
+            }
+
         } 
 
 /*         $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
