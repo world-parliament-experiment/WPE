@@ -19,64 +19,45 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-c_count = 9
-list_of_contents = []
 refs = []
 output = []
 
 # URl needs to be dynamic
 import datetime
 today = datetime.datetime.now()
-sel_date = today - datetime.timedelta(weeks=5)
+stop = ""
+start = 700
+while not stop:
+    url = 'https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start)
+    try:
+        html = urllib.request.urlopen(url, context=ctx).read()
+    except urllib.error.HTTPError as e:
+        if e.getcode() == 404: # check the return code
+            stop = "Stop!"
+            continue
+        raise # if other than 404, raise the error
 
-count = 1
-while count < c_count:
-    sel_date = sel_date + datetime.timedelta(weeks=1)
-    week = sel_date.strftime("%V")
-    year = sel_date.year
-
-    url = 'https://www.bundestag.de/apps/plenar/plenar/conferenceweekDetail.form?year='+str(year)+'&week='+str(week)
-    html = urllib.request.urlopen(url, context=ctx).read()
     soup = BeautifulSoup(html, 'html.parser')
 
-    section = soup.find("div", {'class': 'col-xs-12'})
-    tds = section.findAll('td')
-    for td in tds:
-        list_of_contents.append(td.getText().strip())
-        for links in td.findAll('a'):
-            href = links.get('href')
-            if href != '#': 
-               refs.append(href) 
-    count = count + 1
+    section = soup.find("article", {'class': 'bt-artikel col-xs-12 bt-standard-content'})
+    if not section:
+        stop = "Stop!"
+        continue
+    
+    topic = section.getText().strip()
+    topic = topic.split("\n")
 
-#list_of_contents = np.array(list_of_contents)
+    title = topic[1].replace(u'\xa0', u' ')
+    desc = topic[2] + " \n" + topic[0]
+        
+    for links in section.findAll('a'):
+        href = links.get('href')
+        desc = desc + "\n" + href
 
-uzeit = list_of_contents[0::4]
-topicno = list_of_contents[1::4]
-topiclist = list_of_contents[2::4]
-status = list_of_contents[3::4]
-url = refs[:]
+    output.append(title)
+    output.append(desc)    
 
-#remove empty lines
-topiclist = ("\n".join(str(item) for item in topiclist))
-lines = topiclist.split("\n")
-non_empty_lines = [line for line in lines if line.strip() != ""]
-
-topiclist = ""
-
-for line in non_empty_lines:
-      topiclist += line + "\n"
-
-topiclist = topiclist.split("zum Artikel")
-for topics in topiclist: 
-    topics = topics.replace("Sitzungseröffnung"," ")
-    topics = topics.replace("Sitzungsende"," ")
-    topics = topics.replace("Drucksache"," Drucksache")
-    topics = topics.split("\n")
-    headers = topics[1]
-    contents = topics[2]
-    output.append(headers.strip())
-    output.append(contents.strip())
+    start = start + 1
 
 print(output)
 
@@ -92,9 +73,9 @@ print(output)
 
 #print(topiclist)
 
-f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-f.write("\n".join(str(item) for item in output))
-f.close
+#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
+#f.write("\n".join(str(item) for item in output))
+#f.close
 
 #f = open('BT_Tagesordnung.txt', 'a')
 #f.write("\n".join(str(item) for item in url))

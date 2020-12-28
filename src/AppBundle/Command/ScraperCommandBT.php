@@ -15,10 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class ScraperCommand extends Command
+class ScraperCommandBT extends Command
 {
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'tgde:scrape';
+    protected static $defaultName = 'tgde:scrapeBT';
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -29,13 +29,13 @@ class ScraperCommand extends Command
     protected function configure()
     {
         $this
-            // the short description shown while running "php bin/console list"
-            ->setDescription('Creates new WPE initiatives from scraped content')
+        // the short description shown while running "php bin/console list"
+            ->setDescription('Creates a new WPE initiative')
             ->addArgument('user', InputArgument::REQUIRED, 'The User under whose name the initiatives shall be created')
             ->addArgument('category', InputArgument::REQUIRED, 'The Category in which name the initiatives shall be created')
             ->addOption(
                 'delete',
-                'd',
+                'del',
                 InputOption::VALUE_NONE,
                 'Delete existing entries in the same category created by the same user'
             )
@@ -57,8 +57,8 @@ class ScraperCommand extends Command
                 // return new Response;
             }   
         }
-
-        $process = new Process('python3 scrape_unsc.py');
+             
+        $process = new Process('python3 scrape_bundestag.py');
         $process->run();
         
         // executes after the command finishes
@@ -66,8 +66,9 @@ class ScraperCommand extends Command
             throw new ProcessFailedException($process);
         }
         
+        
         $contents = $process->getOutput();
-        $contentstring = explode(",", $contents);
+        $contentstring = explode("', '", $contents);
 
         $NewEntry = [];
         for ($i = 0; $i < count($contentstring); $i++) {
@@ -90,14 +91,14 @@ class ScraperCommand extends Command
             //CreatedBy and Duration
             $initiative->setCreatedBy($user);
             $initiative->setDuration("7");
-
+            
             //Description
             $desc = str_replace("\\n", " <br /> ", ($desc));
             $desc = str_replace("]", "", ($desc));
             $url_regex = '~(?:http|ftp)s?://(?:www\.)?([a-z0-9.-]+\.[a-z]{2,3}(?:/\S*)?)~i';
             $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
             $desc = str_replace("'", "", ($desc));
-            
+
             $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('description' => $desc)); //existing initiatives
             
             if(!is_null($checkdata)) {
@@ -122,6 +123,14 @@ class ScraperCommand extends Command
             }
 
         } 
+
+/*         $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
+        foreach ($del_initiatives as $deletion) {
+            $this->em->remove($deletion);
+            $this->em->flush();
+            echo ('Deleted initiave with id '.$deletion->getId());
+            // return new Response;
+        } */
 
         // return new Response('Saved new initiave with id '.$initiative->getId());
 

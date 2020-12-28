@@ -20,7 +20,7 @@ ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
 today = datetime.datetime.now()
-list_of_contents = []
+output = []
 
 
 count = -1
@@ -51,10 +51,12 @@ while count < 2:
                 else:
                     contents.append(td.getText().split("\n")[0])
         contents.reverse()
-        title = contents[0]
+        
+        title = contents[0].replace(u'\xa0', u' ')
         desc = contents[3] + " \n" + contents[0] + " \n" + contents[2] + " \n" + contents[1]
-        list_of_contents.append(title)
-        list_of_contents.append(desc)
+
+        output.append(title)
+        output.append(desc)
 
     count = count + 1
 
@@ -64,7 +66,7 @@ while count < 2:
 #headings = list_of_contents[0::4]
 #URL = list_of_contents[2::4]
 
-print(list_of_contents)
+print(output)
 #print(headings)
 #print(URL)
 
