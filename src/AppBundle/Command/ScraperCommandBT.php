@@ -18,7 +18,7 @@ use Symfony\Component\Process\Process;
 class ScraperCommandBT extends Command
 {
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'tgde:scrapeBT';
+    protected static $defaultName = 'wpe:scrape:bundestag';
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -35,9 +35,15 @@ class ScraperCommandBT extends Command
             ->addArgument('category', InputArgument::REQUIRED, 'The Category in which name the initiatives shall be created')
             ->addOption(
                 'delete',
-                'del',
+                'd',
                 InputOption::VALUE_NONE,
                 'Delete existing entries in the same category created by the same user'
+            )
+            ->addOption(
+                'update',
+                'u',
+                InputOption::VALUE_NONE,
+                'Update/Create new entries in the category with the given user'
             )
         ;
     }
@@ -57,72 +63,75 @@ class ScraperCommandBT extends Command
                 // return new Response;
             }   
         }
-             
-        $process = new Process('python3 scrape_bundestag.py');
-        $process->run();
         
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        
-        
-        $contents = $process->getOutput();
-        $contentstring = explode("', '", $contents);
-
-        $NewEntry = [];
-        for ($i = 0; $i < count($contentstring); $i++) {
-            $NewEntry[$contentstring[$i]] = $contentstring[++$i];
-        }
-        
-        foreach ($NewEntry as $title => $desc) {
+        if ($input->getOption('update') === true) {
+            $process = new Process('python3 scrape_bundestag.py');
+            $process->run();
             
-            $initiative = new Initiative();
-
-            $initiative->setState(InitiativeEnum::STATE_ACTIVE);
-            $initiative->setType(InitiativeEnum::TYPE_FUTURE);
-            $initiative->setCategory($category);
-
-            //title
-            $title = str_replace("'", "", ($title));
-            $title = str_replace("[", "", ($title));
-            $initiative->setTitle($title);
-        
-            //CreatedBy and Duration
-            $initiative->setCreatedBy($user);
-            $initiative->setDuration("7");
-            
-            //Description
-            $desc = str_replace("\\n", " <br /> ", ($desc));
-            $desc = str_replace("]", "", ($desc));
-            $url_regex = '~(?:http|ftp)s?://(?:www\.)?([a-z0-9.-]+\.[a-z]{2,3}(?:/\S*)?)~i';
-            $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
-            $desc = str_replace("'", "", ($desc));
-
-            $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('description' => $desc)); //existing initiatives
-            
-            if(!is_null($checkdata)) {
-                $duplicate = $checkdata->getDescription();
-            } else {
-                $duplicate = "";
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
             }
             
             
-            if ($desc == $duplicate ) {
-                // echo $checkdata->getDescription()."\n";
-                continue;
-            } else {
-                $initiative->setDescription($desc);
-                $this->em->persist($initiative);
-                $this->em->flush();
-                                
-                echo $title."\n";
-                echo $desc."\n";
-                $output->writeln('Saved new initiave with id '.$initiative->getId());            
+            $contents = $process->getOutput();
+            $contentstring = explode("', '", $contents);
+
+            $NewEntry = [];
+            for ($i = 0; $i < count($contentstring); $i++) {
+                $NewEntry[$contentstring[$i]] = $contentstring[++$i];
+            }
+            
+            foreach ($NewEntry as $title => $desc) {
                 
-            }
+                $initiative = new Initiative();
 
-        } 
+                $initiative->setState(InitiativeEnum::STATE_ACTIVE);
+                $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+                $initiative->setCategory($category);
+
+                //title
+                $title = str_replace("'", "", ($title));
+                $title = str_replace("[", "", ($title));
+                $initiative->setTitle($title);
+            
+                //CreatedBy and Duration
+                $initiative->setCreatedBy($user);
+                $initiative->setDuration("7");
+                
+                //Description
+                $desc = str_replace("\\n", " <br /> ", ($desc));
+                $desc = str_replace("]", "", ($desc));
+                $url_regex = '~(?:http|ftp)s?://(?:www\.)?([a-z0-9.-]+\.[a-z]{2,3}(?:/\S*)?)~i';
+                $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
+                $desc = str_replace("'", "", ($desc));
+
+                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('description' => $desc)); //existing initiatives
+                
+                if(!is_null($checkdata)) {
+                    $duplicate = $checkdata->getDescription();
+                } else {
+                    $duplicate = "";
+                }
+                
+                
+                if ($desc == $duplicate ) {
+                    // echo $checkdata->getDescription()."\n";
+                    continue;
+                } else {
+                    $initiative->setDescription($desc);
+                    $this->em->persist($initiative);
+                    $this->em->flush();
+                                    
+                    echo $title."\n";
+                    echo $desc."\n";
+                    $output->writeln('Saved new initiave with id '.$initiative->getId());            
+                    
+                } //persist
+
+            } //new entries
+
+        } //update option
 
 /*         $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
         foreach ($del_initiatives as $deletion) {
