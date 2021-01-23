@@ -32,7 +32,7 @@ class ScraperCommandUNSC extends Command
             // the short description shown while running "php bin/console list"
             ->setDescription('Creates new WPE initiatives from scraped content')
             ->addArgument('user', InputArgument::REQUIRED, 'The User under whose name the initiatives shall be created')
-            ->addArgument('category', InputArgument::REQUIRED, 'The Category in which name the initiatives shall be created')
+            ->addArgument('category', InputArgument::REQUIRED, 'The Category in which the initiatives shall be created')
             ->addOption(
                 'delete',
                 'd',
