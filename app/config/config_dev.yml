@@ -46,8 +46,8 @@ twig:
 ewz_recaptcha:
     # For reCAPTCHA v2, use the following test keys. You will always get No CAPTCHA and all verification requests will pass.
     # https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha-v2-what-should-i-do
-    public_key:  6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
-    private_key: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+    public_key:  6LfZBDoaAAAAABQyY0VBSjIRWAfBKeuRL01QHrmo
+    private_key: 6LfZBDoaAAAAAKSq7JUAnI3uvBiBC-2WfTnPhJUp
     # Not needed as "%kernel.default_locale%" is the default value for the locale key
     locale_key:  "%kernel.default_locale%"
     locale_from_request: true
