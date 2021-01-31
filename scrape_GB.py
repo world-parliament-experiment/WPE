@@ -26,9 +26,9 @@ import datetime
 today = datetime.datetime.now()
 year = today.year
 stop = ""
-start = 1
+start = 2801
 while not stop:
-    url = 'https://www.oireachtas.ie/en/bills/bill/'+str(year)+'/'+str(start)+'/'
+    url = 'https://bills.parliament.uk/bills/'+str(start)
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
@@ -41,20 +41,19 @@ while not stop:
     title = ""
     desc = ""
 
-    title = soup.find("div", {'class': 'c-hero__content'}).getText().strip()
+    title = soup.find('div', {'class': 'col-lg-7'}).getText().strip()
     if not title:
         stop = "Stop!"
         continue
     title = title.replace("'", "&#39;")
-    
-    desc = soup.find("p", {'class': 'c-bill-intro__long-title'})
-    #if not desc:
-    #    desc = soup.find("p", {'class': 'NormalInd'})
-        
-    desc = desc.getText().strip()
+    title = title.split("\n")[0]
+
+    desc = soup.find('div', {'class': 'text-break'}).getText().strip()
+    if not desc:
+        stop = "Stop!"
+        continue
     desc = desc.replace("'", "&#39;")
-    href = url
-    desc = desc + "\n" + href
+    desc = desc + "\n" + url
 
     output.append(title)
     output.append(desc) 
