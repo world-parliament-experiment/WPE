@@ -25,15 +25,16 @@ output = []
 # URl needs to be dynamic
 import datetime
 today = datetime.datetime.now()
-stop = ""
+stop = False
 start = 700
+errorcount = 0
 while not stop:
     url = 'https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start)
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
         if e.getcode() == 404: # check the return code
-            stop = "Stop!"
+            stop = True
             continue
         raise # if other than 404, raise the error
 
@@ -41,12 +42,15 @@ while not stop:
 
     section = soup.find("article", {'class': 'bt-artikel col-xs-12 bt-standard-content'})
     if not section:
-        stop = "Stop!"
+        errorcount += 1
+        start += 1
+        if errorcount == 5:
+            stop = True
         continue
     
     topic = section.getText().strip()
     topic = topic.split("\n")
-
+    topic = [t.strip() for t in topic if t.strip() != ""]
     title = topic[1].replace(u'\xa0', u' ')
     desc = topic[2] + " \n" + topic[0]
         
@@ -57,7 +61,7 @@ while not stop:
     output.append(title)
     output.append(desc)    
 
-    start = start + 1
+    start += 1
 
 print(output)
 
