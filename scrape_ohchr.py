@@ -22,53 +22,49 @@ ctx.verify_mode = ssl.CERT_NONE
 today = datetime.datetime.now()
 output = []
 
-count = -1
-while count < 2:
-    year = today.year + count
-    url = 'https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-'+str(year)
+stop = False
+session = 45
+while not stop:
+    url = 'https://www.ohchr.org/EN/HRBodies/HRC/RegularSessions/Session'+str(session)+'/Pages/ResDecStat.aspx'
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
         if e.getcode() == 404: # check the return code
-            count = count + 1
+            session = session + 1
+            stop = True
             continue
         raise # if other than 404, raise the error
 
     soup = BeautifulSoup(html, 'html.parser')
 
-    section = soup.find("div", {'class': 'field-items'})
+    section = soup.find("table", {'class': 'HRCCleanupClass4 tablo-type1 tablo-type1--nopl automobile'})
     trs = section.findAll('tr')
 
     for tr in trs:
         tds = tr.findAll('td')
-        title = []
-        contents = []
-        for id, td in enumerate(tds):          
+        if tds:
+            title = []
+            contents = []
+            for id, td in enumerate(tds):          
                 if td.find('a') is not None and id == 0: 
                     contents.append(td.getText().strip())
                     contents.append(td.find('a').get('href'))
+                elif td.find('a') is None and id == 0:
+                    break 
                 else:
-                    contents.append(td.getText().split("\n")[0])
-        contents.reverse()
-        
-        title = contents[0].replace(u'\xa0', u' ')
-        desc = contents[3] + " \n" + contents[0] + " \n" + contents[2] + " \n" + contents[1]
+                    contents.append(td.getText().strip())
+            contents.reverse()
 
-        output.append(title)
-        output.append(desc)
+            if contents:
+                title = contents[3].replace(u'\xa0', u' ')
+                title = title.replace("    ", " ")
+                desc = contents[0] + " \n" + contents[4]
+                desc = desc.replace("    ", " ")
 
-    count = count + 1
+                output.append(title)
+                output.append(desc)
 
-#print(refs)
-#list_of_contents.reverse()
-
-#headings = list_of_contents[0::4]
-#URL = list_of_contents[2::4]
+    session = session + 1
 
 print(output)
-#print(headings)
-#print(URL)
 
-#f = open('UNSC.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in list_of_contents))
-#f.close

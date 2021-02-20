@@ -15,10 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class ScraperCommandUNSC extends Command
+class ScraperCommandOHCHR extends Command
 {
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'wpe:scrape:unsc';
+    protected static $defaultName = 'wpe:scrape:ohchr';
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -66,7 +66,7 @@ class ScraperCommandUNSC extends Command
 
         if ($input->getOption('update') === true) {
 
-            $process = new Process('python3 scrape_unsc.py');
+            $process = new Process('python3 scrape_ohchr.py');
             $process->setTimeout(600);
             $process->run();
             
