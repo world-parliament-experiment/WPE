@@ -65,7 +65,7 @@ class ScraperCommandBT extends Command
         }
         
         if ($input->getOption('update') === true) {
-            $process = new Process('python3 scrape_bundestag.py');
+            $process = new Process('python3 python/scrape_bundestag.py');
             $process->run();
             
             // executes after the command finishes

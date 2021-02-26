@@ -65,7 +65,7 @@ class ScraperCommandIE extends Command
         }
         
         if ($input->getOption('update') === true) {
-            $process = new Process('python3 scrape_IE.py');
+            $process = new Process('python3 python/scrape_IE.py');
             $process->setTimeout(1800);
             $process->run();
             
