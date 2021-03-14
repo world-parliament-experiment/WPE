@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 import ssl
 import datetime
 
-
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
 ctx.check_hostname = False

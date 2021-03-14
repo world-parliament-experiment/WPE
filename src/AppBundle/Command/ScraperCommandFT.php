@@ -65,7 +65,7 @@ class ScraperCommandFT extends Command
         }
         
         if ($input->getOption('update') === true) {
-            $process = new Process('python3 scrape_folketing.py');
+            $process = new Process('python3 python/scrape_folketing.py');
             $process->setTimeout(1800);
             $process->run();
             

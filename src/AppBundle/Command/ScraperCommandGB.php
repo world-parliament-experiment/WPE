@@ -65,7 +65,7 @@ class ScraperCommandGB extends Command
         }
         
         if ($input->getOption('update') === true) {
-            $process = new Process('python3 scrape_GB.py');
+            $process = new Process('python3 python/scrape_GB.py');
             $process->setTimeout(1800);
             $process->run();
             

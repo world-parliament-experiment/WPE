@@ -66,7 +66,7 @@ class ScraperCommandOHCHR extends Command
 
         if ($input->getOption('update') === true) {
 
-            $process = new Process('python3 scrape_ohchr.py');
+            $process = new Process('python3 python/scrape_ohchr.py');
             $process->setTimeout(600);
             $process->run();
             
