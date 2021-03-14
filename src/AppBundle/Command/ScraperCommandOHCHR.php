@@ -76,7 +76,7 @@ class ScraperCommandOHCHR extends Command
             }
             
             $contents = $process->getOutput();
-            $contentstring = explode("', '", $contents);
+            $contentstring = explode("', 'wpe.split', '", $contents);
 
             $NewEntry = [];
             for ($i = 0; $i < count($contentstring); $i++) {
