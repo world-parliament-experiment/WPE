@@ -30,18 +30,20 @@ class MenuBuilder
 
         $menu->addChild('Home', array("route" => "homepage", "label" => "menu.home.label" ))
             ->setExtra("icon", "fas fa-home fa-fw");
+        $menu->addChild('Future', array("route" => "category_index", 'routeParameters' => array('type' => 'future'), "label" => "New Initiatives" ))
+            ->setExtra("icon", "fas fa-vote-yea fa-fw");
+        $menu->addChild('Ongoing Votes', array("route" => "category_index", 'routeParameters' => array('type' => 'current'), "label" => "Ongoing Votes" ))
+            ->setExtra("icon", "fas fa-vote-yea fa-fw");
         $menu->addChild('General Assembly', array("route" => "general_assembly", "label" => "menu.assembly.label" ))
             ->setExtra("icon", "fas fa-users fa-fw");
         $menu->addChild('Parliament', array("route" => "parliament", "label" => "menu.parliament.label" ))
             ->setExtra("icon", "fas fa-users fa-fw");
-        $menu->addChild('Future', array("route" => "category_index", 'routeParameters' => array('type' => 'future'),"label" => "menu.future.label" ))
-            ->setExtra("icon", "fas fa-vote-yea fa-fw");
-        $menu->addChild('Current', array("route" => "category_index", 'routeParameters' => array('type' => 'current'),"label" => "menu.current.label" ))
-            ->setExtra("icon", "fas fa-vote-yea fa-fw");
-        $menu->addChild('Past', array("route" => "category_index", 'routeParameters' => array('type' => 'past'),"label" => "menu.past.label" ))
+
+        /*$menu->addChild('Past', array("route" => "category_index", 'routeParameters' => array('type' => 'past'), "label" => "menu.rejected.label" ))
             ->setExtra("icon", "fas fa-book-open fa-fw");
-        $menu->addChild('Program', array("route" => "category_index", 'routeParameters' => array('type' => 'program'),"label" => "menu.program.label" ))
+        $menu->addChild('Program', array("route" => "category_index", 'routeParameters' => array('type' => 'program'), "label" => "menu.adopted.label" ))
             ->setExtra("icon", "fas fa-book-open fa-fw");
+        */
 
         if ($this->authorizationChecker->isGranted('ROLE_SUPERADMIN')) {
 
