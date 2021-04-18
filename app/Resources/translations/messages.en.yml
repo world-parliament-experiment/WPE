@@ -100,13 +100,21 @@ menu:
     home:
         label: Home
     future:
-        label: Future
+        label: New Initiatives
     current:
-        label: Current
+        label: Ongoing Votes
     past:
-        label: Past
+        label: Rejected Initiatives
     program:
-        label: Program
+        label: Approved Initiatives
+    new:
+        label: New Initiatives
+    ongoing:
+        label: Ongoing Votes
+    rejected:
+        label: Rejected Initiatives
+    adopted:
+        label: Adopted Initiatives
     user:
         label: User
         profile: Profile
@@ -171,13 +179,13 @@ breadcrumb:
         create:
           label: Create Initiative
     current:
-        label: Current
+        label: Ongoing Votes
     future:
-        label: Future
+        label: New Initiatives
     past:
-        label: Past
+        label: Rejected Initiatives
     program:
-        label: Program
+        label: Approved Initiatives
     search:
         label: Search
 
