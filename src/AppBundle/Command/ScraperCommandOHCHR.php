@@ -19,6 +19,7 @@ class ScraperCommandOHCHR extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'wpe:scrape:ohchr';
+    protected static $_explchar = "', '";
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -76,7 +77,7 @@ class ScraperCommandOHCHR extends Command
             }
             
             $contents = $process->getOutput();
-            $contentstring = explode("', 'wpe.split', '", $contents);
+            $contentstring = explode($_explchar, $contents);
 
             $NewEntry = [];
             for ($i = 0; $i < count($contentstring); $i++) {

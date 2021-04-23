@@ -19,8 +19,6 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-explchar = "wpe.split"
-
 today = datetime.datetime.now()
 output = []
 
@@ -63,9 +61,7 @@ while not stop:
                 desc = contents[0] + " \n" + contents[4]
                 desc = desc.replace("    ", " ")
 
-                output.append(explchar)
                 output.append(title)
-                output.append(explchar)
                 output.append(desc)
 
     session = session + 1
