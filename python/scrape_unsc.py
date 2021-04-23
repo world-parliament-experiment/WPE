@@ -21,8 +21,6 @@ ctx.verify_mode = ssl.CERT_NONE
 today = datetime.datetime.now()
 output = []
 
-explchar = "wpe.split"
-
 count = -1
 while count < 2:
     year = today.year + count
@@ -54,11 +52,12 @@ while count < 2:
         
         if contents:
             title = contents[0].replace(u'\xa0', u' ')
-            desc = contents[3] + " \n" + contents[0] + " \n" + contents[2] + " \n" + contents[1]
+            title = title.replace("'", " ")
+            title = contents[3] + " - " + title
+            desc = contents[0] + " \n" + contents[2] + " \n" + contents[1]
+            desc = desc.replace("'", " ")
 
-            output.append(explchar)
             output.append(title)
-            output.append(explchar)
             output.append(desc)
 
     count = count + 1
