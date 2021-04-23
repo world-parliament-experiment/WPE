@@ -6,9 +6,8 @@
 # http://www.py4e.com/code3/bs4.zip
 # and unzip it in the same directory as this file
 
-import urllib.request
-import urllib.parse
-import urllib.error
+import requests
+import urllib
 from bs4 import BeautifulSoup
 import ssl
 import datetime
@@ -25,44 +24,56 @@ output = []
 stop = False
 session = 45
 while not stop:
+
+    requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += 'HIGH:!DH:!aNULL'
+    try:
+        requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += 'HIGH:!DH:!aNULL'
+    except AttributeError:
+        # no pyopenssl support used / needed / available
+        pass
+
     url = 'https://www.ohchr.org/EN/HRBodies/HRC/RegularSessions/Session'+str(session)+'/Pages/ResDecStat.aspx'
     try:
-        html = urllib.request.urlopen(url, context=ctx).read()
-    except urllib.error.HTTPError as e:
-        if e.getcode() == 404: # check the return code
-            session = session + 1
-            stop = True
-            continue
-        raise # if other than 404, raise the error
+        html = requests.get(url)
+    except requests.exceptions.RequestException as e: 
+        session = session + 1
+        stop = True
+        continue
 
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html.text, 'html.parser')
 
     section = soup.find("table", {'class': 'HRCCleanupClass4 tablo-type1 tablo-type1--nopl automobile'})
-    trs = section.findAll('tr')
+    if section:
+        trs = section.findAll('tr')
 
-    for tr in trs:
-        tds = tr.findAll('td')
-        if tds:
-            title = []
-            contents = []
-            for id, td in enumerate(tds):          
-                if td.find('a') is not None and id == 0: 
-                    contents.append(td.getText().strip())
-                    contents.append(td.find('a').get('href'))
-                elif td.find('a') is None and id == 0:
-                    break 
-                else:
-                    contents.append(td.getText().strip())
-            contents.reverse()
+        for tr in trs:
+            tds = tr.findAll('td')
+            if tds:
+                title = []
+                contents = []
+                for id, td in enumerate(tds):          
+                    if td.find('a') is not None and id == 0: 
+                        contents.append(td.getText().strip())
+                        contents.append(td.find('a').get('href'))
+                    elif td.find('a') is None and id == 0:
+                        break 
+                    else:
+                        contents.append(td.getText().strip())
+                contents.reverse()
 
-            if contents:
-                title = contents[3].replace(u'\xa0', u' ')
-                title = title.replace("    ", " ")
-                desc = contents[0] + " \n" + contents[4]
-                desc = desc.replace("    ", " ")
+                if contents:
+                    title = contents[3].replace(u'\xa0', u' ')
+                    title = contents[5] + " - " + title
+                    title = title.replace("    ", " ")
+                    desc = contents[0] + " \n" + contents[4]
+                    desc = desc.replace("    ", " ")
 
-                output.append(title)
-                output.append(desc)
+                    output.append(title)
+                    output.append(desc)
+    else:
+        session = session + 1
+        stop = True
+        continue  
 
     session = session + 1
 
