@@ -19,6 +19,7 @@ class ScraperCommandUNSC extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'wpe:scrape:unsc';
+    protected static $_explchar = "', '";
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -52,7 +53,8 @@ class ScraperCommandUNSC extends Command
     {
         $user= $this->em->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => $input->getArgument('user')));
         $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('name' => $input->getArgument('category')));
-        
+        $explchar = self::$_explchar;
+
         if ($input->getOption('delete') === true) {
             $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
             foreach ($del_initiatives as $deletion) {
@@ -94,7 +96,6 @@ class ScraperCommandUNSC extends Command
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
-                $initiative->setTitle($title);
             
                 //CreatedBy and Duration
                 $initiative->setCreatedBy($user);
@@ -107,19 +108,20 @@ class ScraperCommandUNSC extends Command
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
-                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('description' => $desc)); //existing initiatives
+                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing description
                 
                 if(!is_null($checkdata)) {
-                    $duplicate = $checkdata->getDescription();
+                    $duplicate = $checkdata->getTitle();
                 } else {
                     $duplicate = "";
                 }
-                
-                
-                if ($desc == $duplicate ) {
-                    // echo $checkdata->getDescription()."\n";
+                          
+                if ($title == $duplicate ) {
+                    echo "Duplicate";
+                    echo $checkdata->getDescription()."\n";
                     continue;
                 } else {
+                    $initiative->setTitle($title);
                     $initiative->setDescription($desc);
                     $this->em->persist($initiative);
                     $this->em->flush();
