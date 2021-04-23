@@ -95,7 +95,7 @@ class Initiative
     /**
      *
      * @Assert\NotBlank(message="Type should be selected")
-     * @ORM\Column(type="smallint", nullable=false)
+     * @ORM\Column(type="smallint", length=1000, nullable=false, unique=true)
      * @JMSSerializer\Expose
      * @JMSSerializer\Type("integer")
      * @JMSSerializer\Groups({"default", "simple"})
