@@ -84,7 +84,7 @@ class Initiative
 
     /**
      * @Assert\NotBlank(message="Description for the initiative is mandatory")
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="text", length=1000, nullable=true, unique=true)
      * @Gedmo\Versioned()
      * @JMSSerializer\Expose
      * @JMSSerializer\Type("string")
@@ -95,7 +95,7 @@ class Initiative
     /**
      *
      * @Assert\NotBlank(message="Type should be selected")
-     * @ORM\Column(type="smallint", length=1000, nullable=false, unique=true)
+     * @ORM\Column(type="smallint", nullable=false)
      * @JMSSerializer\Expose
      * @JMSSerializer\Type("integer")
      * @JMSSerializer\Groups({"default", "simple"})
