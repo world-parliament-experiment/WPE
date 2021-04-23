@@ -84,7 +84,7 @@ class Initiative
 
     /**
      * @Assert\NotBlank(message="Description for the initiative is mandatory")
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Versioned()
      * @JMSSerializer\Expose
      * @JMSSerializer\Type("string")
