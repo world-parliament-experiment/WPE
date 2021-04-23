@@ -19,7 +19,6 @@ class ScraperCommandOHCHR extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'wpe:scrape:ohchr';
-    protected static $_explchar = "', '";
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -77,7 +76,7 @@ class ScraperCommandOHCHR extends Command
             }
             
             $contents = $process->getOutput();
-            $contentstring = explode($_explchar, $contents);
+            $contentstring = explode("', '", $contents);
 
             $NewEntry = [];
             for ($i = 0; $i < count($contentstring); $i++) {
@@ -95,7 +94,6 @@ class ScraperCommandOHCHR extends Command
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
-                $initiative->setTitle($title);
             
                 //CreatedBy and Duration
                 $initiative->setCreatedBy($user);
@@ -108,19 +106,19 @@ class ScraperCommandOHCHR extends Command
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
-                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('description' => $desc)); //existing initiatives
+                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
                 
                 if(!is_null($checkdata)) {
-                    $duplicate = $checkdata->getDescription();
+                    $duplicate = $checkdata->getTitle();
                 } else {
                     $duplicate = "";
                 }
-                
                 
                 if ($desc == $duplicate ) {
                     // echo $checkdata->getDescription()."\n";
                     continue;
                 } else {
+                    $initiative->setTitle($title);
                     $initiative->setDescription($desc);
                     $this->em->persist($initiative);
                     $this->em->flush();
