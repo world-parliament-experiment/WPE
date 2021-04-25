@@ -59,17 +59,42 @@ class ScraperCommandOHCHR extends Command
         if ($input->getOption('delete') === true) {
             $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
             foreach ($del_initiatives as $deletion) {
+                unset($del_voting);
                 $delid = $deletion->getId();
-                try{
-                    $this->em->remove($deletion);
-                    $this->em->flush();
+                $dvoting = $deletion->getFutureVoting();
+                $del_voting = $dvoting->getID();
+                //echo $dvoting;
+                echo $del_voting;
+                
+                if (is_null($del_voting)) { //delete inititive if no votings exist
+                    try{
+                        $this->em->remove($dvoting);
+                        $this->em->remove($deletion);
+                        $this->em->flush();
+                    }
+                    catch (\Exception $e) {
+                        echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        continue;
+                    }
+                    echo ('Deleted initiave with id '.$delid);
+                } else {
+                    $votes_exist = $dvoting->getVotes();
+                    if (isset($votes_exist)) { // do not delete intiative if votes already exist
+                        try{
+                            $this->em->remove($dvoting);
+                            $this->em->remove($deletion);
+                            $this->em->flush();
+                        }
+                        catch (\Exception $e) {
+                            echo 'Caught exception: ',  $e->getMessage(), "\n";
+                            continue;
+                        }
+                        echo ('Deleted initiave with id '.$delid);
+                    } else {
+                        continue;
+                    }
+
                 }
-                catch (\Exception $e) {
-                    echo 'Caught exception: ',  $e->getMessage(), "\n";
-                    continue;
-                }
-                echo ('Deleted initiave with id '.$delid);
-                // return new Response;
             }   
         }
 
@@ -113,7 +138,7 @@ class ScraperCommandOHCHR extends Command
                     $duplicate = "";
                 }
                 
-                if ($desc == $duplicate ) {
+                if ($title == $duplicate ) {
                     // echo $checkdata->getDescription()."\n";
                     continue;
                 } else { //persist new initiative and voting
