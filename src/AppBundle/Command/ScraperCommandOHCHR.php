@@ -9,11 +9,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Entity\Initiative;
 use AppBundle\Entity\Category;
+use AppBundle\Entity\Voting;
 use AppBundle\Enum\InitiativeEnum;
+use AppBundle\Enum\VotingEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use DateTime;
 
 class ScraperCommandOHCHR extends Command
 {
@@ -57,8 +60,14 @@ class ScraperCommandOHCHR extends Command
             $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
             foreach ($del_initiatives as $deletion) {
                 $delid = $deletion->getId();
-                $this->em->remove($deletion);
-                $this->em->flush();
+                try{
+                    $this->em->remove($deletion);
+                    $this->em->flush();
+                }
+                catch (\Exception $e) {
+                    echo 'Caught exception: ',  $e->getMessage(), "\n";
+                    continue;
+                }
                 echo ('Deleted initiave with id '.$delid);
                 // return new Response;
             }   
@@ -84,20 +93,10 @@ class ScraperCommandOHCHR extends Command
             }
             
             foreach ($NewEntry as $title => $desc) {
-                
-                $initiative = new Initiative();
-
-                $initiative->setState(InitiativeEnum::STATE_ACTIVE);
-                $initiative->setType(InitiativeEnum::TYPE_FUTURE);
-                $initiative->setCategory($category);
 
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
-            
-                //CreatedBy and Duration
-                $initiative->setCreatedBy($user);
-                $initiative->setDuration("7");
 
                 //Description
                 $desc = str_replace("\\n", " <br /> ", ($desc));
@@ -117,9 +116,34 @@ class ScraperCommandOHCHR extends Command
                 if ($desc == $duplicate ) {
                     // echo $checkdata->getDescription()."\n";
                     continue;
-                } else {
+                } else { //persist new initiative and voting
+
+                    $initiative = new Initiative();
+                    $voting = New Voting();
+
+                    $startdate = new DateTime();
+                    $initiative->setCategory($category);
                     $initiative->setTitle($title);
                     $initiative->setDescription($desc);
+                    $initiative->setCreatedBy($user);
+                    $initiative->setDuration("7");
+                    $initiative->setPublishedAt($startdate);
+                    $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+                    $initiative->setState(InitiativeEnum::STATE_ACTIVE);
+    
+                    $startdate->modify("today 20:00");
+    
+                    if ($startdate < new DateTime()) {
+                        $startdate->modify("tomorrow 20:00");
+                    }
+    
+                    $voting->setStartdate($startdate);
+    
+                    $voting->setState(VotingEnum::STATE_WAITING);
+                    $voting->setType(VotingEnum::TYPE_FUTURE);
+                    $voting->setInitiative($initiative);
+    
+                    $this->em->persist($voting);
                     $this->em->persist($initiative);
                     $this->em->flush();
                                     
