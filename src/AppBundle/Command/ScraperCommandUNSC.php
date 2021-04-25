@@ -56,14 +56,42 @@ class ScraperCommandUNSC extends Command
         $explchar = self::$_explchar;
 
         if ($input->getOption('delete') === true) {
-            $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
+            $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category, 'type' => 0));
             foreach ($del_initiatives as $deletion) {
                 $delid = $deletion->getId();
-                $this->em->remove($deletion);
-                $this->em->flush();
-                echo ('Deleted initiave with id '.$delid);
-                // return new Response;
-            }   
+                $dvoting = $deletion->getFutureVoting();
+                echo $deletion->getType();
+                
+                if ($dvoting) {
+                    $votes_exist = $dvoting->getVotesTotal();
+                    if (isset($votes_exist)) { // do not delete intiative if votes already exist
+                        continue;
+                    } else {
+                        try{
+                            $this->em->remove($dvoting);
+                            $this->em->remove($deletion);
+                            $this->em->flush();
+                        }
+                        catch (\Exception $e) {
+                            echo 'Caught exception: ',  $e->getMessage(), "\n";
+                            continue;
+                        }
+                        echo ('Deleted initiave with id '.$delid);
+                    }
+                    //delete inititive if no voting objects exist
+
+                } else {
+                    try{
+                        $this->em->remove($deletion);
+                        $this->em->flush();
+                    }
+                    catch (\Exception $e) {
+                        echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        continue;
+                    }
+                    echo ('Deleted initiave with id '.$delid);
+                }
+            }    
         }
 
         if ($input->getOption('update') === true) {
@@ -87,19 +115,9 @@ class ScraperCommandUNSC extends Command
             
             foreach ($NewEntry as $title => $desc) {
                 
-                $initiative = new Initiative();
-
-                $initiative->setState(InitiativeEnum::STATE_ACTIVE);
-                $initiative->setType(InitiativeEnum::TYPE_FUTURE);
-                $initiative->setCategory($category);
-
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
-            
-                //CreatedBy and Duration
-                $initiative->setCreatedBy($user);
-                $initiative->setDuration("7");
 
                 //Description
                 $desc = str_replace("\\n", " <br /> ", ($desc));
@@ -108,21 +126,45 @@ class ScraperCommandUNSC extends Command
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
-                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing description
+                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
                 
                 if(!is_null($checkdata)) {
                     $duplicate = $checkdata->getTitle();
                 } else {
                     $duplicate = "";
                 }
-                          
+                
                 if ($title == $duplicate ) {
-                    echo "Duplicate";
-                    echo $checkdata->getDescription()."\n";
+                    // echo $checkdata->getDescription()."\n";
                     continue;
-                } else {
+                } else { //persist new initiative and voting
+
+                    $initiative = new Initiative();
+                    $voting = New Voting();
+
+                    $startdate = new DateTime();
+                    $initiative->setCategory($category);
                     $initiative->setTitle($title);
                     $initiative->setDescription($desc);
+                    $initiative->setCreatedBy($user);
+                    $initiative->setDuration("7");
+                    $initiative->setPublishedAt($startdate);
+                    $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+                    $initiative->setState(InitiativeEnum::STATE_ACTIVE);
+    
+                    $startdate->modify("today 20:00");
+    
+                    if ($startdate < new DateTime()) {
+                        $startdate->modify("tomorrow 20:00");
+                    }
+    
+                    $voting->setStartdate($startdate);
+    
+                    $voting->setState(VotingEnum::STATE_WAITING);
+                    $voting->setType(VotingEnum::TYPE_FUTURE);
+                    $voting->setInitiative($initiative);
+    
+                    $this->em->persist($voting);
                     $this->em->persist($initiative);
                     $this->em->flush();
                                     
