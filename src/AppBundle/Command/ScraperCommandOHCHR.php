@@ -57,29 +57,17 @@ class ScraperCommandOHCHR extends Command
         $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('name' => $input->getArgument('category')));
         
         if ($input->getOption('delete') === true) {
-            $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
+            $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category, 'type' => 0));
             foreach ($del_initiatives as $deletion) {
-                unset($del_voting);
                 $delid = $deletion->getId();
                 $dvoting = $deletion->getFutureVoting();
-                $del_voting = $dvoting->getID();
-                //echo $dvoting;
-                echo $del_voting;
+                echo $deletion->getType();
                 
-                if (is_null($del_voting)) { //delete inititive if no votings exist
-                    try{
-                        $this->em->remove($dvoting);
-                        $this->em->remove($deletion);
-                        $this->em->flush();
-                    }
-                    catch (\Exception $e) {
-                        echo 'Caught exception: ',  $e->getMessage(), "\n";
-                        continue;
-                    }
-                    echo ('Deleted initiave with id '.$delid);
-                } else {
-                    $votes_exist = $dvoting->getVotes();
+                if ($dvoting) {
+                    $votes_exist = $dvoting->getVotesTotal();
                     if (isset($votes_exist)) { // do not delete intiative if votes already exist
+                        continue;
+                    } else {
                         try{
                             $this->em->remove($dvoting);
                             $this->em->remove($deletion);
@@ -90,10 +78,19 @@ class ScraperCommandOHCHR extends Command
                             continue;
                         }
                         echo ('Deleted initiave with id '.$delid);
-                    } else {
+                    }
+                    //delete inititive if no voting objects exist
+
+                } else {
+                    try{
+                        $this->em->remove($deletion);
+                        $this->em->flush();
+                    }
+                    catch (\Exception $e) {
+                        echo 'Caught exception: ',  $e->getMessage(), "\n";
                         continue;
                     }
-
+                    echo ('Deleted initiave with id '.$delid);
                 }
             }   
         }
