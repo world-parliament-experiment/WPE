@@ -9,11 +9,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Entity\Initiative;
 use AppBundle\Entity\Category;
+use AppBundle\Entity\Voting;
 use AppBundle\Enum\InitiativeEnum;
+use AppBundle\Enum\VotingEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use DateTime;
 
 class ScraperCommandUNSC extends Command
 {
