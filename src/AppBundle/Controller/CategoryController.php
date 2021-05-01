@@ -54,13 +54,21 @@ class CategoryController extends BaseController
                 'initiatives' => $initiatives
             ]);
 
-        } else {
+        } elseif ($type === 'program') {
             $categories = $em->getRepository(Category::class)
                 ->getCategoryOverview($type);
 
             return $this->render('Category/index.html.twig', [
                 'categories' => $categories,
-                'type' => $type,
+                'type' => 'decisions',
+            ]);
+        } else {
+            $categories = $em->getRepository(Category::class)
+                ->getCategoryOverview($type);
+    
+            return $this->render('Category/index.html.twig', [
+                'categories' => $categories,
+                'type' => 'archive',
             ]);
         }
     }
