@@ -60,7 +60,8 @@ class CategoryController extends BaseController
 
             return $this->render('Category/index.html.twig', [
                 'categories' => $categories,
-                'type' => 'decisions',
+                'type' => $type,
+                'alias' => 'decisions',
             ]);
         } else {
             $categories = $em->getRepository(Category::class)
@@ -68,7 +69,8 @@ class CategoryController extends BaseController
     
             return $this->render('Category/index.html.twig', [
                 'categories' => $categories,
-                'type' => 'archive',
+                'type' => $type,
+                'alias' => 'archive',
             ]);
         }
     }
@@ -83,11 +85,19 @@ class CategoryController extends BaseController
      */
     public function listCategoryAction(Category $category, $type)
     {
-        return $this->render('Category/category.html.twig', [
-            "category" => $category,
-            "type" => $type,
-        ]);
-
+        if ($type === 'program') {
+            return $this->render('Category/category.html.twig', [
+                "category" => $category,
+                "type" => $type,
+                'alias' => 'adopted votes'
+            ]);
+        } elseif ($type === 'past') {
+            return $this->render('Category/category.html.twig', [
+                "category" => $category,
+                "type" => $type,
+                'alias' => 'unsuccessful votes'
+            ]);
+        }
     }
 
     /**

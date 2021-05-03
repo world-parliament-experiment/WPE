@@ -175,9 +175,13 @@ breadcrumb:
     future:
         label: New Initiatives
     past:
-        label: Rejected Initiatives
+        label: Unsuccessful Initiatives
     program:
-        label: Approved Initiatives
+        label: Adopted Votes
+    archive:
+        label: Unsuccessful Initiatives
+    decisions:
+        label: Adopted Votes
     search:
         label: Search
 
