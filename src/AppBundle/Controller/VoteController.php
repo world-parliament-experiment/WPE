@@ -170,11 +170,36 @@ class VoteController extends BaseController
         $comment->setReported('0');
         $comment->setParent(NULL);
 
-        return $this->render('Vote/show.html.twig', array(
-            'initiative' => $initiative,
-            'form' => $form->createView(),
-            'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
-        ));
+        if ($initiative->getType() === 0) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'proposal',
+            ));
+        } elseif ($initiative->getType() === 1) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'vote',
+            ));
+        } elseif ($initiative->getType() === 2) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'unsuccessful initiative',
+            ));
+        } else {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'adopted vote',
+            ));
+        }
+        ;
 
     }
 
