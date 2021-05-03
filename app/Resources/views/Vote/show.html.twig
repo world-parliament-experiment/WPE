@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Initiative', background: asset('assets/img/header/initiative_large.jpg')}, with_context = false) }}
+    {{ include ('Widget/_breadcrumb.html.twig', {title: type|capitalize, background: asset('assets/img/header/initiative_large.jpg')}, with_context = false) }}
 
     {{ apy_breadcrumb_trail_render() }}
 
@@ -38,6 +38,64 @@
                             {% autoescape false %}
                                 {{ initiative.description }}
                             {% endautoescape %}
+
+                            <!-- Vote Area -->
+
+                            <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
+                                <!-- Section Title -->
+                                <div class="section-heading">
+                                    <h5>SUPPORT</h5>
+                                </div>
+
+                                <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
+                                    data-slug="{{ initiative.slug }}"></div>
+
+                                {% if initiative.type == 1 and  initiative.state == 1 %}
+                                    <div class="text-center" style="margin-top: 1rem;"><p>You can see the results of completed elections <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
+                                {% endif %}
+
+                            </div>
+
+                            {#                    {{ dump(initiative) }}#}
+                            {#                    {% for voting in initiative.votings %}#}
+                            {#                        {{ dump(voting) }}#}
+                            {#                    {% endfor %}#}
+
+                            <!-- Comment Area -->
+                            <div class="comment_area clearfix bg-white mb-30 p-30 box-shadow">
+                                <!-- Section Title -->
+                                <div class="section-heading">
+                                    <h5>DISCUSSION</h5>
+                                </div>
+
+                                {{ m.comment_tree(initiative.comments, repo, 0) }}
+
+                            </div>
+                            <!-- Post A Comment Area -->
+                            <div class="post-a-comment-area bg-white mb-30 p-30 box-shadow clearfix">
+                                <!-- Section Title -->
+                                <div class="section-heading">
+                                    <h5>NEW COMMENT</h5>
+                                </div>
+
+                            {% if is_granted('ROLE_USER') %}
+
+                                <!-- Reply Form -->
+                                <div id="contact-form-area" class="contact-form-area">
+                                    {{ form_start(form) }}
+
+                                    {{ form_row(form.message) }}
+
+                                    <button type="submit" class="btn btn-primary" formnovalidate><i class="fas fa-save"></i> {{ 'comment.button.submit'|trans }} </button>
+                                    {{ form_end(form) }}
+                                </div>
+
+                            {% else %}
+
+                                <div class="text-center">Only registered user can comment for this initiative! Please <a href="{{ path("fos_user_security_login") }}">login</a> or <a href="{{ path("fos_user_registration_register") }}">register</a> to continue.</div>
+
+                            {% endif %}
+                            </div>
 
                             <!-- Like Dislike Share -->
                             <div class="like-dislike-share my-5">
@@ -75,64 +133,6 @@
                             </div>
 
                         </div>
-                    </div>
-
-                    <!-- Vote Area -->
-
-                    <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
-                        <!-- Section Title -->
-                        <div class="section-heading">
-                            <h5>VOTE</h5>
-                        </div>
-
-                        <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
-                             data-slug="{{ initiative.slug }}"></div>
-
-                        {% if initiative.type == 1 and  initiative.state == 1 %}
-                            <div class="text-center" style="margin-top: 1rem;"><p>You can see the results of completed elections <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
-                        {% endif %}
-
-                    </div>
-
-{#                    {{ dump(initiative) }}#}
-{#                    {% for voting in initiative.votings %}#}
-{#                        {{ dump(voting) }}#}
-{#                    {% endfor %}#}
-
-                    <!-- Comment Area -->
-                    <div class="comment_area clearfix bg-white mb-30 p-30 box-shadow">
-                        <!-- Section Title -->
-                        <div class="section-heading">
-                            <h5>COMMENTS</h5>
-                        </div>
-
-                        {{ m.comment_tree(initiative.comments, repo, 0) }}
-
-                    </div>
-                    <!-- Post A Comment Area -->
-                    <div class="post-a-comment-area bg-white mb-30 p-30 box-shadow clearfix">
-                        <!-- Section Title -->
-                        <div class="section-heading">
-                            <h5>LEAVE A REPLY</h5>
-                        </div>
-
-                    {% if is_granted('ROLE_USER') %}
-
-                        <!-- Reply Form -->
-                        <div id="contact-form-area" class="contact-form-area">
-                            {{ form_start(form) }}
-
-                            {{ form_row(form.message) }}
-
-                            <button type="submit" class="btn btn-primary" formnovalidate><i class="fas fa-save"></i> {{ 'comment.button.submit'|trans }} </button>
-                            {{ form_end(form) }}
-                        </div>
-
-                    {% else %}
-
-                        <div class="text-center">Only registered user can comment for this initiative! Please <a href="{{ path("fos_user_security_login") }}">login</a> or <a href="{{ path("fos_user_registration_register") }}">register</a> to continue.</div>
-
-                    {% endif %}
                     </div>
 
                 </div>
