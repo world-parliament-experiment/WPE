@@ -325,11 +325,11 @@ class UserController extends BaseController
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
-                $startdate->modify("today 20:00");
+                $startdate->modify("+30 seconds");
 
-                if ($startdate < new DateTime()) {
-                    $startdate->modify("tomorrow 20:00");
-                }
+                // if ($startdate < new DateTime()) {
+                //     $startdate->modify("tomorrow 20:00");
+                // }
 
                 $voting->setStartdate($startdate);
 
@@ -409,11 +409,11 @@ class UserController extends BaseController
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
-                $startdate->modify("today 20:00");
+                $startdate->modify("+30 seconds");
 
-                if ($startdate < new DateTime()) {
-                    $startdate->modify("tomorrow 20:00");
-                }
+                // if ($startdate < new DateTime()) {
+                //     $startdate->modify("tomorrow 20:00");
+                // }
 
                 $voting->setStartdate($startdate);
 
