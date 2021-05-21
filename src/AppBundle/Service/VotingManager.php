@@ -88,7 +88,7 @@ class VotingManager
                 $voting = $initiative->getFutureVoting();
 
                 $enddate = new DateTime();
-                $enddate->modify("+$duration days 19:00");
+                $enddate->modify("Sunday 19:00");
                 $voting->setEnddate($enddate);
 
                 $voting->setState(VotingEnum::STATE_OPEN);
@@ -128,7 +128,7 @@ class VotingManager
                 $voting = $initiative->getCurrentVoting();
 
                 $enddate = new DateTime();
-                $enddate->modify("+$duration days 19:00");
+                $enddate->modify("Sunday 19:00");
                 $voting->setEnddate($enddate);
 
                 $voting->setState(VotingEnum::STATE_OPEN);
@@ -182,11 +182,11 @@ class VotingManager
                     $em->persist($initiative);
 
                     $startdate = new DateTime();
-                    $startdate->modify("today 20:00");
+                    $startdate->modify("+30 seconds");
 
-                    if ($startdate < new DateTime()) {
-                        $startdate->modify("tomorrow 20:00");
-                    }
+                    // if ($startdate < new DateTime()) {
+                    //     $startdate->modify("tomorrow 20:00");
+                    // }
 
                     $cVoting = new Voting();
                     $cVoting->settype(VotingEnum::TYPE_CURRENT);
