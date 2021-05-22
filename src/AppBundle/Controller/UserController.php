@@ -333,7 +333,7 @@ class UserController extends BaseController
 
                 $voting->setStartdate($startdate);
 
-                $voting->setState(VotingEnum::STATE_WAITING);
+                $voting->setState(VotingEnum::STATE_OPEN);
                 $voting->setType(VotingEnum::TYPE_FUTURE);
                 $voting->setInitiative($initiative);
 
