@@ -149,7 +149,7 @@ class ScraperCommand extends Command
                     $voting = New Voting();
 
                     $startdate = new DateTime("+30 seconds");
-                    $enddate = new DateTime("Sunday 19:00")
+                    $enddate = new DateTime("Sunday 19:00");
                     $initiative->setCategory($category);
                     $initiative->setTitle($title);
                     $initiative->setDescription($desc);
