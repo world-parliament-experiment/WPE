@@ -52,7 +52,7 @@ while not stop:
             stop = True
         continue
     title = title.replace("'", "&#39;")
-    
+    title = title.replace(u'\xa0', u' ')
     desc = soup.find("p", {'class': 'c-bill-intro__long-title'})
     #if not desc:
     #    desc = soup.find("p", {'class': 'NormalInd'})
