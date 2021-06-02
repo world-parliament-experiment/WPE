@@ -6,6 +6,13 @@
 <!-- Catagory Widget -->
 <ul class="catagory-widgets">
     {% for category in categories %}
-        <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": "program"}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+        {% if app.user %}
+            {% if category == app.user.country %}
+                <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": "program"}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+            {% endif %}
+        {% endif %}
+        {% if category not in countries %}
+                <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": "program"}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+        {% endif %}
     {% endfor %}
 </ul>
