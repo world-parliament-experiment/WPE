@@ -32,6 +32,7 @@ class CreateCategoryCommand extends ContainerAwareCommand
             ->setDescription('Create a new category.')
             ->setDefinition(array(
                 new InputArgument('name', InputArgument::REQUIRED, 'The category name'),
+                new InputOption('delete', 'd', InputOption::VALUE_NONE, 'Delete Category')
             ))
             ->setHelp(<<<'EOT'
 The <info>wpe:category:create</info> command creates a new category:
@@ -50,11 +51,23 @@ EOT
         $name = $input->getArgument('name');
         $category = new Category();
 
+        if ($input->getOption('delete') === true) {
+            $del_category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('name' => $name));
+            try {
+                $this->em->remove($del_category);
+                $this->em->flush();
+            }
+            catch (\Exception $e) {
+                echo 'Caught exception: ',  $e->getMessage(), "\n";
+            }
+        }
+        else {
+
         $category->setName($name);
         $this->em->persist($category);
         $this->em->flush();
                         
         $output->writeln('Saved new category with name '.$category->getName());  
-
+        }
     }
 }
