@@ -100,8 +100,10 @@ class ScraperCommand extends Command
         }
 
         if ($input->getOption('update') === true) {
-
-            $script = 'python3 python/scrape_'.$country.'.py';
+	    $script = 'python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py';
+            //$path = getcwd();   
+            //$script = 'python3 '.$path.'python/scrape_'.$country.'.py';
+	    // $script = 'python3 python/scrape_'.$country.'.py';
             $process = new Process($script);
             $process->setTimeout(600);
             $process->run();
