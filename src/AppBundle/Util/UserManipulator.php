@@ -69,7 +69,7 @@ class UserManipulator
      *
      * @return \FOS\UserBundle\Model\UserInterface
      */
-    public function create($username, $firstname, $lastname, $password, $email, $active, $superadmin)
+    public function create($username, $firstname, $lastname, $password, $email, $active, $superadmin, $consents)
     {
         $user = $this->userManager->createUser();
         $user->setUsername($username);
@@ -78,6 +78,7 @@ class UserManipulator
 
         $user->setEmail($email);
         $user->setPlainPassword($password);
+        $user->setConsents($consents);
         $user->setEnabled((bool) $active);
         $user->setSuperAdmin((bool) $superadmin);
         $this->userManager->updateUser($user);
