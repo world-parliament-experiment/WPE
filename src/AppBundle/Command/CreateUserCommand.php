@@ -92,7 +92,7 @@ EOT
         $output->writeln('Consents:'.$consents);
 
         $manipulator = $this->getContainer()->get('AppBundle\Util\UserManipulator');
-        $manipulator->create($username, $firstname, $lastname, $password, $email, $consents, !$inactive, $superadmin);
+        $manipulator->create($username, $firstname, $lastname, $password, $email, !$inactive, $superadmin, $consents);
 
         $output->writeln(sprintf('Created user <comment>%s</comment>', $username));
     }
