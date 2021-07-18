@@ -28,11 +28,23 @@
                             </thead>
                             <tbody>
                             {% for category in categories %}
-                                <tr>
-                                    <td><a href="{{ path('category_type', { 'id': category.id, 'slug': category.slug, 'type': type}) }}">{{ category.name }}</a></td>
-                                    <td>{{ category.count_initiative }} total</td>
-                                    <td>{{ category.last_initiative is empty ? "" : category.last_initiative|date('d.m.Y H:i') }}</td>
-                                </tr>
+                                {% if app.user %}
+                                    {% if app.user.country == category.description or category.description|length > 2 %}
+                                        <tr>
+                                            <td><a href="{{ path('category_type', { 'id': category.id, 'slug': category.slug, 'type': type}) }}">{{ category.name }}</a></td>
+                                            <td>{{ category.count_initiative }} total</td>
+                                            <td>{{ category.last_initiative is empty ? "" : category.last_initiative|date('d.m.Y H:i') }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% else %}
+                                    {% if category.description|length > 2 %}
+                                        <tr>
+                                            <td><a href="{{ path('category_type', { 'id': category.id, 'slug': category.slug, 'type': type}) }}">{{ category.name }}</a></td>
+                                            <td>{{ category.count_initiative }} total</td>
+                                            <td>{{ category.last_initiative is empty ? "" : category.last_initiative|date('d.m.Y H:i') }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
 
                             </tbody>
