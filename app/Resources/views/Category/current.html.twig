@@ -18,40 +18,74 @@
                         </div>
 
                         {% for category in initiatives %}
+                            {% if app.user %}
+                                {% if app.user.country == category.description or category.description|length > 2 %}
+                                    <h2>{{ category.name }}</h2>
+                                    <table class="table table-categories table-striped table-bordered" style="width:100%">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Creator</th>
+                                            <th>Date</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for initiative in category.initiatives %}
+                                            <tr>
+                                                <td>
+                                                    <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                                </td>
+                                                <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                                <td>{{ initiative.createdAt|date('Y-m-d H:i') }}</td>
+                                                <td class="text-center">
+                                                    {% if initiative.voteStatus == 'now' %}
+                                                        <span class="badge badge-danger"> NOW </span>
+                                                    {% elseif initiative.voteStatus == 'soon' %}
+                                                        <span class="badge badge-warning"> SOON </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% endif %}
+                            {% else %}
+                                {% if category.description|length > 2 %}
+                                    <h2>{{ category.name }}</h2>
+                                    <table class="table table-categories table-striped table-bordered" style="width:100%">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Creator</th>
+                                            <th>Date</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                        </thead>
 
-                            <h2>{{ category.name }}</h2>
-                            <table class="table table-categories table-striped table-bordered" style="width:100%">
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Creator</th>
-                                    <th>Date</th>
-                                    <th>&nbsp;</th>
-                                </tr>
-                                </thead>
+                                        <tbody>
+                                        {% for initiative in category.initiatives %}
 
-                                <tbody>
-                                {% for initiative in category.initiatives %}
+                                            <tr>
+                                                <td>
+                                                    <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                                </td>
+                                                <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                                <td>{{ initiative.createdAt|date('Y-m-d H:i') }}</td>
+                                                <td class="text-center">
+                                                    {% if initiative.voteStatus == 'now' %}
+                                                        <span class="badge badge-danger"> NOW </span>
+                                                    {% elseif initiative.voteStatus == 'soon' %}
+                                                        <span class="badge badge-warning"> SOON </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
 
-                                    <tr>
-                                        <td>
-                                            <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
-                                        </td>
-                                        <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
-                                        <td>{{ initiative.createdAt|date('Y-m-d H:i') }}</td>
-                                        <td class="text-center">
-                                            {% if initiative.voteStatus == 'now' %}
-                                                <span class="badge badge-danger"> NOW </span>
-                                            {% elseif initiative.voteStatus == 'soon' %}
-                                                <span class="badge badge-warning"> SOON </span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-
-                                {% endfor %}
-                                </tbody>
-
-                            </table>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}
                     </div>
                 </div>
