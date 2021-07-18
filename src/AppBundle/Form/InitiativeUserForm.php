@@ -16,12 +16,29 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Voting;
 use AppBundle\Entity\Category;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Security;
 
 class InitiativeUserForm extends AbstractType
 {
+    public function __construct(EntityManagerInterface $em, Security $security)
+    {
+        $this->em = $em;
+        $this->security = $security;
+    }
+    
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $enddate = new DateTime();
+        $repoCategory = $this->em->getRepository('AppBundle:Category');
+        $user= $this->security->getUser();
+        $country = $user->getCountry();
+            
+        $categories = $repoCategory->createQueryBuilder("q")
+            ->where("length(q.description) > 2 OR q.description = :country")
+            ->setParameter("country", $country)
+            ->getQuery()
+            ->getResult();
 
         $builder
 
@@ -37,7 +54,9 @@ class InitiativeUserForm extends AbstractType
             ->add('category', EntityType::class, array(
                 'class'        => Category::class,
                 'choice_label' => 'name',
-                'label' => 'initiative.edit.category'
+                'placeholder' => "Select a category",
+                'label' => 'initiative.edit.category',
+                'choices' => $categories
             ))
             ->add('duration', ChoiceType::class, array('label' => 'initiative.edit.duration',
                 'choices' => [
