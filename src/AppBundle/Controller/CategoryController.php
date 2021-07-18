@@ -36,6 +36,7 @@ class CategoryController extends BaseController
     public function listCategoryOverviewAction($type)
     {
         $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
 
         if ($type === 'future') {
 
