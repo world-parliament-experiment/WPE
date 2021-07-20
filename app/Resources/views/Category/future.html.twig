@@ -15,76 +15,73 @@
                         <!-- Section Title -->
                         <div class="section-heading">
                             <h6>Proposals</h6>
-                        </div>                   
-                        {% for category in initiatives %}
-                            {% if app.user %}
-                                {% if app.user.country == category.description or category.description|length > 2 %}
-                                    <h2>{{ category.name }}</h2>
-                                    <table class="table table-categories table-striped table-bordered" style="width:100%">
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Creator</th>
-                                            <th>Date</th>
-                                            <th>&nbsp;</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for initiative in category.initiatives %}
-                                            <tr>
-                                                <td>
-                                                    <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
-                                                </td>
-                                                <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
-                                                <td>{{ initiative.createdAt|date('Y-m-d H:i') }}</td>
-                                                <td class="text-center">
-                                                    {% if initiative.voteStatus == 'now' %}
-                                                        <span class="badge badge-danger"> NOW </span>
-                                                    {% elseif initiative.voteStatus == 'soon' %}
-                                                        <span class="badge badge-warning"> SOON </span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                        </div> 
+                            <table class="table table-categories table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Creator</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Views</th>
+                                    <th>Comments</th>
+                                    <th>Voting</th>
+                                </tr>
+                                </thead>
+                                <tbody>                  
+                                {% if app.user %}
+                                    {% for category in initiatives %}
+                                        {% if app.user.country == category.description or category.description|length > 2 %}
+                                            {% for initiative in category.initiatives %}
+                                                <tr>
+                                                    <td>
+                                                        <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                                    </td>
+                                                    <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                                    <td>{{ category.name }}</td>
+                                                    <td>{{ initiative.createdAt|date('Y-m-d') }}</td>
+                                                    <td>{{ initiative.views }}</td>
+                                                    <td>{{ initiative.countComments }}</td>
+                                                    <td class="text-center">
+                                                        {% if initiative.voteStatus == 'now' %}
+                                                            <span class="badge badge-danger"> NOW </span>
+                                                        {% elseif initiative.voteStatus == 'soon' %}
+                                                            <span class="badge badge-warning"> SOON </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}                              
+                                    {% for category in initiatives %}
+                                        {% if category.description|length > 2 %}
+                                            {% for initiative in category.initiatives %}
+                                                <tr>
+                                                    <td>
+                                                        <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                                    </td>
+                                                    <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                                    <td>{{ category.name }}</td>
+                                                    <td>{{ initiative.createdAt|date('Y-m-d') }}</td>
+                                                    <td>{{ initiative.views }}</td>
+                                                    <td>{{ initiative.countComments }}</td>
+                                                    <td class="text-center">
+                                                        {% if initiative.voteStatus == 'now' %}
+                                                            <span class="badge badge-danger"> NOW </span>
+                                                        {% elseif initiative.voteStatus == 'soon' %}
+                                                            <span class="badge badge-warning"> SOON </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
                                 {% endif %}
-                            {% else %}
-                                {% if category.description|length > 2 %}
-                                    <h2>{{ category.name }}</h2>
-                                    <table class="table table-categories table-striped table-bordered" style="width:100%">
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Creator</th>
-                                            <th>Date</th>
-                                            <th>&nbsp;</th>
-                                        </tr>
-                                        </thead>
-
-                                        <tbody>
-                                        {% for initiative in category.initiatives %}
-                                            <tr>
-                                                <td>
-                                                    <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
-                                                </td>
-                                                <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
-                                                <td>{{ initiative.createdAt|date('Y-m-d H:i') }}</td>
-                                                <td class="text-center">
-                                                    {% if initiative.voteStatus == 'now' %}
-                                                        <span class="badge badge-danger"> NOW </span>
-                                                    {% elseif initiative.voteStatus == 'soon' %}
-                                                        <span class="badge badge-warning"> SOON </span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                         </table>  
                     </div>
                 </div>
             </div>
@@ -106,14 +103,16 @@
             var table = $('.table-categories').DataTable({
                 "searching": false,
                 "ordering": true,
-                "paging": false,
-                "info": false,
-                "order": [[3, "desc"]],
+                "paging": true,
+                "info": true,
+                "order": [[5, "desc"],[4, "desc"]],
                 "columns": [
-                    { "width": "40%" },
-                    { "width": "20%" },
-                    { "width": "25%" },
+                    { "width": "50%" },
                     { "width": "10%" },
+                    { "width": "10%" },
+                    { "width": "15%" },
+                    { "width": "5%", "visible": true, },
+                    { "width": "5%", "visible": true, },
                     { "width": "5%", "orderable": false }
                 ]
             });
