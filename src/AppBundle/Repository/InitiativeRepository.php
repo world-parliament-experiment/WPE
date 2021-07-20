@@ -509,9 +509,12 @@ class InitiativeRepository extends EntityRepository
     {
 
         return $this->createQueryBuilder('i')
+            ->select(['i', 'c'])
+            ->leftJoin('i.category', 'c')
             ->setMaxResults(3)
             ->addOrderBy('i.views', 'desc')
             ->andWhere('i.state IN (:state)')
+            ->andWhere('LENGTH(c.description) > 2')
             ->setParameters([
                 'state' => [InitiativeEnum::STATE_ACTIVE, InitiativeEnum::STATE_FINISHED],
             ])
@@ -524,13 +527,16 @@ class InitiativeRepository extends EntityRepository
     {
 
         return $this->createQueryBuilder('i')
+            ->select(['i', 'c'])
+            ->leftJoin('i.category', 'c')
             ->setMaxResults(3)
             ->addOrderBy('i.views', 'desc')
             ->andWhere('i.state = :state')
             ->andWhere('i.type IN (:type)')
+            ->andWhere('LENGTH(c.description) > 2')
             ->setParameters([
                 'state' => InitiativeEnum::STATE_ACTIVE,
-                'type' => [InitiativeEnum::TYPE_FUTURE, InitiativeEnum::TYPE_CURRENT]
+                'type' => [InitiativeEnum::TYPE_FUTURE, InitiativeEnum::TYPE_CURRENT],
             ])
             ->getQuery()
             ->execute();
