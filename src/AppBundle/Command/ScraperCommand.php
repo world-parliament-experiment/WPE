@@ -100,8 +100,8 @@ class ScraperCommand extends Command
         }
 
         if ($input->getOption('update') === true) {
-   
-            $script = 'python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py';
+
+            $script = 'python3 python/scrape_'.$country.'.py';
             $process = new Process($script);
             $process->setTimeout(600);
             $process->run();
@@ -124,12 +124,13 @@ class ScraperCommand extends Command
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
+                $title = str_replace("]", "", ($title));
 
                 //Description
                 $desc = str_replace("\\n", " <br /> ", ($desc));
                 $desc = str_replace("]", "", ($desc));
                 $url_regex = '~(?:http|ftp)s?://(?:www\.)?([a-z0-9.-]+\.[a-z]{2,3}(?:/\S*)?)~i';
-                $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow">$1</a>', $desc);
+                $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow" target="_blank">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
                 $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
@@ -149,7 +150,6 @@ class ScraperCommand extends Command
                     $voting = New Voting();
 
                     $startdate = new DateTime("+30 seconds");
-                    $enddate = new DateTime("Sunday 19:00");
                     $initiative->setCategory($category);
                     $initiative->setTitle($title);
                     $initiative->setDescription($desc);
@@ -166,9 +166,8 @@ class ScraperCommand extends Command
                     // }
     
                     $voting->setStartdate($startdate);
-                    $voting->setEnddate($enddate);
     
-                    $voting->setState(VotingEnum::STATE_OPEN);
+                    $voting->setState(VotingEnum::STATE_WAITING);
                     $voting->setType(VotingEnum::TYPE_FUTURE);
                     $voting->setInitiative($initiative);
     
