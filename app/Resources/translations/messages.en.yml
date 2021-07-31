@@ -1,7 +1,7 @@
 vote:
     future:
         button:
-            vote_yes: I want this to be a future vote
+            vote_yes: I want this topic to become an online vote
     current:
         button:
             vote_yes: Yes
