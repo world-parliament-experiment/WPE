@@ -26,11 +26,11 @@ output = []
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 1266
+start = 1296
 errorcount = 0
-rooturl = 'https://www.senado.gob.ar'
+rooturl = 'https://www.senado.gob.ar/'
 while not stop:
-    url = rooturl+'/votaciones/detalleActa/'+str(start)
+    url = rooturl+'votaciones/detalleActa/'+str(start)
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
@@ -44,7 +44,6 @@ while not stop:
 
     soup = BeautifulSoup(html, 'html.parser')
 
-    section = ""
     section = soup.find("div", {'class': 'col-lg-6 col-sm-6'})
     if not section:
         errorcount += 1
@@ -53,47 +52,20 @@ while not stop:
             stop = True
         continue
     
-    section = section.find_all('p')
-    if len(section) > 1:
-        topic = section[1].get_text().strip()
-        topic = topic.replace("\n", "")
-        topic = topic.replace(u'\xa0', u' ')
-        if len(str(topic)) < 4:
-            errorcount += 1
-            start += 1
-            if errorcount == 5:
-                stop = True
-            continue
-    else:
-        errorcount += 1
-        start += 1
-        if errorcount == 5:
-            stop = True
-        continue
-    topic = topic.split(".", 1)
+    topic = section.getText().strip()
+    topic = topic.split("\n")
     topic = [t.strip() for t in topic if t.strip() != ""]
-    title = topic[0].replace(u'\xa0', u' ')
-    if len(topic) > 1:
-        id = topic[1]
-        id = " ".join(id.split())
-        if '(' not in id:
-            title = id + ' - ' + title
-        desc = topic[0] + "\n" + topic[1]
-        desc = " ".join(desc.split())
-        desc = desc.replace("( ", "")
-
-        href = ''
-            
-        for links in section[1].findAll('a'):
-            href = rooturl + links.get('href')
-            desc = desc + "\n" + href
-        if not href:
-            errorcount += 1
-            start += 1
-            if errorcount == 5:
-                stop = True
-            continue
-    else:
+    title = topic[1].replace(u'\xa0', u' ')
+    title = title.replace("( - ", "")
+    id = topic[2].replace(u'\xa0', u' ')
+    title = id + ' - ' + title
+    desc = topic[1].replace(u'\xa0', u' ')
+    href = ''
+        
+    for links in section.findAll('a'):
+        href = rooturl + links.get('href')
+        desc = desc + "\n" + href
+    if not href:
         errorcount += 1
         start += 1
         if errorcount == 5:
@@ -101,10 +73,28 @@ while not stop:
         continue
 
     output.append(title)
-    output.append(desc) 
+    output.append(desc)    
 
-    #successful scrape
-    errorcount = 0
     start += 1
 
 print(output)
+
+#print(topicno)
+#print(status)
+#print(url)
+#print(uzeit) 
+#list_of_contents.remove("\n")
+#list_of_contents.remove(" ")
+
+
+#print(list_of_contents)
+
+#print(topiclist)
+
+#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
+#f.write("\n".join(str(item) for item in output))
+#f.close
+
+#f = open('BT_Tagesordnung.txt', 'a')
+#f.write("\n".join(str(item) for item in url))
+#f.close
