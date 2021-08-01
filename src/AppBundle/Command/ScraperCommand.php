@@ -124,6 +124,7 @@ class ScraperCommand extends Command
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
+                $title = substr($title,0,255);
 
                 //Description
                 $desc = str_replace("\\n", " <br /> ", ($desc));

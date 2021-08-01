@@ -19,31 +19,33 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-refs = []
 output = []
 
 # URl needs to be dynamic
 import datetime
 today = datetime.datetime.now()
+if  today.month <= 7:       #voting period is Sep - May 
+    year = today.year - 1
+else:
+    year = today.year
 stop = False
-start = 750
+start = 250
 errorcount = 0
 while not stop:
-    url = 'https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start)
+    #url = 'https://www.ft.dk/samling/20201/beslutningsforslag/b'+str(start)+'/index.htm'
+    url = 'https://www.ft.dk/samling/20201/beslutningsforslag/b'+str(start)+'/20201_b'+str(start)+'_som_fremsat.htm'
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
-        if e.getcode() == 404: # check the return code
             errorcount += 1
             start += 1
             if errorcount == 5:
                 stop = True
             continue
-        raise # if other than 404, raise the error
 
     soup = BeautifulSoup(html, 'html.parser')
 
-    section = soup.find("article", {'class': 'bt-artikel col-xs-12 bt-standard-content'})
+    section = soup.find("div", {'class': 'case-document'})
     if not section:
         errorcount += 1
         start += 1
@@ -51,20 +53,25 @@ while not stop:
             stop = True
         continue
     
-    topic = section.getText().strip()
-    topic = topic.split("\n")
-    topic = [t.strip() for t in topic if t.strip() != ""]
-    title = topic[1].replace(u'\xa0', u' ')
-    desc = topic[2] + " \n" + topic[0]
+    title = ""
+    desc = ""
+
+    title1 = soup.find("p", {'class': 'TitelPrefiks1'}).getText().strip()
+    title2 = soup.find("p", {'class': 'Titel2'}).getText().strip()
+    title = title1 + " " + title2
+    desc = soup.find("p", {'class': 'Tekst1Sp'})
+    if not desc:
+        desc = soup.find("p", {'class': 'NormalInd'})
         
-    for links in section.findAll('a'):
-        href = links.get('href')
-        desc = desc + "\n" + href
+    desc = desc.getText().strip()
+    href = 'https://www.ft.dk/ripdf/samling/'+str(year)+'1/beslutningsforslag/b'+str(start)+'/20201_b'+str(start)+'_som_fremsat.pdf'
+    desc = desc + "\n" + href
 
     output.append(title)
-    output.append(desc)    
+    output.append(desc) 
+    #print(start)   
 
-    start += 1
+    start = start + 1
 
 print(output)
 

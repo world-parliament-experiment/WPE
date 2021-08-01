@@ -65,6 +65,7 @@ while not stop:
                     title = contents[3].replace(u'\xa0', u' ')
                     title = contents[5] + " - " + title
                     title = title.replace("    ", " ")
+                    title = title[:255]
                     desc = contents[0] + " \n" + contents[4]
                     desc = desc.replace("    ", " ")
 
