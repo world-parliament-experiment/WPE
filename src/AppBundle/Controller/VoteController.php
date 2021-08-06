@@ -428,7 +428,7 @@ class VoteController extends BaseController
                         } else {
                             return $this->createApiResponse([
                                 'success' => false,
-                                'message' => 'Only registered user can vote for this initiative! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
+                                'message' => 'Only registered users can supoort a proposal to become an online vote! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
                             ], 302);
                         }
                     }
@@ -496,7 +496,7 @@ class VoteController extends BaseController
                         } else {
                             return $this->createApiResponse([
                                 'success' => false,
-                                'message' => 'Only registered user can vote for this initiative! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
+                                'message' => 'Only registered users can vote! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
                             ], 302);
                         }
                     }
