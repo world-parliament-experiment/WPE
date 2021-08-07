@@ -373,7 +373,7 @@ class InitiativeRepository extends EntityRepository
         ->andWhere('i.type = :itype')
         ->andWhere('v.state = :vstate')
         ->andWhere('v.type = :vtype')
-        ->andWhere('v.startdate <= CURRENT_TIMESTAMP()')
+        //->andWhere('v.startdate <= CURRENT_TIMESTAMP()')
         ->setParameters([
             'istate' => InitiativeEnum::STATE_ACTIVE,
             'itype' => InitiativeEnum::TYPE_FUTURE,
@@ -428,7 +428,7 @@ class InitiativeRepository extends EntityRepository
             ->setParameters([
                 'istate' => InitiativeEnum::STATE_ACTIVE,
                 'itype' => InitiativeEnum::TYPE_FUTURE,
-                'vstate' => VotingEnum::STATE_OPEN,
+                'vstate' => VotingEnum::STATE_WAITING,
                 'vtype' => VotingEnum::TYPE_FUTURE,
             ])
             ->orderBy('i.publishedAt')
@@ -449,7 +449,7 @@ class InitiativeRepository extends EntityRepository
             ->andWhere('i.type = :itype')
             ->andWhere('v.state = :vstate')
             ->andWhere('v.type = :vtype')
-            ->andWhere('v.enddate <= CURRENT_TIMESTAMP()')
+            #->andWhere('v.enddate <= CURRENT_TIMESTAMP()')
             ->setParameters([
                 'istate' => InitiativeEnum::STATE_ACTIVE,
                 'itype' => InitiativeEnum::TYPE_CURRENT,

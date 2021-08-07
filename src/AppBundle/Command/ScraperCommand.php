@@ -150,7 +150,7 @@ class ScraperCommand extends Command
                     $voting = New Voting();
 
                     $startdate = new DateTime("+30 seconds");
-                    $enddate = new DateTime("Sunday 19:00");
+                    $enddate = new DateTime("+6 months");
                     $initiative->setCategory($category);
                     $initiative->setTitle($title);
                     $initiative->setDescription($desc);
@@ -169,7 +169,7 @@ class ScraperCommand extends Command
                     $voting->setStartdate($startdate);
                     $voting->setEnddate($enddate);
     
-                    $voting->setState(VotingEnum::STATE_OPEN);
+                    $voting->setState(VotingEnum::STATE_WAITING);
                     $voting->setType(VotingEnum::TYPE_FUTURE);
                     $voting->setInitiative($initiative);
     
