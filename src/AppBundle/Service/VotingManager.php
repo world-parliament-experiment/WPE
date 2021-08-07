@@ -83,12 +83,12 @@ class VotingManager
         $this->manager->transactional(function(EntityManagerInterface $em) use ($initiatives, &$cntVotings) {
             foreach ($initiatives as $initiative) {
                 /** @var Initiative $initiative */
-                $duration = $initiative->getDuration();
+                // $duration = $initiative->getDuration();
 
                 $voting = $initiative->getFutureVoting();
 
                 $enddate = new DateTime();
-                $enddate->modify("Sunday 19:00");
+                $enddate->modify("+6 months");
                 $voting->setEnddate($enddate);
 
                 $voting->setState(VotingEnum::STATE_OPEN);
@@ -123,7 +123,7 @@ class VotingManager
             foreach ($initiatives as $initiative) {
 
                 /** @var Initiative $initiative */
-                $duration = $initiative->getDuration();
+                //$duration = $initiative->getDuration();
 
                 $voting = $initiative->getCurrentVoting();
 
@@ -168,8 +168,8 @@ class VotingManager
                 /** @var Initiative $initiative */
                 $voting = $initiative->getFutureVoting();
 
-                $voting->setState(VotingEnum::STATE_FINISHED);
-                $em->persist($voting);
+//              $voting->setState(VotingEnum::STATE_FINISHED);
+//              $em->persist($voting);
 
                 if ($randomize) $this->randomizeVoting($voting, true);
 
@@ -177,8 +177,10 @@ class VotingManager
 
                 if ($accepted === true) {
 
-                    $initiative->setType(InitiativeEnum::TYPE_CURRENT);
+                    $voting->setState(VotingEnum::STATE_FINISHED);
+                    $em->persist($voting);
 
+                    $initiative->setType(InitiativeEnum::TYPE_CURRENT);
                     $em->persist($initiative);
 
                     $startdate = new DateTime();
@@ -197,10 +199,10 @@ class VotingManager
 
                 } else {
 
-                    $initiative->setType(InitiativeEnum::TYPE_PAST);
-                    $initiative->setState(InitiativeEnum::STATE_FINISHED);
+                    //$initiative->setType(InitiativeEnum::TYPE_PAST);
+                    //$initiative->setState(InitiativeEnum::STATE_FINISHED);
 
-                    $em->persist($initiative);
+                    //$em->persist($initiative);
 
                 }
 

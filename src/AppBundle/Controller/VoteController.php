@@ -417,10 +417,10 @@ class VoteController extends BaseController
                                 // already voted
                                 return $this->createApiResponse([
                                     'success' => true,
-                                    'message' => 'You already voted for this initiative',
+                                    'message' => 'You already voted for this proposal',
                                     'data' => [
                                         'type' => 'info',
-                                        'content' => 'You already voted for this initiative at ' . $vote->getVotedAt()->format('F j, Y H:i') . '!',
+                                        'content' => 'You already voted for this proposal on ' . $vote->getVotedAt()->format('F j, Y H:i') . '! The proposal will become an official online vote when it has reached the required quota of at least 5% of eligible voters for the proposal. Online voting starts every Sunday at 19:00 CET after a proposal has reached the threshold support to become a vote.',
                                         'enddate' => $voting->getEnddate()->format("Y-m-d H:i:s"),
                                     ]
                                 ]);
@@ -485,10 +485,10 @@ class VoteController extends BaseController
                                 // already voted
                                 return $this->createApiResponse([
                                     'success' => true,
-                                    'message' => 'You already voted for this initiative',
+                                    'message' => 'You already voted on this proposal',
                                     'data' => [
                                         'type' => 'info',
-                                        'content' => 'You already voted for this initiative at ' . $vote->getVotedAt()->format('F j, Y H:i') . '!',
+                                        'content' => 'You already voted on this proposal on ' . $vote->getVotedAt()->format('F j, Y H:i') . '! The results of the online vote will be visible after voting has finished.',
                                         'enddate' => $voting->getEnddate()->format("Y-m-d H:i:s"),
                                     ]
                                 ]);
