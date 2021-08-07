@@ -313,6 +313,7 @@ class UserController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $initiative = $form->getData();
+            $initiative->setDuration("7");
 
             if ($form->get('publish')->isClicked()) {
 
@@ -321,7 +322,7 @@ class UserController extends BaseController
                 $voting = New Voting();
 
                 $startdate = new DateTime();
-
+ 
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
@@ -333,7 +334,7 @@ class UserController extends BaseController
 
                 $voting->setStartdate($startdate);
 
-                $voting->setState(VotingEnum::STATE_OPEN);
+                $voting->setState(VotingEnum::STATE_WAITING);
                 $voting->setType(VotingEnum::TYPE_FUTURE);
                 $voting->setInitiative($initiative);
 
@@ -398,6 +399,7 @@ class UserController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $initiative = $editForm->getData();
+            $initiative->setDuration("7");
 
             if ($editForm->get('publish')->isClicked()) {
                 $voting = New Voting();

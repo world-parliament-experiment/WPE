@@ -53,10 +53,10 @@ class InitiativeForm extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'initiative.edit.category'
             ))
-            ->add('duration', TextType::class, [
-                'label' => 'initiative.edit.duration',
-                'disabled' => true,
-            ])
+            // ->add('duration', TextType::class, [
+            //     'label' => 'initiative.edit.duration',
+            //     'disabled' => true,
+            // ])
             ->add('slug', TextType::class, [
                 'label' => 'initiative.edit.slug',
                 'disabled' => true,

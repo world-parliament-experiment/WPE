@@ -58,24 +58,24 @@ class InitiativeUserForm extends AbstractType
                 'label' => 'initiative.edit.category',
                 'choices' => $categories
             ))
-            ->add('duration', ChoiceType::class, array('label' => 'initiative.edit.duration',
-                'choices' => [
-                    '1 day' => '1',
-                    '2 days' => '2',
-                    '3 days' => '3',
-                    '4 days' => '4',
-                    '5 days' => '5',
-                    '6 days' => '6',
-                    '7 days' => '7',
-                    '8 days' => '8',
-                    '9 days' => '9',
-                    '10 days' => '10',
-                    '11 days' => '11',
-                    '12 days' => '12',
-                    '13 days' => '13',
-                    '14 days' => '14',
-                ],
-            ))
+            // ->add('duration', ChoiceType::class, array('label' => 'initiative.edit.duration',
+            //     'choices' => [
+            //         '1 day' => '1',
+            //         '2 days' => '2',
+            //         '3 days' => '3',
+            //         '4 days' => '4',
+            //         '5 days' => '5',
+            //         '6 days' => '6',
+            //         '7 days' => '7',
+            //         '8 days' => '8',
+            //         '9 days' => '9',
+            //         '10 days' => '10',
+            //         '11 days' => '11',
+            //         '12 days' => '12',
+            //         '13 days' => '13',
+            //         '14 days' => '14',
+            //     ],
+            // ))
 
             ->add('publish', SubmitType::class, [
                 'label' => 'initiative.button.publish',
