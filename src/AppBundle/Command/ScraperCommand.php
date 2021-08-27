@@ -129,7 +129,7 @@ class ScraperCommand extends Command
                 //Description
                 $desc = str_replace("\\n", " <br /> ", ($desc));
                 $desc = str_replace("]", "", ($desc));
-                $url_regex = '~(?:http|ftp)s?://(?:www\.)?([a-z0-9.-]+\.[a-z]{2,3}(?:/\S*)?)~i';
+                $url_regex = '~(?:http|https|ftps)?://(?:www\.)?([a-z0-9.-]+\.[a-z0-9]{1,3}(?:/\S*)?)~i';
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow" target="_blank">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
