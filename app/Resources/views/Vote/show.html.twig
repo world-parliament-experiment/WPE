@@ -144,7 +144,7 @@
                         <!-- Sidebar Widget -->
 
                         <div class="single-sidebar-widget p-30">
-                            {{ render(controller('AppBundle:Widget:programCategories')) }}
+                            {{ render(controller('AppBundle:Widget:CategoriesOverview', { 'type': initiative.typeName })) }}
                         </div>
                         <div class="single-sidebar-widget p-30">
                             {{ render(controller('AppBundle:Widget:mostCitizensByCountry')) }}
