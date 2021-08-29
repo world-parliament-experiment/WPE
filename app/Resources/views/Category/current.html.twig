@@ -96,25 +96,33 @@
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
+{{ parent() }}
     <script type="text/javascript" src="{{ asset('assets/plugins/DataTables/datatables.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             var table = $('.table-categories').DataTable({
-                "searching": false,
-                "ordering": true,
-                "paging": true,
-                "info": true,
-                "order": [[5, "desc"],[4, "desc"]],
-                "columns": [
-                    { "width": "50%" },
-                    { "width": "10%" },
-                    { "width": "10%" },
-                    { "width": "15%" },
-                    { "width": "5%", "visible": true, },
-                    { "width": "5%", "visible": true, },
-                    { "width": "5%", "orderable": false }
-                ]
+                initComplete: function () {
+                    this.api().order( [[ 3, 'desc' ], [ 5, 'desc' ], [ 4, 'desc' ]] )
+                    this.api().draw()
+                    this.api().columns([2]).every( function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo( $(column.header()) )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+        
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+        
+                        column.data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );
+                    } );           
+                }
             });
         });
     </script>
