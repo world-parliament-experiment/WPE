@@ -422,7 +422,6 @@ class InitiativeRepository extends EntityRepository
             ->leftJoin('i.votings', 'v')
             ->andWhere('i.state = :istate')
             ->andWhere('i.type = :itype')
-            ->andWhere('i.category = :icategory')
             ->andWhere('v.state = :vstate')
             ->andWhere('v.type = :vtype')
 //           ->andWhere('v.enddate <= CURRENT_TIMESTAMP()')
@@ -431,7 +430,6 @@ class InitiativeRepository extends EntityRepository
                 'itype' => InitiativeEnum::TYPE_FUTURE,
                 'vstate' => VotingEnum::STATE_OPEN,
                 'vtype' => VotingEnum::TYPE_FUTURE,
-                'icategory' => 29,
             ])
             ->orderBy('i.publishedAt')
             ->getQuery()
