@@ -109,5 +109,24 @@ class CategoryRepository extends EntityRepository
             ->execute();
     }
 
+  /**
+     * All initiatives by category and type
+     *
+     * @return mixed
+     */
+    public function getInitiatives($category, $type)
+    {
+        return $this->createQueryBuilder('category')
+        ->select(['category', 'initiative'])
+        ->leftJoin('category.initiatives', 'initiative')
+        ->andWhere('initiative.category = :icategory')
+        ->andWhere('initiative.type = :itype')
+        ->setParameters([
+            'icategory' => $category,
+            'itype' => $type,
+        ])
+        ->getQuery()
+        ->execute();
+    }
 
 }
