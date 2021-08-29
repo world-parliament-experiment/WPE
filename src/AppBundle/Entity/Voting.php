@@ -139,7 +139,7 @@ class Voting
     public function __construct()
     {
         $this->votes = new ArrayCollection();
-        $this->quorum = 0.1;
+        $this->quorum = 0.05;
         $this->consensus = 0.5;
     }
 
