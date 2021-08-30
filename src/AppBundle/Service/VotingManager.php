@@ -168,14 +168,13 @@ class VotingManager
                 /** @var Initiative $initiative */
                 $voting = $initiative->getFutureVoting();
 
-//              $voting->setState(VotingEnum::STATE_FINISHED);
-//              $em->persist($voting);
+
 
                 if ($randomize) $this->randomizeVoting($voting, true);
 
                 $accepted = $this->evaluateVoting($voting, $initiative);
 
-                if ($accepted == 1) {
+                if ($accepted === 1) {
 
                     $voting->setState(VotingEnum::STATE_FINISHED);
                     $em->persist($voting);
@@ -197,14 +196,17 @@ class VotingManager
                     $cVoting->setInitiative($initiative);
                     $em->persist($cVoting);
 
-                } elseif ($accepted == 2) {
+                } elseif ($accepted === 2) {
+
+                    $voting->setState(VotingEnum::STATE_FINISHED);
+                    $em->persist($voting);
 
                     $initiative->setType(InitiativeEnum::TYPE_PAST);
                     $initiative->setState(InitiativeEnum::STATE_FINISHED);
 
                     $em->persist($initiative);
 
-                } elseif ($accepted == 0) {
+                } elseif ($accepted === 0) {
                     //do nothing
                 }
 
@@ -252,10 +254,12 @@ class VotingManager
 
                 switch($outcome){
                     case 1:
+                        $voting->setState(VotingEnum::STATE_FINISHED);
                         $initiative->setType(InitiativeEnum::TYPE_PROGRAM);
                         $initiative->setState(InitiativeEnum::STATE_FINISHED);
                         break;
                     case 2:
+                        $voting->setState(VotingEnum::STATE_FINISHED);
                         $initiative->setType(InitiativeEnum::TYPE_PAST);
                         $initiative->setState(InitiativeEnum::STATE_FINISHED);
                         break;
@@ -263,8 +267,7 @@ class VotingManager
                         //do nothing, leave initiative open
                         break;
                 }
-
-
+                $em->persist($voting);
                 $em->persist($initiative);
 
                 $cntVotings++;
@@ -562,7 +565,6 @@ class VotingManager
         $quorum = $voting->getQuorum();
         $consensus = $voting->getConsensus();
         $now = new Datetime("now");
-        $outcome = 0; 
 
         $results = [
             "eligibleVoters" => count($this->currentUsers),
@@ -578,6 +580,7 @@ class VotingManager
             "rejected" => false,
             "nonVoterTotal" => 0,
             "quorum" => $quorum,
+            "outcome" => 0,
         ];
 
         foreach ($directVoter as $dv) {
@@ -630,6 +633,14 @@ class VotingManager
                 break;
         } //endswitch
 
+        if ( $results["rejected"] === true ) {
+            $results["outcome"] = 2;
+        } elseif ( $results["accepted"] === true ) {
+            $results["outcome"] = 1;
+        } else {
+            $results["outcome"] = 0;
+        }
+
         $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $results) {
             $voting->setEligibleVoters($results['eligibleVoters']);
             $voting->setVotesTotal($results["votesTotal"]);
@@ -642,19 +653,10 @@ class VotingManager
             $voting->setVotesRejectionDelegated($results["votesRejectionDelegated"]);
             $voting->setAccepted($results["accepted"]);
             $voting->setRejected($results["rejected"]);
-            if ($results["rejected"]){
-                $voting->setState(VotingEnum::STATE_FINISHED);
-                $outcome = 2;
-            } elseif ($results["accepted"]) {
-                $voting->setState(VotingEnum::STATE_FINISHED);
-                $outcome = 1;
-            } else {
-                $outcome = 0;
-            }
             $em->persist($voting);
         });
 
-        if ($outcome != 0) {
+        if ( $results["outcome"] != 0 ) {
             $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $directVoter) {
                 foreach ($directVoter as $vote) {
                     /** @var User $u */
@@ -709,7 +711,7 @@ class VotingManager
         if ($this->getDebugMode()) dump($results);
         if ($this->getDebugMode()) print("==================================================================================================\n\n");
 
-        return $outcome;
+        return $results["outcome"];
 
     }
 
