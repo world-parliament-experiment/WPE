@@ -25,7 +25,7 @@
                                     <th>Date</th>
                                     <th>Views</th>
                                     <th>Comments</th>
-                                    <th>Voting</th>
+                                    <th>Supporters</th>
                                 </tr>
                                 </thead>
                                 <tbody>                  
@@ -44,9 +44,10 @@
                                                     <td>{{ initiative.countComments }}</td>
                                                     <td class="text-center">
                                                         {% if initiative.voteStatus == 'now' %}
-                                                            <span class="badge badge-danger"> NOW </span>
+                                                            {{ initiative.getFutureVoting.getVotesTotal() }}
+                                                            {# <span class="badge badge-danger"> NOW </span> #}
                                                         {% elseif initiative.voteStatus == 'soon' %}
-                                                            <span class="badge badge-warning"> SOON </span>
+                                                            <span class="badge badge-warning"> STARTING SOON </span>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
@@ -70,9 +71,10 @@
                                                     <td>{{ initiative.countComments }}</td>
                                                     <td class="text-center">
                                                         {% if initiative.voteStatus == 'now' %}
-                                                            <span class="badge badge-danger"> NOW </span>
+                                                            {{ initiative.getFutureVoting.getVotesTotal() }}
+                                                            {# <span class="badge badge-danger"> NOW </span> #}
                                                         {% elseif initiative.voteStatus == 'soon' %}
-                                                            <span class="badge badge-warning"> SOON </span>
+                                                            <span class="badge badge-warning"> STARTING SOON </span>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
