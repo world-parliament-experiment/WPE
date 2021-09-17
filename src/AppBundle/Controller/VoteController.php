@@ -587,7 +587,7 @@ class VoteController extends BaseController
 
                     return $this->createApiResponse([
                         'success' => true,
-                        'message' => 'Your vote was successfully registered!',
+                        'message' => 'Your vote was successfully registered! The proposal will become an official online vote when it has reached the required quota of at least 5% of eligible voters for the proposal. Online voting starts immediately after a proposal has reached the threshold support to become a vote. If a proposal fails to reach the 5 percent quorum during the validity of the proposal, it will be archived.',
                     ]);
 
                 }
