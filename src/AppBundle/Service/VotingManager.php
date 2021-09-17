@@ -616,7 +616,7 @@ class VotingManager
                 if (($voting->getEnddate() > $now) &&
                     ($results["votesTotal"] > 0) &&
                     (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
-                    (($results["votesAcception"] / $results["votesTotal"]) > $consensus) &&
+                    (($results["votesAcception"] / $results["eligibleVoters"]) > $consensus) &&
                     ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
                 ) {
                     $results['accepted'] = true;

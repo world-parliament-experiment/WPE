@@ -307,6 +307,8 @@ class VoteController extends BaseController
                         "breakdown" => [
                             "direct" => ($voting->getVotesAcception() - $voting->getVotesAcceptionDelegated()),
                             "delegated" => $voting->getVotesAcceptionDelegated(),
+                            "enddate" => $voting->getEnddate(),
+                            "accepted" => $voting->getVotesAcception() 
                         ],
                         "config" => [
                             "isActive" => $voting->getAccepted(),
