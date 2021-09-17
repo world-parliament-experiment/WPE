@@ -424,7 +424,7 @@ class VoteController extends BaseController
                                     'message' => 'You already voted for this proposal',
                                     'data' => [
                                         'type' => 'info',
-                                        'content' => 'You already voted for this proposal on ' . $vote->getVotedAt()->format('F j, Y H:i') . '! The proposal will become an official online vote when it has reached the required quota of at least 5% of eligible voters for the proposal. Online voting starts every Sunday at 19:00 CET after a proposal has reached the threshold support to become a vote.',
+                                        'content' => 'You already voted for this proposal on ' . $vote->getVotedAt()->format('F j, Y H:i') . '! The proposal will become an official online vote when it has reached the required quota of at least 5% of eligible voters for the proposal. Online voting starts immediately after a proposal has reached the threshold support to become a vote. If a proposal fails to reach the 5 percent quorum during the validity of the proposal, it will be archived.',
                                         'enddate' => $voting->getEnddate()->format("Y-m-d H:i:s"),
                                     ]
                                 ]);
