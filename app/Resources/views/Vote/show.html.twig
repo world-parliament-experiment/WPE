@@ -51,7 +51,7 @@
                                     data-slug="{{ initiative.slug }}"></div>
 
                                 {% if initiative.type == 1 and  initiative.state == 1 %}
-                                    <div class="text-center" style="margin-top: 1rem;"><p>You can see the results of completed elections <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
+                                    <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted, the vote will end and the results will be evaluated immediately.</p><p>You can see the results of completed elections <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
                                 {% endif %}
 
                             </div>
