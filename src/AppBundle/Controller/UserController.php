@@ -326,7 +326,7 @@ class UserController extends BaseController
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
-                $startdate->modify("+30 seconds");
+                $startdate->modify("+2 minutes");
 
                 // if ($startdate < new DateTime()) {
                 //     $startdate->modify("tomorrow 20:00");
@@ -411,7 +411,7 @@ class UserController extends BaseController
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
-                $startdate->modify("+30 seconds");
+                $startdate->modify("+2 minutes");
 
                 // if ($startdate < new DateTime()) {
                 //     $startdate->modify("tomorrow 20:00");

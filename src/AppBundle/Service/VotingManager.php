@@ -183,7 +183,7 @@ class VotingManager
                     $em->persist($initiative);
 
                     $startdate = new DateTime();
-                    $startdate->modify("+30 seconds");
+                    $startdate->modify("+2 minutes");
 
                     // if ($startdate < new DateTime()) {
                     //     $startdate->modify("tomorrow 20:00");
@@ -613,14 +613,21 @@ class VotingManager
                 }
                 break;
             case VotingEnum::TYPE_CURRENT:
-                if (($voting->getEnddate() > $now) &&
-                    ($results["votesTotal"] > 0) &&
+                if ($voting->getEnddate() > $now) {
+                    if (($results["votesTotal"] > 0) &&
                     (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
                     (($results["votesAcception"] / $results["eligibleVoters"]) > $consensus) &&
                     ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
-                ) {
-                    $results['accepted'] = true;
-                } elseif ($voting->getEnddate() < $now) {
+                    ) {
+                        $results['accepted'] = true;
+                    } elseif (($results["votesTotal"] > 0) &&
+                    (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
+                    (($results["votesRejection"] / $results["eligibleVoters"]) > $consensus) &&
+                    ($results["votesRejection"] > ($results["votesAbstention"]  + $results["votesAcception"]))
+                    ) {
+                        $results['rejected'] = true;
+                    } 
+                } else {
                     if (($results["votesTotal"] > 0) &&
                         (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
                         ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
