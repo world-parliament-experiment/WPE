@@ -38,6 +38,14 @@ class Voter
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="voters")
      */
     protected $user;
+    
+     /**
+     * @var DateTime $votedAt
+     *
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    protected $votedAt;
 
     protected $type;
 
@@ -79,6 +87,22 @@ class Voter
     public function getType()
     {
         return $this->type;
+    }
+    
+        /**
+     * @return DateTime
+     */
+    public function getVotedAt()
+    {
+        return $this->votedAt;
+    }
+
+    /**
+     * @param DateTime $votedAt
+     */
+    public function setVotedAt($votedAt)
+    {
+        $this->votedAt = $votedAt;
     }
 
 }
