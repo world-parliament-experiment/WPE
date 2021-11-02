@@ -27,6 +27,11 @@ class Vote
      * @ORM\JoinColumn(nullable=false)
      */
     protected $voting;
+    
+     /**
+     * @ORM\Column(type="integer")
+     */
+    protected $value;
 
     /**
      * @ORM\Id()
