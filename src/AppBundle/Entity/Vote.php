@@ -34,12 +34,7 @@ class Vote
      * @ORM\JoinColumn(nullable=false)
      */
     protected $user;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $value;
-
+    
     /**
      * @var DateTime $votedAt
      *
