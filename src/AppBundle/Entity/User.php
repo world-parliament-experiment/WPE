@@ -46,13 +46,19 @@ class User extends BaseUser
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMSSerializer\Type("integer")
+     * @ORM\Column(type="guid")
+     * @ORM\GeneratedValue(strategy="UUID")
+     * @JMSSerializer\Type("uuid")
      * @JMSSerializer\Groups({"default", "simple"})
      */
     protected $id;
-
+    
+     /**
+     * @ORM\Column(type="string", unique="true")
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default"})
+     */
+    protected $devicePhoneID;
     
     /**
      * @Assert\NotBlank(message="Please enter your first name.", groups={"Registration", "Profile"})
@@ -158,17 +164,21 @@ class User extends BaseUser
      */
     protected $registeredAt;
 
-
     /**
-     * @RollerworksPassword\PasswordStrength(minLength=7, minStrength=3)
-     */
-    protected $plainPassword;
+     * #RollerworksPassword\PasswordStrength(minLength=7, minStrength=3)
+     * #protected $plainPassword;
+    */
 
     /**
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default"})
      */
     protected $email;
+    
+     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $electable;
 
     /**
      * @JMSSerializer\Type("string")
