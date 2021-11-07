@@ -574,7 +574,9 @@ class VoteController extends BaseController
                 if ($form->get('vote')->isClicked()) {
                     $em = $this->getDoctrine()->getManager();
                     $voting = $initiative->getFutureVoting();
-                    $vote->setUser($this->getUser());
+              
+                    $vote->setUser($this->getUser()); // NEW->only set user ID if the user has delegations
+                    
                     $vote->setVoting($voting);
                     $vote->setValue(1);
 
@@ -629,7 +631,7 @@ class VoteController extends BaseController
 
                     $em = $this->getDoctrine()->getManager();
                     $voting = $initiative->getCurrentVoting();
-                    $vote->setUser($this->getUser());
+                    $vote->setUser($this->getUser()); // NEW->only set user ID if the user has delegations
                     $vote->setVoting($voting);
 
                     if ($form->get('voteYes')->isClicked()) {
@@ -646,6 +648,14 @@ class VoteController extends BaseController
 //                    dump($form);
 //                    dump($voting);
 //                    dump($vote);
+                    
+                    // track that user has voted
+                    $voter->setUser($this->getUser());
+                    $voter->setVoting($voting);
+                    
+                    $em->persist($voter);
+                    $em->flush();
+                    
 
                     return $this->createApiResponse([
                         'success' => true,
