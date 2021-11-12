@@ -43,22 +43,39 @@ class User extends BaseUser
             }
         }
     }
-
+    
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMSSerializer\Type("integer")
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $id;
+    
+     /**
      * @ORM\Id
      * @ORM\Column(type="guid")
      * @ORM\GeneratedValue(strategy="UUID")
      * @JMSSerializer\Type("uuid")
      * @JMSSerializer\Groups({"default", "simple"})
      */
-    protected $id;
+    protected $gid;
+    
     
      /**
      * @ORM\Column(type="string", unique="true")
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default"})
      */
-    protected $devicePhoneID;
+    protected $deviceID;
+    
+     /**
+     * @ORM\Column(type="teltype", unique="true")
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default"})
+     */
+    protected $Phone;
     
     /**
      * @Assert\NotBlank(message="Please enter your first name.", groups={"Registration", "Profile"})
