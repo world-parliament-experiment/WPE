@@ -6,16 +6,21 @@ use AppBundle\Entity\Comment;
 use AppBundle\Entity\Initiative;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Vote;
+use AppBundle\Entity\Voter;
 use AppBundle\Entity\Voting;
+use AppBundle\Entity\Delegation;
 use AppBundle\Enum\CommentEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
+use AppBundle\Enum\DelegationEnum;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 use Doctrine\ORM\NonUniqueResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Service\VotingManager;
+
 
 
 /**
@@ -611,7 +616,7 @@ class VoteController extends BaseController
      * @param Initiative $initiative
      * @return Response
      */
-    public function voteCurrentAction(Request $request, Initiative $initiative)
+    public function voteCurrentAction(Request $request, Initiative $initiative, VotingManager $VotingManager)
     {
 
         $this->denyAccessUnlessGranted("vote", $initiative);
@@ -620,6 +625,9 @@ class VoteController extends BaseController
         if (false !== $request->isXmlHttpRequest()) {
 
             $vote = new Vote();
+            $voter = new Voter();
+            $delegation = new Delegation();
+            $user = new User();
             $form = $this->createForm('AppBundle\Form\CurrentVoteForm', $vote);
             $form->handleRequest($request);
 
@@ -629,8 +637,83 @@ class VoteController extends BaseController
 
                     $em = $this->getDoctrine()->getManager();
                     $voting = $initiative->getCurrentVoting();
-                    $vote->setUser($this->getUser());
-                    $vote->setVoting($voting);
+
+                    $voter->setUser($this->getUser());
+
+                    // GET CURRENT DELEGATIONS
+                    $delegations = $em->getRepository(Initiative::Class)->getCurrentDelegations();
+
+                    // evaluate all delegations whether they apply to the current vote
+                    // if yes, register the values of the votes coming from the delegations in vote table
+                    // register the users on whose behalf the vote was cast, in the voter table
+                    // if a user has voted with delegations, then his username will be saved together with his vote
+                    // this achieves anonymity of voting for non-representatives
+                    foreach ($delegations as $key->$delegation) {
+
+                        $category_id = $initiative->getCategory()->getId();
+                        $initiative_id = $initiative->getId();
+                        
+                        switch($delegation->getScope()) {
+                            case(DelegationEnum::SCOPE_PLATFORM): 
+                                if ($form->get('voteYes')->isClicked()) {
+                                    $vote->setValue(1);
+                                } elseif ($form->get('voteAbstention')->isClicked()) {
+                                    $vote->setValue(0);
+                                } elseif ($form->get('voteNo')->isClicked()) {
+                                    $vote->setValue(-1);
+                                }
+                                $vote->setVoting($voting);
+                                //do not save user information in vote table
+                                $voter->setVoting($voting);
+                                $voter->setUser($delegation->getTruster());
+            
+                                $em->persist($voter);
+                                $em->persist($vote);
+                                $em->flush();
+                                break;
+                            case(DelegationEnum::SCOPE_CATEGORY):
+                                if ($delegation->getCategory()->getId() !== $category_id) {
+                                 unset($delegations[$key]);
+                                } else {
+                                    if ($form->get('voteYes')->isClicked()) {
+                                        $vote->setValue(1);
+                                    } elseif ($form->get('voteAbstention')->isClicked()) {
+                                        $vote->setValue(0);
+                                    } elseif ($form->get('voteNo')->isClicked()) {
+                                        $vote->setValue(-1);
+                                    }
+                                    $vote->setVoting($voting);
+                                    //do not save user information in vote table
+                                    $voter->setVoting($voting);
+                                    $voter->setUser($delegation->getTruster());
+                
+                                    $em->persist($voter);
+                                    $em->persist($vote);
+                                    $em->flush();
+                                } break;
+                            case(DelegationEnum::SCOPE_INITIATIVE): 
+                                if ($delegation->getInitiative() !== $initiative_id) {
+                                   unset($delegations[$key]);  
+                                } else {
+                                    if ($form->get('voteYes')->isClicked()) {
+                                        $vote->setValue(1);
+                                    } elseif ($form->get('voteAbstention')->isClicked()) {
+                                        $vote->setValue(0);
+                                    } elseif ($form->get('voteNo')->isClicked()) {
+                                        $vote->setValue(-1);
+                                    }
+                                    $vote->setVoting($voting);
+                                    //do not save user information in vote table
+                                    $voter->setVoting($voting);
+                                    $voter->setUser($delegation->getTruster());
+                
+                                    $em->persist($voter);
+                                    $em->persist($vote);
+                                    $em->flush();
+                                } break;
+                            default: unset($delegations[$key]);
+                        }
+                    }
 
                     if ($form->get('voteYes')->isClicked()) {
                         $vote->setValue(1);
@@ -639,13 +722,16 @@ class VoteController extends BaseController
                     } elseif ($form->get('voteNo')->isClicked()) {
                         $vote->setValue(-1);
                     }
+                    $vote->setVoting($voting);
+                    if ($delegations) {
+                        $vote->setUser($voter); //only register voter together with vote, if he had delegations
+                    }
+                    $voter->setVoting($voting);
+                    $voter->setUser($voter);
 
+                    $em->persist($voter);
                     $em->persist($vote);
                     $em->flush();
-
-//                    dump($form);
-//                    dump($voting);
-//                    dump($vote);
 
                     return $this->createApiResponse([
                         'success' => true,
