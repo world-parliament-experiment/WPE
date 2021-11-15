@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JMSSerializer;
 use Gedmo\Mapping\Annotation as Gedmo;
+use AppBundle\Enum\CategoryEnum;
 
 /**
  *
@@ -52,6 +53,23 @@ class Category
      * @ORM\Column(type="text", nullable=true)     *
      */
     protected $description;
+
+    /**
+     *
+     * @Assert\NotBlank(message="Type should be selected")
+     * @ORM\Column(type="smallint", nullable=false)
+     * @JMSSerializer\Expose
+     * @JMSSerializer\Type("integer")
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $type;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $country;
 
     /**
      * @ORM\Column(type="string", unique=true)
@@ -153,5 +171,47 @@ class Category
     public function getImageSmall(){
         return 'assets/img/category/K_' . $this->getId() . '_small.jpg';
     }
+
+        /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     * @return Initiative
+     */
+
+    public function setType($type)
+    {
+        if (!in_array($type, CategoryEnum::getAvailableTypes())) {
+            throw new \InvalidArgumentException("Invalid type");
+        }
+
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param string $country
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    }
+
 
 }
