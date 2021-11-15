@@ -28,7 +28,7 @@ class CategoryRepository extends EntityRepository
         if ($type !== false) {
 
             $qb = $this->createQueryBuilder('category')
-                ->select('category.id, category.name, category.description, category.slug')
+                ->select('category.id, category.name, category.description, category.country, category.slug')
                 ->addSelect('COUNT(initiative.id) count_initiative')
                 ->addSelect('MAX(initiative.createdAt) last_initiative')
                 ->leftJoin('category.initiatives', 'initiative', Join::WITH, 'category.id = initiative.category AND initiative.type = :type AND initiative.state = :state')
