@@ -8,12 +8,22 @@
 <ul class="catagory-widgets">
     {% for category in categories %}
         {% if app.user %}
-            {% if app.user.country == category.description or category.description|length > 2 %}
-                <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": type}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+            {% if app.user.country == category.country or category.description|length > 2 %}
+                <li>
+                    <a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": type}) }}">
+                        <span><i class="m-5 flag-icon flag-icon-{{ category.country|length == 2 ? category.country|lower : "un" }}"></i>{{ category.name }}</span>
+                        <span>{{ category.count_initiative }}</span>
+                    </a>
+                </li>
             {% endif %}
         {% else %}
             {% if category.description|length > 2 %}
-                <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": type}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+                <li>
+                    <a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": type}) }}">
+                        <span><i class="m-5 flag-icon flag-icon-{{ category.country|length == 2 ? category.country|lower : "un" }}"></i>{{ category.name }}</span>
+                        <span>{{ category.count_initiative }}</span>
+                    </a>
+                </li>
             {% endif %}
         {% endif %}
     {% endfor %}
