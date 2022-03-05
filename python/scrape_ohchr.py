@@ -22,7 +22,7 @@ today = datetime.datetime.now()
 output = []
 
 stop = False
-session = 45
+session = 49
 while not stop:
 
     requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += 'HIGH:!DH:!aNULL'

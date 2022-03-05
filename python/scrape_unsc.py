@@ -21,7 +21,7 @@ ctx.verify_mode = ssl.CERT_NONE
 today = datetime.datetime.now()
 output = []
 
-count = -1
+count = 0
 while count < 2:
     year = today.year + count
     url = 'https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-'+str(year)
