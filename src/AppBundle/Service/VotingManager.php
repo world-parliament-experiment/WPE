@@ -608,9 +608,9 @@ class VotingManager
                     ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
                 ) {
                     $results['accepted'] = true;
-                } elseif ($voting->getEnddate() < $now) {
+                } elseif ($voting->getEnddate() > $now) {
                     $results['rejected'] = true;
-                }
+                } 
                 break;
             case VotingEnum::TYPE_CURRENT:
                 if ($voting->getEnddate() > $now) {
@@ -630,7 +630,7 @@ class VotingManager
                 } else {
                     if (($results["votesTotal"] > 0) &&
                         (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
-                        ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
+                        ($results["votesAcception"] > ($results["votesAbstention"] + $results["votesRejection"]))
                     ) {
                         $results['accepted'] = true;
                     } else {
