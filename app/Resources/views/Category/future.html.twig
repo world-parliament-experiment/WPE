@@ -104,7 +104,7 @@
         $(document).ready(function () {
             var table = $('.table-categories').DataTable({
                 initComplete: function () {
-                    this.api().order( [[ 3, 'desc' ], [ 5, 'desc' ], [ 4, 'desc' ]] )
+                    this.api().order( [[ 4, 'desc' ], [ 5, 'desc' ], [ 3, 'desc' ]] )
                     this.api().draw()
                     this.api().columns([2]).every( function () {
                         var column = this;
