@@ -124,7 +124,7 @@ class InitiativeRepository extends EntityRepository
             ->andWhere('initiative.type IN (0,1)')
             ->andWhere('initiative.state = 1')
             ->setMaxResults($maxResults)
-            ->orderBy('RANDOM()')
+            ->orderBy($views, 'DESC')
             ->getQuery()
             ->execute();
 
