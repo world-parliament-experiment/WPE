@@ -26,20 +26,19 @@ output = []
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 755
+start = 749
 errorcount = 0
 while not stop:
     url = 'https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start)
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
-        if e.getcode() == 404: # check the return code
+        if e:
             errorcount += 1
             start += 1
             if errorcount == 5:
                 stop = True
             continue
-        raise # if other than 404, raise the error
 
     soup = BeautifulSoup(html, 'html.parser')
 
