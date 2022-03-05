@@ -64,6 +64,8 @@ while not stop:
     output.append(desc)    
 
     start += 1
+    if start == 762:
+        stop = True
 
 print(output)
 
