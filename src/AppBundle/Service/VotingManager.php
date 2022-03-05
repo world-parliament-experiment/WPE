@@ -168,13 +168,11 @@ class VotingManager
                 /** @var Initiative $initiative */
                 $voting = $initiative->getFutureVoting();
 
-
-
                 if ($randomize) $this->randomizeVoting($voting, true);
 
                 $accepted = $this->evaluateVoting($voting, $initiative);
 
-                if ($accepted === 1) {
+                if ($accepted == 1) {
 
                     $voting->setState(VotingEnum::STATE_FINISHED);
                     $em->persist($voting);
@@ -196,7 +194,7 @@ class VotingManager
                     $cVoting->setInitiative($initiative);
                     $em->persist($cVoting);
 
-                } elseif ($accepted === 2) {
+                } elseif ($accepted == 2) {
 
                     $voting->setState(VotingEnum::STATE_FINISHED);
                     $em->persist($voting);
@@ -206,7 +204,7 @@ class VotingManager
 
                     $em->persist($initiative);
 
-                } elseif ($accepted === 0) {
+                } elseif ($accepted == 0) {
                     //do nothing
                 }
 
@@ -608,7 +606,7 @@ class VotingManager
                     ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
                 ) {
                     $results['accepted'] = true;
-                } elseif ($voting->getEnddate() > $now) {
+                } elseif ($voting->getEnddate() < $now) {
                     $results['rejected'] = true;
                 } 
                 break;
@@ -640,9 +638,9 @@ class VotingManager
                 break;
         } //endswitch
 
-        if ( $results["rejected"] === true ) {
+        if ( $results["rejected"] == true ) {
             $results["outcome"] = 2;
-        } elseif ( $results["accepted"] === true ) {
+        } elseif ( $results["accepted"] == true ) {
             $results["outcome"] = 1;
         } else {
             $results["outcome"] = 0;
