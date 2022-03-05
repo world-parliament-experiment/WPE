@@ -61,7 +61,7 @@ class ScraperCommand extends Command
         $explchar = self::$_explchar;
 
         if ($input->getOption('delete') === true) {
-            $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category, 'type' => 0));
+            $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
             foreach ($del_initiatives as $deletion) {
                 $delid = $deletion->getId();
                 $dvoting = $deletion->getFutureVoting();
