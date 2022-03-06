@@ -26,10 +26,11 @@ output = []
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 749
+start = 760
 errorcount = 0
 while not stop:
-    url = 'https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start)
+    url= urllib.request.Request('https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start))
+    url.add_header('User-agent', 'Mozilla/5.0 (Linux i686)')
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
@@ -64,8 +65,6 @@ while not stop:
     output.append(desc)    
 
     start += 1
-    if start == 762:
-        stop = True
 
 print(output)
 
