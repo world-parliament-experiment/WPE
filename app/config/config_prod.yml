@@ -28,7 +28,7 @@ monolog:
             from_email:   'support@tgde.org'
             to_email:     'admin@world-parliament.org'
             subject:      'An Error Occurred! %%message%%'
-            level:        debug
+            level:        error
             formatter:    monolog.formatter.html
             content_type: text/html
 
