@@ -626,15 +626,15 @@ class VotingManager
                         $results['rejected'] = true;
                     } 
                 } else {
-                    if (($results["votesTotal"] > 0) &&
-                        (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
+                    if (($results["votesTotal"] > 5) &&
+                        //(($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
                         ($results["votesAcception"] > ($results["votesAbstention"] + $results["votesRejection"]))
                     ) {
                         $results['accepted'] = true;
                     } else {
                         $results['rejected'] = true;
                     }
-                } 
+                }
                 break;
         } //endswitch
 
