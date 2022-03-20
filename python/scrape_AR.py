@@ -26,7 +26,7 @@ output = []
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 1309
+start = 1350
 errorcount = 0
 rooturl = 'https://www.senado.gob.ar'
 while not stop:
