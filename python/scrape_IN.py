@@ -50,9 +50,11 @@ for tr in trs[3:]:
     if contents:
         desc = contents[3] + "\n" + desc  
         desc = desc.replace("'", " ")
-        date = datetime.strptime(contents[3], "%d/%m/%Y")
-        if date < (datetime.now() - timedelta(days=365)):
-            break
+        if contents[3]:
+            date = datetime.strptime(contents[3], "%d/%m/%Y")
+            if date < (datetime.now() - timedelta(days=365)):
+                break
+
         output.append(title)
         output.append(desc)
 
