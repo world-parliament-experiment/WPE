@@ -108,8 +108,8 @@ fos_user:
         form:
             type: AppBundle\Form\GroupForm
     from_email:
-        address: "support@tgde.org"
-        sender_name: "tgde-Support"
+        address: "admin@world-parliament.org"
+        sender_name: "TheWorldParliamentExperiment"
     profile:
         form:
             type: AppBundle\Form\ProfileForm
