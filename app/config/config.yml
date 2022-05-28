@@ -60,6 +60,7 @@ doctrine:
                 user:     "%database_user%"
                 password: "%database_password%"
                 charset:  UTF8
+                server_version: '11.14'
                 mapping_types:
                     _text: string
 
@@ -108,7 +109,7 @@ fos_user:
         form:
             type: AppBundle\Form\GroupForm
     from_email:
-        address: "admin@world-parliament.org"
+        address: "support@tgde.org"
         sender_name: "TheWorldParliamentExperiment"
     profile:
         form:
