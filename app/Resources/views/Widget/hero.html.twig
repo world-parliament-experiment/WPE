@@ -6,8 +6,8 @@
         {% if app.user %}
             {% if app.user.country == vote.category.description or vote.category.description|length > 2 %}
                 <div class="hero-blog-post bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
-                    <div class="container h-100">
-                        <div class="row h-100 align-items-center">
+                    <div class="container h-50">
+                        <div class="row h-50 align-items-center">
                             <div class="col-12">
                                 <!-- Post Content -->
                                 <div class="post-content text-center">
@@ -31,8 +31,8 @@
         {% else %}
             {% if vote.category.description|length > 2 %}
                 <div class="hero-blog-post bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
-                    <div class="container h-100">
-                        <div class="row h-100 align-items-center">
+                    <div class="container h-50">
+                        <div class="row h-50 align-items-center">
                             <div class="col-12">
                                 <!-- Post Content -->
                                 <div class="post-content text-center">
