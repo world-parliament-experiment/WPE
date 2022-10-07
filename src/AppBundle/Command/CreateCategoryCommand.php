@@ -48,11 +48,19 @@ class CreateCategoryCommand extends ContainerAwareCommand
 The <info>wpe:category:create</info> command creates, delets or changes a category:
 
 Create:
-    php bin/console wpe:category:create Deutschland DE
+    php bin/console wpe:category:create Deutschland 2 DE
 Delete 
-    php bin/console wpe:category:create Deutschland DE -d
+    php bin/console wpe:category:create Deutschland 2 DE -d
 Change
-    php bin/console wpe:category:create Deutschland DE Germany DE -c          
+    php bin/console wpe:category:create Deutschland 2 DE Germany DE -c   
+
+Category Types:
+    const TYPE_GLOBAL = 0;
+    const TYPE_SUPRANATIONAL = 1;
+    const TYPE_NATIONAL = 2;
+    const TYPE_REGIONAL = 3;
+    const TYPE_LOCAL = 4;
+    
 EOT
             );
     }
