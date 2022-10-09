@@ -34,6 +34,7 @@ class CategoryRepository extends EntityRepository
                 ->leftJoin('category.initiatives', 'initiative', Join::WITH, 'category.id = initiative.category AND initiative.type = :type AND initiative.state = :state')
                 ->setParameter('type', $type)
                 ->addOrderBy('category.type')
+                ->addOrderBy('count_initiative')
                 ->groupBy('category.id');
 
             if ($type === InitiativeEnum::TYPE_PAST ||
