@@ -4,7 +4,7 @@
 
     {% for vote in votes %}
         {% if app.user %}
-            {% if app.user.country == vote.category.description or vote.category.description|length > 2 %}
+            {% if app.user.country == vote.category.description or vote.category.country == "UN" %}
                 <div class="hero-blog-post bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
                     <div class="container h-100">
                         <div class="row h-100 align-items-center">
@@ -29,7 +29,7 @@
                 </div>
             {% endif %}
         {% else %}
-            {% if vote.category.description|length > 2 %}
+            {% if vote.category.country == "UN" %}
                 <div class="hero-blog-post bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
                     <div class="container h-100">
                         <div class="row h-100 align-items-center">

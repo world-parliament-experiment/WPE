@@ -52,7 +52,7 @@ Create:
 Delete 
     php bin/console wpe:category:create Deutschland 2 DE -d
 Change
-    php bin/console wpe:category:create Deutschland 2 DE Germany DE -c   
+    php bin/console wpe:category:create Deutschland 2 "Bundestag" DE Germany 2 "Bundestag" DE -c   
 
 Category Types:
     const TYPE_GLOBAL = 0;
