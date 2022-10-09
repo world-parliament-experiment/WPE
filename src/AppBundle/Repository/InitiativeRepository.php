@@ -78,6 +78,7 @@ class InitiativeRepository extends EntityRepository
     {
         return $this->createQueryBuilder('initiative')
             ->andWhere('initiative.type = 0')
+            ->andWhere('initiative.state = 1')
             ->setMaxResults(3)
             ->addOrderBy('initiative.createdAt', 'asc')
             ->getQuery()
@@ -89,6 +90,7 @@ class InitiativeRepository extends EntityRepository
     {
         return $this->createQueryBuilder('initiative')
             ->andWhere('initiative.type = 1')
+            ->andWhere('initiative.state = 1')
             ->setMaxResults(3)
             ->addOrderBy('initiative.createdAt', 'asc')
             ->getQuery()
@@ -124,7 +126,7 @@ class InitiativeRepository extends EntityRepository
             ->andWhere('initiative.type IN (0,1)')
             ->andWhere('initiative.state = 1')
             ->setMaxResults($maxResults)
-            ->orderBy('initiative.views', 'DESC')
+            ->orderBy('initiative.published_at', 'DESC')
             ->getQuery()
             ->execute();
 
