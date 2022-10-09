@@ -39,7 +39,7 @@ class DefaultController extends BaseController
 
         $em = $this->getDoctrine()->getManager();
 
-        $initiatives = $em->getRepository(Initiative::class)->slider(10);
+        $initiatives = $em->getRepository(Initiative::class)->slider(25);
 
         $votesf = $em->getRepository(Initiative::class)
             ->future();
