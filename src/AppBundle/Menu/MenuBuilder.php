@@ -42,6 +42,8 @@ class MenuBuilder
             ->setExtra("icon", "fas fa-users fa-fw");
         $menu->addChild('Parliament', array("route" => "parliament", "label" => "menu.parliament.label" ))
             ->setExtra("icon", "fas fa-users fa-fw");
+        $menu->addChild('FAQ', array("route" => "faq", "label" => "menu.faq.label" ))
+            ->setExtra("icon", "fas fa-question fa-fw");
 
 
         
