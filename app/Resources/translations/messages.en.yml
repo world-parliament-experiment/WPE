@@ -107,6 +107,8 @@ menu:
         label: Archive
     program:
         label: Decisions
+    faq:
+        label: FAQ
     user:
         label: User
         profile: Profile
@@ -182,6 +184,8 @@ breadcrumb:
         label: Archive
     decisions:
         label: Decisions
+    faq:
+        label: FAQ
     search:
         label: Search
 
