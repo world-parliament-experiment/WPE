@@ -126,7 +126,7 @@ class InitiativeRepository extends EntityRepository
             ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type IN (0,1)')
             ->andWhere('initiative.state = 1')
-            ->andWhere('c.country IN (:UN)
+            ->andWhere('c.country =:UN')
             ->setParameters([
                 'UN' => 'UN'
             ])
