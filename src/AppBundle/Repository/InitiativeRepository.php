@@ -123,14 +123,17 @@ class InitiativeRepository extends EntityRepository
     public function slider($maxResults)
     {
         return $this->createQueryBuilder('initiative')
+            ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type IN (0,1)')
             ->andWhere('initiative.state = 1')
+            ->andWhere('c.country IN (:UN)
+            ->setParameters([
+                'UN' => 'UN'
+            ])
             ->setMaxResults($maxResults)
             ->orderBy('initiative.publishedAt', 'DESC')
             ->getQuery()
             ->execute();
-
-
     }
 
     public function getDraftInitiativesByUser(User $user)
