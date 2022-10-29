@@ -126,9 +126,9 @@ class InitiativeRepository extends EntityRepository
             ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type IN (0,1)')
             ->andWhere('initiative.state = 1')
-            ->andWhere('c.country =:UN')
+            ->andWhere('c.country IN (:country)')
             ->setParameters([
-                'UN' => 'UN'
+                'country' => ['UN']
             ])
             ->setMaxResults($maxResults)
             ->orderBy('initiative.publishedAt', 'DESC')
@@ -519,9 +519,10 @@ class InitiativeRepository extends EntityRepository
             ->setMaxResults(3)
             ->addOrderBy('i.views', 'desc')
             ->andWhere('i.state IN (:state)')
-            ->andWhere('LENGTH(c.description) > 2')
+            ->andWhere('c.country IN (:country')
             ->setParameters([
                 'state' => [InitiativeEnum::STATE_ACTIVE, InitiativeEnum::STATE_FINISHED],
+                'country' => ['UN']
             ])
             ->getQuery()
             ->execute();
@@ -538,10 +539,11 @@ class InitiativeRepository extends EntityRepository
             ->addOrderBy('i.views', 'desc')
             ->andWhere('i.state = :state')
             ->andWhere('i.type IN (:type)')
-            ->andWhere('LENGTH(c.description) > 2')
+            ->andWhere('c.country IN (:country)')
             ->setParameters([
                 'state' => InitiativeEnum::STATE_ACTIVE,
                 'type' => [InitiativeEnum::TYPE_FUTURE, InitiativeEnum::TYPE_CURRENT],
+                'country' => ['UN']
             ])
             ->getQuery()
             ->execute();
