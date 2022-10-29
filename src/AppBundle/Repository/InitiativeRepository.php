@@ -519,7 +519,7 @@ class InitiativeRepository extends EntityRepository
             ->setMaxResults(3)
             ->addOrderBy('i.views', 'desc')
             ->andWhere('i.state IN (:state)')
-            ->andWhere('c.country IN (:country')
+            ->andWhere('c.country IN (:country)')
             ->setParameters([
                 'state' => [InitiativeEnum::STATE_ACTIVE, InitiativeEnum::STATE_FINISHED],
                 'country' => ['UN']
