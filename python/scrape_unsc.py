@@ -24,9 +24,12 @@ output = []
 count = 0
 while count < 2:
     year = today.year + count
-    url = 'https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-'+str(year)
+    req = urllib.request.Request(
+        url='http://www.cmegroup.com/trading/products/#sortField=oi&sortAsc=false&venues=3&page=1&cleared=1&group=1', 
+        headers={'User-Agent': 'Mozilla/5.0'}
+    )
     try:
-        html = urllib.request.urlopen(url, context=ctx).read()
+        html = urllib.request.urlopen(req).read()
     except urllib.error.HTTPError as e:
         if e.getcode() == 404: # check the return code
             count = count + 1
