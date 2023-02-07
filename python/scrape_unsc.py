@@ -25,7 +25,7 @@ count = 0
 while count < 2:
     year = today.year + count
     req = urllib.request.Request(
-        url='http://www.cmegroup.com/trading/products/#sortField=oi&sortAsc=false&venues=3&page=1&cleared=1&group=1', 
+        url='https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-'+str(year), 
         headers={'User-Agent': 'Mozilla/5.0'}
     )
     try:
