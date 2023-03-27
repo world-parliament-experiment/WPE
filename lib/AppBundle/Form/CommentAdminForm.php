@@ -28,7 +28,7 @@ class CommentAdminForm extends CommentForm
                 'label' => 'initiative.edit.state',
                 'required' => true,
                 'choices' => CommentEnum::getAvailableStates(),
-                'choices_as_values' => true,
+                // 'choices_as_values' => true,
                 'choice_label' => function($choice) {
                     return CommentEnum::getStateName($choice);
                 }

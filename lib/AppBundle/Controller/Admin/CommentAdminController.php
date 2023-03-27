@@ -6,6 +6,7 @@ use AppBundle\Annotation\PageAnnotation as Page;
 use AppBundle\Controller\BaseController;
 use JMS\Serializer\SerializerInterface;
 use AppBundle\Entity\Category;
+use AppBundle\Form\CommentAdminForm;
 
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Initiative;
@@ -94,7 +95,7 @@ class CommentAdminController extends BaseController
     public function editAction (Request $request, Comment $comment)
     {
         $deleteForm = $this->createDeleteForm($comment);
-        $editForm = $this->createForm('AppBundle\Form\CommentAdminForm', $comment);
+        $editForm = $this->createForm(CommentAdminForm::class, $comment);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {

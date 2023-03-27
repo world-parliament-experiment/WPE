@@ -21,12 +21,12 @@ doctrine:
                 prefix: 'AppBundle\Entity'
                 alias: AppBundle
                 type: annotation
-            # gedmo_loggable:
-            #     type: annotation
-            #     prefix: Gedmo\Loggable\Entity
-            #     dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity"
-            #     alias: GedmoLoggable # (optional) it will default to the name set for the mappingmapping
-            #     is_bundle: false
+            gedmo_loggable:
+                type: annotation
+                prefix: Gedmo\Loggable\Entity
+                dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity"
+                alias: GedmoLoggable # (optional) it will default to the name set for the mappingmapping
+                is_bundle: false
 
 when@test:
     doctrine:

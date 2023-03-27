@@ -64,7 +64,7 @@ class RegistrationController extends AbstractController
                 $user->setPassword($hashedPassword);
                 $user->setRoles($user->getRoles());
 
-                $user->setEnabled(false);
+                $user->setEnabled(true);
                 if (null === $user->getConfirmationToken()) {
                     $user->setConfirmationToken($user->generateToken());
                 }

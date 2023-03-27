@@ -29,8 +29,12 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    AppBundle\Service\UserManager:
-        class: AppBundle\Service\UserManager
+    AppBundle\Service\:
+        resource: '../lib/AppBundle/Service/'
+        autowire: true
+
+    AppBundle\Util\:
+        resource: '../lib/AppBundle/Util/'
         autowire: true
 
     AppBundle\Service\Mailer:
@@ -71,5 +75,20 @@ services:
     AppBundle\EventSubscriber\LoginSubscriber:
         tags:
             - { name: kernel.event_subscriber }
+
+    AppBundle\Form\DelegationForm:
+        public: false
+        autowire: true
+
+    AppBundle\Form\InitiativeUserForm:
+        public: false
+        autowire: true
+
+    AppBundle\Security\InitiativeVoter:
+        public: false
+        arguments:
+            - '@security.access.decision_manager'
+        tags:
+            - { name: security.voter }
 
     # Symfony\Component\Mailer\MailerInterface: 

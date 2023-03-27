@@ -36,19 +36,19 @@ initiative:
         delete: Your proposal is successfully deleted
 
 comment:
-  edit:
-    message: Message
-    note: Note
-    field: Field
-    new_value: New Value
-    updated_at: Updated At
-    updated_by: Updated By
-    changes_caption: Changed Field Values
-    submit: Save Comment
-  button:
-    submit: Save Comment
-    overview: Overview
-    delete: Delete Comment
+    edit:
+        message: Message
+        note: Note
+        field: Field
+        new_value: New Value
+        updated_at: Updated At
+        updated_by: Updated By
+        changes_caption: Changed Field Values
+        submit: Save Comment
+    button:
+        submit: Save Comment
+        overview: Overview
+        delete: Delete Comment
 
 delegation:
     button:

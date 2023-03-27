@@ -152,6 +152,7 @@ class VoteController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
+        // dd($initiative);
 
         $this->denyAccessUnlessGranted("view", $initiative);
 

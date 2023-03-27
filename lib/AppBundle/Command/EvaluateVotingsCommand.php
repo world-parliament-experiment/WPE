@@ -6,11 +6,13 @@ use AppBundle\Enum\VotingEnum;
 use AppBundle\Service\VotingManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EvaluateVotingsCommand extends ContainerAwareCommand
+class EvaluateVotingsCommand extends Command
 {
     /**
      * @var LoggerInterface

@@ -1,0 +1,2 @@
+apy_breadcrumb_trail:
+    template: Helpers/breadcrumbtrail.html.twig

@@ -9,8 +9,13 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\User;
+use AppBundle\Entity\Comment;
 use AppBundle\Entity\UserImage;
+use AppBundle\Entity\Category;
 use AppBundle\Entity\Voting;
+use AppBundle\Entity\Initiative;
+use AppBundle\Entity\vote;
+use AppBundle\Entity\Delegation;
 use AppBundle\Enum\DelegationEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
@@ -36,7 +41,7 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->select('i')
-            ->from('AppBundle:UserImage', 'i')
+            ->from(UserImage::class, 'i')
             ->andWhere('i.imageType = :type')
             ->andWhere('i.user = :user')
             ->setParameters(['type' => UserImage::USER_IMAGE_TYPE_AVATAR, 'user' => $user->getId()])
@@ -80,7 +85,7 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->select('v')
-            ->from('AppBundle:Vote', 'v')
+            ->from(Vote::class, 'v')
             ->andWhere('v.user = :user')
             ->andWhere('v.voting = :voting')
             ->setParameter('user', $user->getId())
@@ -178,7 +183,7 @@ class UserRepository extends EntityRepository
 
         return $qb
             ->select(["u"])
-            ->from("AppBundle:User", "u")
+            ->from(User::class, "u")
             ->where(
                 $qb->expr()->exists(
                     $this->getEntityManager()->createQueryBuilder()
@@ -218,7 +223,7 @@ class UserRepository extends EntityRepository
 
         return $qb
             ->select(["u"])
-            ->from("AppBundle:User", "u")
+            ->from(User::class, "u")
             ->where(
                 $qb->expr()->orX(
                     $qb->expr()->exists(
@@ -259,7 +264,7 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->addSelect('count(d.user) AS delegations, u.username, u.id')
-            ->from('AppBundle:Delegation', 'd')
+            ->from(Delegation::class, 'd')
             ->leftJoin('d.truster', 'u')
             ->groupBy('u.username, u.id')
             ->orderBy('delegations', 'DESC')
@@ -282,7 +287,7 @@ class UserRepository extends EntityRepository
         $q = $this->getEntityManager()
             ->createQueryBuilder()
             ->select('c.id')
-            ->from("AppBundle:Category", "c")
+            ->from(Category::class, "c")
             ->getQuery();
 
         foreach ($q->execute() as $category) {
@@ -294,7 +299,7 @@ class UserRepository extends EntityRepository
         $q = $this->getEntityManager()
             ->createQueryBuilder()
             ->select("u.id AS user, t.id AS truster, t.username AS truster_username")
-            ->from("AppBundle:Delegation", "d")
+            ->from(Delegation::class, "d")
             ->leftJoin('d.user', 'u')
             ->leftJoin('d.truster', 't')
             ->where("d.scope = :scope")
@@ -313,7 +318,7 @@ class UserRepository extends EntityRepository
         $q = $this->getEntityManager()
             ->createQueryBuilder()
             ->select("u.id AS user, t.id AS truster, t.username AS truster_username, c.id AS category")
-            ->from("AppBundle:Delegation", "d")
+            ->from(Delegation::class, "d")
             ->leftJoin('d.user', 'u')
             ->leftJoin('d.truster', 't')
             ->leftJoin('d.category', 'c')
@@ -351,7 +356,7 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->select('u.id, count(c.createdBy) AS comments, u.username')
-            ->from('AppBundle:Comment', 'c')
+            ->from(Comment::class, 'c')
             ->leftJoin('c.createdBy', 'u', Join::ON. 'c.createdBy = u.id')
             ->groupBy('c.createdBy, u.username, u.id')
             ->orderBy('comments', 'DESC')
@@ -367,7 +372,7 @@ class UserRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('u.id')
             ->addSelect('count(c.createdBy) AS initiatives, u.username')
-            ->from('AppBundle:Initiative', 'c')
+            ->from(Initiative::class, 'c')
             ->leftJoin('c.createdBy', 'u', Join::ON. 'c.createdBy = u.id')
             ->andWhere('c.state != :istate OR c.state != :vstate' )
            // ->andWhere('c.state != :vstate')

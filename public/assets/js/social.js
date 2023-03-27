@@ -22,8 +22,8 @@
             var $title = $('meta[property="og:title"]');
             var $url = $('meta[property="og:url"]');
 
-            if ($title !== null) self._storage.pageTitle = encodeURIComponent($title.attr('content'));
-            if ($url !== null) self._storage.pageUrl = encodeURIComponent($url.attr('content'));
+            if ($title !== null) self._storage.pageTitle = $title.attr('content') == undefined ? document.title : encodeURIComponent($title.attr('content'));
+            if ($url !== null) self._storage.pageUrl = $url.attr('content') == undefined ? window.location.href : encodeURIComponent($url.attr('content'));
 
             var share = {
                 facebook: {
