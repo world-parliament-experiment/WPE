@@ -1,0 +1,84 @@
+
+{% macro comment_tree(comments, repo, depth=0) %}
+    {% import _self as m %}
+    {% if comments %}
+        <ol class="comment_area comment_area_level_{{ depth }} {{ depth > 0 ? "children" : "" }}">
+            {% for comment in comments %}
+                <li class="single_comment_area">
+                    <!-- Comment Content -->
+                    <div class="comment-content d-flex">
+                    {%  if comment.state != constant('AppBundle\\Enum\\CommentEnum::STATE_DELETED' )%}
+                        <!-- Comment Author -->
+                        <div class="comment-author">
+                            <img src=" {{ path('user_profile_avatar', {'id': comment.createdBy.id}) }}" alt="user avatar" />
+                        </div>
+                    {% endif %}
+                        <!-- Comment Meta -->
+                        <div class="comment-meta w-100">
+{#                            <h6>{{ comment.parent ? comment.parent.id ~ ' / ' ~ comment.id : comment.id }}</h6>#}
+                            <a href="#" class="comment-date">{{ comment.createdAt|date('F j, Y') }}</a>
+                            {%  if comment.state != constant('AppBundle\\Enum\\CommentEnum::STATE_DELETED' )%}
+                            <h6>
+                                <a href="{{ path('user_profile_show', { 'id':comment.createdBy.id }) }}" class="author-name">{{ comment.createdBy.username }}</a>
+                                {% if app.user and app.user.id != comment.createdBy.id %}
+                                    {% if comment.createdBy.isFriend(app.user) %}
+                                        <a href="#" data-toggle="tooltip" title="Add as friend" data-user-id="{{ comment.createdBy.id }}" class="author-friend btn btn-friend btn-sm"><i class="friend fas fa-heart" aria-hidden="true"></i></a>
+                                    {% else %}
+                                        <a href="#" data-toggle="tooltip" title="Add as friend" data-user-id="{{ comment.createdBy.id }}" class="author-friend btn btn-friend btn-sm"><i class="friend far fa-heart" aria-hidden="true"></i></a>
+                                    {% endif %}
+                                {% endif %}
+                            </h6>
+                            {% endif %}
+                            {%  if comment.state == constant('AppBundle\\Enum\\CommentEnum::STATE_OPEN' )%}
+                                <p>{% autoescape false %}{{ comment.message}}{% endautoescape %}</p>
+                                {% if comment.getLastMessageModifierUsername(repo) not in [comment.createdBy.username, null] %}
+                                 <p class="alert alert-info">last modified by: {{ comment.getLastMessageModifierUsername(repo) }}</p>
+                                {% endif %}
+                            {% elseif comment.note != null and comment.state == constant('AppBundle\\Enum\\CommentEnum::STATE_CLOSED' ) %}
+                                <div class="alert alert-warning w-100">
+                                    {% autoescape false %}
+                                        {{ comment.note}}<br>
+                                        closed by: {{ comment.getLastStateModifierUsername(repo) }}
+                                    {% endautoescape %}
+                                </div>
+                            {% elseif comment.note != null  %}
+                                <div class="alert alert-danger w-100">
+                                    {% autoescape false %}
+                                        {{ comment.note}}<br>
+                                        deleted by: {{ comment.getLastStateModifierUsername(repo) }}
+                                    {% endautoescape %}
+                                </div>
+                            {%  elseif comment.state == constant('AppBundle\\Enum\\CommentEnum::STATE_CLOSED' )%}
+                                <p class="alert alert-warning w-100">comment is under investiqation!<br>
+                                                            closed by: {{ comment.getLastStateModifierUsername(repo) }}</p>
+                            {% else %}
+                                <p class="alert alert-danger w-100">comment was deleted!<br>
+                                                            deleted by: {{ comment.getLastStateModifierUsername(repo) }}</p>
+                            {% endif %}
+                            {% if is_granted('ROLE_USER') %}
+                                <div class="d-flex align-items-center">
+                                    {% if comment.state == constant('AppBundle\\Enum\\CommentEnum::STATE_OPEN' )%}
+                                        <a href="{{ path("initiative_increment_counter",{'type':'like','id': comment.id}) }}" class="like">like</a>
+                                        <a href="{{ path("initiative_increment_counter",{'type':'dislike','id': comment.id}) }}" class="like">dislike</a>
+                                        <a href="{{ path("initiative_increment_counter",{'type':'report','id': comment.id}) }}" class="like">Report</a>
+                                        <a href="{{ path("initiative_save_reply",{'type':'comment','id': comment.id}) }}" class="reply" >Reply</a>
+                                    {% endif %}
+                                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MODERATOR')%}
+                                        <a href="{{ path("admin_comment_edit",{'id': comment.id}) }}" class="edit" >edit</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if comment.children|length > 0 %}
+                        {{ m.comment_tree(comment.children, repo, (depth +1)) }}
+                    {% endif %}
+                </li>
+            {% else %}
+                <p>No comments yet!</p>
+            {% endfor %}
+        </ol>
+    {% endif %}
+{% endmacro %}
+

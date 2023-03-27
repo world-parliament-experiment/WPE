@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <!-- ##### Hero Area Start ##### -->
+
+    {{ include ('/Widget/hero.html.twig', {votes: top}, with_context = false) }}
+
+    <!-- ##### Hero Area End ##### -->
+
+    <!-- ##### Mag Posts Area Start ##### -->
+    <section class="mag-posts-area d-flex flex-wrap">
+
+        <!-- >>>>>>>>>>>>>>>>>>>>
+         Post Left Sidebar Area
+        <<<<<<<<<<<<<<<<<<<<< -->
+        <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
+            <!-- Sidebar Widget -->
+            <div class="single-sidebar-widget p-30">
+               {{ render(controller('AppBundle\\Controller\\WidgetController::MostPopularAction')) }}
+            </div>
+{#              <div class="single-sidebar-widget p-30">#}
+{#                {{ render(controller('AppBundle:Widget:MostCommentedInitiatives')) }}#}
+{#            </div>#}
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::MostViewsAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::MostCommentsAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::mostDelegationsAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::MostInitiativesAction')) }}
+            </div>
+
+
+        </div>
+
+        <!-- >>>>>>>>>>>>>>>>>>>>
+             Main Posts Area
+        <<<<<<<<<<<<<<<<<<<<< -->
+
+        <div class="mag-posts-content m-t-30 m-b-30 p-30 box-shadow">
+            <div class="feature-video-posts m-b-30">
+                <!-- Section Title -->
+                <div class="section-heading">
+                    <h5>Only Global Democracy can address humanity's global challenges</h5>
+                </div>
+                <div class="post-content">
+                    <p>One country alone cannot do it. We are all in this together.</p>
+
+                    <p>The World Parliament Experiment (WPE) is a <b>positive vision</b> of a <b>fully democratic world</b>, in which everybody can take part and have a say. <b>Global, digital, democratic.</b> </p>
+                    
+                    <p>War is not inevitable. Tyranny and Injustice are not inevitable. <b>Global Democracy is possible, if <u>YOU</u> take part in it!</b></p>
+                </div>
+            </div>
+
+            <div class="trending-now-posts m-b-30">
+                <div class="section-heading">
+                    <h5>CURRENT VOTES</h5>
+                </div>
+
+                <div class="trending-post-slides owl-carousel">
+                    {% include ('/Widget/trendingc.html.twig') %}
+                </div>
+            </div>
+            <div class="trending-now-posts m-b-30">
+                <div class="section-heading">
+                    <h5>CURRENT PROPOSALS</h5>
+                </div>
+
+                <div class="trending-post-slides owl-carousel">
+                    {% include ('/Widget/trendingf.html.twig') %}
+                </div>
+            </div>
+            <!-- Feature Video Posts Area -->
+            <div class="feature-video-posts m-b-30">
+
+                <div class="section-heading">
+                    <h5>How does it work?</h5>
+                </div>
+                    <p>The WPE allows you to vote on real-world political initiatives, both on the global and national level. You can create your own political proposals, and bring them to the global vote.</p>         
+                    <p>The WPE voting results will be visible to decision-making bodies both on the national and supra-national level. We want to be a real political factor. The more people participate, the more powerful the voice of the WPE will become.</p>
+                    <p>To start creating proposals, vote, discuss or be elected, <a href="{{ path("login") }}"> login</a> or create a <a href="{{ path("app_register") }}"> global citizen user account </a>. For detailed instructions and further information, please visit the <a href="{{ path("faq") }}">FAQ section</a>.</p>
+                <br />
+                <blockquote>
+                    <h6 class="quote-text">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
+                    <h6 class="quote-name">ABRAHAM LINCOLN</h6>
+                </blockquote>
+                <br />
+                <div class="section-heading">
+                    <h5>How can I support the WPE?</h5>
+                </div>
+                    <p>Become a global citizen and starting voting on the platform!</p>
+                    <p>You can repost current proposals or votes that you feel are important on your social media. You can tell your friends.</p>
+                    <p>You can help spreading the idea of the World Parliament Experiment by using our branded <a href="https://shop.spreadshirt.de/World-Parpament-Experiment/">merchandise</a>.</p>
+                    <p>You can support us on <a href="https://gofund.me/abb115b4">GoFundMe</a>.</p>
+                <br />
+
+            </div>
+
+        </div>
+
+        <!-- >>>>>>>>>>>>>>>>>>>>
+        Post Right Sidebar Area
+        <<<<<<<<<<<<<<<<<<<<< -->
+
+        <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::lastLoginsAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::lastRegistrationsAction')) }}
+            </div>
+        </div>
+
+    </section>
+    <!-- ##### Mag Posts Area End ##### -->
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

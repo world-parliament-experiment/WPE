@@ -1,0 +1,29 @@
+
+{% extends 'base.html.twig' %}
+
+{% block test %}
+
+                        <!-- Reply Form -->
+
+
+
+                        {{ form_start(form) }}
+
+                        <fieldset>
+
+
+                            {{ form_row(form.createdBy) }}
+                            <a href="{{ path('admin_user_edit', { 'id': user.id }) }}">{{ user.id }}</a>
+                            {{ form_row(form.message) }}
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+                            </div>
+
+
+                        </fieldset>
+
+
+                        {{ form_end(form) }}
+
+{% endblock %}
