@@ -583,6 +583,7 @@ class VoteController extends BaseController
                     $vote->setUser($this->getUser());
                     $vote->setVoting($voting);
                     $vote->setValue(1);
+                    $vote->setVotedAt(new \DateTime());
 
 //                    dump($form);
 //                    dump($voting);

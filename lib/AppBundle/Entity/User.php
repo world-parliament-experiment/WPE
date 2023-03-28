@@ -666,5 +666,7 @@ class User implements UserInterface
         return $this->firstname." ".$this->lastname;    
     }
     
-
+    public function isAccountNonLocked () {
+        return true;
+    }
 }

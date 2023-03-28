@@ -83,6 +83,6 @@ class ActivateVotingsCommand extends Command
         }
 
         $this->logger->info($message);
-
+        return 1;
     }
 }
