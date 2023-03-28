@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use FOS\UserBundle\FOSUserEvents;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
-use AppBundle\Service\UserManagerInterface;
+use AppBundle\Service\UserManager;
 
 /**
  * User controller.
@@ -131,7 +131,7 @@ class UserAdminController extends BaseController
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      */
-    public function editAction(Request $request, int $id, UserManagerInterface $userManager)
+    public function editAction(Request $request, int $id, UserManager $userManager)
     {
 
         $em = $this->getDoctrine()->getManager();

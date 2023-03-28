@@ -17,6 +17,11 @@ framework:
     php_errors:
         log: true
 
+    assets: 
+        packages:
+            default:
+                base_path: '%kernel.project_dir%/public'
+
 when@test:
     framework:
         test: true
