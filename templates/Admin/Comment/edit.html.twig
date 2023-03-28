@@ -1,0 +1,88 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+<!-- ##### Breadcrumb Area Start ##### -->
+<section class="breadcrumb-area bg-img bg-overlay" style="background-image: url('https://via.placeholder.com/1920x850');">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12">
+                <div class="breadcrumb-content">
+                    <h2>{{ page_title() }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ##### Breadcrumb Area End ##### -->
+{{ apy_breadcrumb_trail_render() }}
+<!-- ##### Login Area Start ##### -->
+<div class="admin-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="login-content bg-white p-30 mb-30 box-shadow">
+                    <!-- Section Title -->
+                    <div class="section-heading">
+                        <h5>{{ page_title() }}</h5>
+                    </div>
+
+                    {{ form_start(form) }}
+
+                        {{ form_row(form.message) }}
+                        {{ form_row(form.state) }}
+                        {{ form_row(form.note) }}
+                        {{ form_row(form.createdBy) }}
+                        {{ form_row(form.createdAt) }}
+                        {{ form_row(form.updatedBy) }}
+                        {{ form_row(form.updatedAt) }}
+                        {% if changes|filter(c => c.action == "update")|length > 0 %}
+                            <h6>{{ 'comment.edit.changes_caption'|trans }}</h6>
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="text-nowrap">{{ 'comment.edit.updated_at'|trans }}</th>
+                                        <th class="text-nowrap">{{ 'comment.edit.updated_by'|trans }}</th>
+                                        <th>{{ 'comment.edit.field'|trans }}</th>
+                                        <th>{{ 'comment.edit.new_value'|trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for change in changes|filter(c => c.action == "update") %}
+                                    {% for fieldname, fieldvalue in change.data %}
+                                        <tr>
+                                            <td class="text-nowrap">{{ change.loggedAt|date('d.m.Y  H:i:s') }}</td>
+                                            <td>{{ change.username }}</td>
+                                            <td>{{ fieldname }}</td>
+                                            <td>{{ fieldvalue }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary" formnovalidate><i class="fa fa-save"></i> {{ 'comment.edit.submit'|trans }} </button>
+                    {{ form_end(form) }}
+
+                    <br />
+                    <p>
+                        {{ form_start(delete_form) }}
+                        <a href="{{ path('admin_comment_index') }}" class="btn btn-dark"><i class="fas fa-bars"></i> {{ 'comment.button.overview'|trans }} </a>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> {{ 'comment.button.delete'|trans }} </button>
+                        {{ form_end(delete_form) }}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Login Area End ##### -->
+{% endblock body %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
