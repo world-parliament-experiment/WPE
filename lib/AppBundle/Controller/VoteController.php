@@ -152,6 +152,7 @@ class VoteController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
+        // dd($initiative);
 
         $this->denyAccessUnlessGranted("view", $initiative);
 
@@ -582,6 +583,7 @@ class VoteController extends BaseController
                     $vote->setUser($this->getUser());
                     $vote->setVoting($voting);
                     $vote->setValue(1);
+                    $vote->setVotedAt(new \DateTime());
 
 //                    dump($form);
 //                    dump($voting);

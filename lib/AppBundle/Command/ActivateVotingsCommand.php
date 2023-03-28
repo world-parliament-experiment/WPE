@@ -5,12 +5,14 @@ namespace AppBundle\Command;
 use AppBundle\Enum\VotingEnum;
 use AppBundle\Service\VotingManager;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+// use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ActivateVotingsCommand extends ContainerAwareCommand
+class ActivateVotingsCommand extends Command
 {
     /**
      * @var LoggerInterface
@@ -81,6 +83,6 @@ class ActivateVotingsCommand extends ContainerAwareCommand
         }
 
         $this->logger->info($message);
-
+        return 1;
     }
 }

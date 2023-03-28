@@ -116,3 +116,7 @@ form:
     gender_help:  'Please choose your gender'
     consents: 'Yes, i will receive news per e-mail'
     terms: 'Yes, i accept the terms'
+
+fos_user:
+    password:   
+        mismatch: 'Password field does not match'

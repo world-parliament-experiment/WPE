@@ -28,7 +28,9 @@ class User implements UserInterface
     const USER_GENDER_DIVERSE = "DIVERSE";
     const USER_GENDER_NOTSTATED = "NOT STATED";
 
-    const DEFAULT_ROLE = 'ROLE_SUPERADMIN';
+    const DEFAULT_ROLE = 'ROLE_USER';
+
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPERADMIN';
 
     /**
      * @Assert\Callback
@@ -504,7 +506,7 @@ class User implements UserInterface
         $this->consents = $consents;
     }
 
-    public function getUsername()
+    public function getUsername():string
     {
         return $this->username;
     }
@@ -613,16 +615,16 @@ class User implements UserInterface
         return $this;
     }
 
-    // public function setSuperAdmin($boolean)
-    // {
-    //     if (true === $boolean) {
-    //         $this->addRole(static::ROLE_SUPER_ADMIN);
-    //     } else {
-    //         $this->removeRole(static::ROLE_SUPER_ADMIN);
-    //     }
+    public function setSuperAdmin($boolean)
+    {
+        if (true === $boolean) {
+            $this->addRole(static::ROLE_SUPER_ADMIN);
+        } else {
+            $this->removeRole(static::ROLE_SUPER_ADMIN);
+        }
 
-    //     return $this;
-    // }
+        return $this;
+    }
     
     public function getEmail()
     {
@@ -664,5 +666,7 @@ class User implements UserInterface
         return $this->firstname." ".$this->lastname;    
     }
     
-
+    public function isAccountNonLocked () {
+        return true;
+    }
 }

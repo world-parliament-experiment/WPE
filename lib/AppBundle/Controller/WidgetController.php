@@ -229,6 +229,8 @@ class WidgetController extends BaseController
     {
         $cacheKey = 'widget_most_comments';
         $cache = $this->cache->getItem($cacheKey);
+
+       
         // $cache = $this->get('cache.app')->getItem('widget_most_comments');
 
         if (!$cache->isHit()) {

@@ -11,20 +11,33 @@
 
 namespace AppBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+// use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use AppBundle\Util\UserManipulator;
 
 /**
  * @author Matthieu Bontemps <matthieu@knplabs.com>
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
  * @author Luis Cordova <cordoval@gmail.com>
  */
-class CreateUserCommand extends ContainerAwareCommand
+class CreateUserCommand extends Command
 {
+    protected static $defaultName = 'app:create-user';
+
+    private $userManipulator;
+
+    public function __construct(UserManipulator $userManipulator)
+    {
+        parent::__construct('app:create-user');
+
+        $this->userManipulator = $userManipulator;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -78,10 +91,12 @@ EOT
         $inactive = $input->getOption('inactive');
         $superadmin = $input->getOption('super-admin');
 
-        $manipulator = $this->getContainer()->get('AppBundle\Util\UserManipulator');
-        $manipulator->create($username, $firstname, $lastname, $password, $email, !$inactive, $superadmin);
+        // $manipulator = $this->getContainer()->get('AppBundle\Util\UserManipulator');
+        $this->userManipulator->create($username, $firstname, $lastname, $password, $email, !$inactive, $superadmin);
 
         $output->writeln(sprintf('Created user <comment>%s</comment>', $username));
+
+        return 1;
     }
 
     /**
