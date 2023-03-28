@@ -43,22 +43,28 @@ services:
             $senderEmail: '%env(SENDER_EMAIL)%'
         autowire: true
 
-    AppBundle\Twig\PageExtension:
-        public: false
+    # AppBundle\Twig\PageExtension:
+    #     public: false
+    #     autowire: true
+    #     tags:
+    #         - { name: twig.extension }
+
+    # AppBundle\Twig\WidgetExtension:
+    #     public: false
+    #     tags:
+    #         - { name: twig.extension }
+
+    # AppBundle\Twig\TimeDiffExtension:
+    #     tags:
+    #         - { name: twig.extension }
+
+    # AppBundle\Twig\TextExtension:
+    #     tags:
+    #         - { name: twig.extension }
+
+    AppBundle\Twig\:
+        resource: '../lib/AppBundle/Twig/'
         autowire: true
-        tags:
-            - { name: twig.extension }
-
-    AppBundle\Twig\WidgetExtension:
-        public: false
-        tags:
-            - { name: twig.extension }
-
-    AppBundle\Twig\TimeDiffExtension:
-        tags:
-            - { name: twig.extension }
-
-    AppBundle\Twig\TextExtension:
         tags:
             - { name: twig.extension }
 
@@ -76,12 +82,16 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    AppBundle\Form\DelegationForm:
-        public: false
-        autowire: true
+    # AppBundle\Form\DelegationForm:
+    #     public: false
+    #     autowire: true
 
-    AppBundle\Form\InitiativeUserForm:
-        public: false
+    # AppBundle\Form\InitiativeUserForm:
+    #     public: false
+    #     autowire: true
+
+    AppBundle\Form\:
+        resource: '../lib/AppBundle/Form/'
         autowire: true
 
     AppBundle\Security\InitiativeVoter:
