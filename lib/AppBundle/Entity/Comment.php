@@ -403,6 +403,8 @@ class Comment
      */public function getLastMessageModifierUsername(LogEntryRepository $repo )
     {
         $logs = $repo->getLogEntries($this);
+
+       
         foreach ($logs as $log){
             $data = $log->getData();
             if(isset($data['message']) && $data['message'] == $this->message){

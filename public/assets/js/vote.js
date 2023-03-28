@@ -46,7 +46,7 @@
             $.ajax({
                 url: url
             }).then(function(response) {
-                console.log(response);
+                console.log(response.data);
                 if (response.success) {
                     if (response.data.type === 'message') {
                         self._renderTemplate('#js-vote-message-template', response.data);

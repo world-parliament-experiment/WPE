@@ -77,7 +77,7 @@ class VotingManager
 
         $this->logger->info('activate future votes...');
 
-        $initiatives = $this->manager->getRepository('AppBundle:Initiative')->getFutureInitiativesToActivate();
+        $initiatives = $this->manager->getRepository(Initiative::class)->getFutureInitiativesToActivate();
         $cntVotings = 0;
 
         $this->manager->transactional(function(EntityManagerInterface $em) use ($initiatives, &$cntVotings) {
@@ -116,7 +116,7 @@ class VotingManager
 
         $this->logger->info('activate current votings...');
 
-        $initiatives = $this->manager->getRepository('AppBundle:Initiative')->getCurrentInitiativesToActivate();
+        $initiatives = $this->manager->getRepository(Initiative::class)->getCurrentInitiativesToActivate();
         $cntVotings = 0;
 
         $this->manager->transactional(function(EntityManagerInterface $em) use ($initiatives, &$cntVotings) {
@@ -156,7 +156,7 @@ class VotingManager
 
         $this->logger->info('starting to evaluate future votes...');
 
-        $initiatives = $this->manager->getRepository('AppBundle:Initiative')->getFutureInitiativesToEvaluate();
+        $initiatives = $this->manager->getRepository(Initiative::class)->getFutureInitiativesToEvaluate();
         $cntVotings = 0;
 
 //        dump($this->currentDelegations);
@@ -230,7 +230,7 @@ class VotingManager
 
         $this->logger->info('starting to evaluate current votes...');
 
-        $initiatives = $this->manager->getRepository('AppBundle:Initiative')->getCurrentInitiativesToEvaluate();
+        $initiatives = $this->manager->getRepository(Initiative::class)->getCurrentInitiativesToEvaluate();
         $cntVotings = 0;
 
 //        dump($this->currentDelegations);
@@ -282,7 +282,7 @@ class VotingManager
     private function loadCurrentDelegations()
     {
         $this->currentDelegations = array();
-        $delegations = $this->manager->getRepository('AppBundle:Initiative')->getCurrentDelegations();
+        $delegations = $this->manager->getRepository(Initiative::class)->getCurrentDelegations();
 
         /** @var Delegation $delegation */
         foreach ($delegations as $delegation) {
@@ -323,7 +323,7 @@ class VotingManager
     {
 
         $this->currentUsers = array();
-        $users = $this->manager->getRepository('AppBundle:Initiative')->getCurrentVoters();
+        $users = $this->manager->getRepository(Initiative::class)->getCurrentVoters();
 
         /** @var User $user */
         foreach ($users as $user) {
@@ -344,7 +344,7 @@ class VotingManager
     {
 
         $votesArr = array();
-        $votes = $this->manager->getRepository('AppBundle:Initiative')->getVotesByVoting($voting);
+        $votes = $this->manager->getRepository(Initiative::class)->getVotesByVoting($voting);
 
         /** @var Vote $vote */
         foreach ($votes as $vote) {
@@ -383,7 +383,7 @@ class VotingManager
 
 
                 $this->manager->createQueryBuilder()
-                    ->delete('AppBundle:Vote', 'v')
+                    ->delete(Vote::class, 'v')
                     ->where('v.voting = :voting')
                     ->setParameter('voting', $voting)
                     ->getQuery()->execute();

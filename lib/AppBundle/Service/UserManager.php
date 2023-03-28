@@ -14,7 +14,7 @@ class UserManager
         $this->entityManager = $entityManager;
     }
 
-    public function createUser($username, $password, $email)
+    public function createUser()
     {
         $user = new User();
         // $user->setUsername($username);

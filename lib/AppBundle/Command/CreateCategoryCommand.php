@@ -17,6 +17,7 @@ use AppBundle\Enum\CategoryEnum;
 
 class CreateCategoryCommand extends Command
 {
+
     private $logger;
     private $em;
 

@@ -11,11 +11,13 @@
 
 namespace AppBundle\Util;
 
-use FOS\UserBundle\Event\UserEvent;
-use FOS\UserBundle\FOSUserEvents;
-use FOS\UserBundle\Model\UserInterface;
-use FOS\UserBundle\Model\UserManagerInterface;
+// use FOS\UserBundle\Event\UserEvent;
+// use FOS\UserBundle\FOSUserEvents;
+// use FOS\UserBundle\Model\UserInterface;
+// use FOS\UserBundle\Model\UserManagerInterface;
+use AppBundle\Service\UserManager;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -30,7 +32,7 @@ class UserManipulator
     /**
      * User manager.
      *
-     * @var UserManagerInterface
+     * @var UserManager
      */
     private $userManager;
 
@@ -44,18 +46,23 @@ class UserManipulator
      */
     private $requestStack;
 
+    private $passwordHasher;
+
     /**
      * UserManipulator constructor.
      *
-     * @param UserManagerInterface     $userManager
+     * @param UserManager     $userManager
      * @param EventDispatcherInterface $dispatcher
      * @param RequestStack             $requestStack
      */
-    public function __construct(UserManagerInterface $userManager, EventDispatcherInterface $dispatcher, RequestStack $requestStack)
+    public function __construct(UserManager $userManager, EventDispatcherInterface $dispatcher, UserPasswordHasherInterface $passwordHasher, RequestStack $requestStack)
     {
         $this->userManager = $userManager;
         $this->dispatcher = $dispatcher;
         $this->requestStack = $requestStack;
+        $this->passwordHasher = $passwordHasher;
+
+        
     }
 
     /**
@@ -80,10 +87,22 @@ class UserManipulator
         $user->setPlainPassword($password);
         $user->setEnabled((bool) $active);
         $user->setSuperAdmin((bool) $superadmin);
+
+        $hashedPassword = $this->passwordHasher->hashPassword(
+            $user,
+            $password
+        );
+        $user->setPassword($hashedPassword);
+
+        $user->setRegisteredAt(new \DateTime());
+        $user->setUsernameCanonical($username);
+        $user->setEmailCanonical($email);
+        $user->setConsents(true);
+
         $this->userManager->updateUser($user);
 
-        $event = new UserEvent($user, $this->getRequest());
-        $this->dispatcher->dispatch(FOSUserEvents::USER_CREATED, $event);
+        // $event = new UserEvent($user, $this->getRequest());
+        // $this->dispatcher->dispatch(FOSUserEvents::USER_CREATED, $event);
 
         return $user;
     }

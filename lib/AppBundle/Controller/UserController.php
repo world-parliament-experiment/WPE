@@ -16,6 +16,7 @@ use AppBundle\Enum\FavouriteEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
 use AppBundle\Service\AvatarManager;
+use AppBundle\Form\InitiativeUserForm;
 use DateTime;
 
 use Doctrine\ORM\NonUniqueResultException;
@@ -206,14 +207,18 @@ class UserController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
 
+        
         if ($id == 0) {
             $delegation = $em->getRepository(Delegation::class)->getDelegationGlobalByUser($user);
         } else {
             $category = $em->getRepository(Category::class)->find($id);
+
             if (is_null($category)) {
                 throw $this->createNotFoundException('category not found');
             }
             $delegation = $em->getRepository(Delegation::class)->getDelegationByCategoryAndUser($category, $user);
+
+
         }
 
         if (is_null($delegation)) {
@@ -308,7 +313,7 @@ class UserController extends BaseController
         $initiative->setState(InitiativeEnum::STATE_DRAFT);
         $initiative->setType(InitiativeEnum::TYPE_FUTURE);
 
-        $form = $this->createForm('AppBundle\Form\InitiativeUserForm', $initiative);
+        $form = $this->createForm(InitiativeUserForm::class, $initiative);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -554,6 +559,8 @@ class UserController extends BaseController
                 if ( $data !== false ) {
                     $data = base64_decode( $data );
                     $dir =  $this->getParameter('avatar_image_path');
+
+                    // dd(is_writable( $dir ));
                     if ( is_dir( $dir ) && is_writable( $dir ) ) {
                         $em = $this->getDoctrine()->getManager();
                         $image = $em->getRepository(User::class)->getUserAvatarImage($user);

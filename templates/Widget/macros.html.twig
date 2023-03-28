@@ -15,7 +15,7 @@
                     {% endif %}
                         <!-- Comment Meta -->
                         <div class="comment-meta w-100">
-{#                            <h6>{{ comment.parent ? comment.parent.id ~ ' / ' ~ comment.id : comment.id }}</h6>#}
+                    {#          <h6>{{ comment.parent ? comment.parent.id ~ ' / ' ~ comment.id : comment.id }}</h6>#}
                             <a href="#" class="comment-date">{{ comment.createdAt|date('F j, Y') }}</a>
                             {%  if comment.state != constant('AppBundle\\Enum\\CommentEnum::STATE_DELETED' )%}
                             <h6>
