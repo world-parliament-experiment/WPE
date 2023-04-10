@@ -221,7 +221,7 @@ class User implements UserInterface
     protected $confirmationToken;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $passwordRequestedAt;
 
