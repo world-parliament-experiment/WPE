@@ -118,27 +118,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     */
-    protected $mobileNo;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected $mobileVarificationCode;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
-     */
-    protected $mobileVarificationExpAt;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $mobileVarificationStatus;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default", "simple"})
     
@@ -268,7 +247,6 @@ class User implements UserInterface
         $this->trustees = new ArrayCollection();
         $this->votes = new ArrayCollection();
         $this->enabled = false;
-        $this->mobileVarificationStatus = false;
         $this->roles = [];
 
     }
@@ -304,72 +282,6 @@ class User implements UserInterface
     public function setCountry($country)
     {
         $this->country = $country;
-    }
-
-    /**
-     * @return string
-     */
-
-    public function getMobileNo()
-    {
-        return $this->mobileNo;
-    }
-
-    /**
-     * @param string $mobileNo
-     */
-    public function setMobileNo($mobileNo)
-    {
-        $this->mobileNo = $mobileNo;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMobileVarificationCode()
-    {
-        return $this->mobileVarificationCode;
-    }
- 
-    /**
-     * @param string $mobileVarificationCode
-     */
-    public function setMobileVarificationCode($mobileVarificationCode)
-    {
-        $this->mobileVarificationCode = $mobileVarificationCode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMobileVarificationExpAt(): string
-    {
-        return $this->mobileVarificationExpAt->format('Y-m-d H:i:s');
-    }
- 
-    /**
-     * @param DateTime $mobileVarificationExpAt
-     */
-    public function setMobileVarificationExpAt($mobileVarificationExpAt)
-    {
-        $this->mobileVarificationExpAt = $mobileVarificationExpAt;
-    }
-
-
-    /**
-     * @return bool
-     */
-    public function getMobileVarificationStatus()
-    {
-        return $this->mobileVarificationStatus;
-    }
- 
-    /**
-     * @param bool $mobileVarificationStatus
-     */
-    public function setMobileVarificationStatus($mobileVarificationStatus)
-    {
-        $this->mobileVarificationStatus = $mobileVarificationStatus;
     }
 
     /**
