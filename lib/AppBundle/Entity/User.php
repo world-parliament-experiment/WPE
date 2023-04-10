@@ -226,7 +226,7 @@ class User implements UserInterface
     protected $passwordRequestedAt;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="array")
      */
     protected $roles;
 
