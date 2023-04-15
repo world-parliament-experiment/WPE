@@ -25,7 +25,6 @@ use Psr\Cache\CacheItemPoolInterface;
 class DefaultController extends BaseController
 {
     private $cache;
-    private $managerRegistry;
     public $serializer;
 
     public function __construct(SerializerInterface $serializer,CacheItemPoolInterface $cache)
