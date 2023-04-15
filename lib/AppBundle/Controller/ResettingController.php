@@ -21,15 +21,15 @@ class ResettingController extends AbstractController
     private $userManager;
     private $tokenGenerator;
     private $mailer;
+    private $managerRegistry;
 
 
     public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer,ManagerRegistry $managerRegistry)
     {
-        parent::__construct($serializer,$managerRegistry);
         $this->tokenGenerator = $tokenGenerator;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
-        
+        $this->managerRegistry = $managerRegistry;
     }
 
     /**

@@ -29,16 +29,16 @@ class RegistrationController extends AbstractController
      * @Autowired
      */
     private $formFactory;
-
+    private $managerRegistry;
     private $userManager;
     private $mailer;
 
     public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer,ManagerRegistry $managerRegistry)
     {
-        parent::__construct($serializer,$managerRegistry);
         $this->formFactory = $formFactory;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
+        $this->managerRegistry = $managerRegistry;
     }
 
     /**
