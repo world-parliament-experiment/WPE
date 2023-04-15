@@ -19,7 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 use DateTime;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 // use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+// use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 class DefaultController extends BaseController
 {
@@ -27,7 +28,7 @@ class DefaultController extends BaseController
 
     public $serializer;
 
-    public function __construct(SerializerInterface $serializer,AdapterInterface $cache)
+    public function __construct(SerializerInterface $serializer,CacheItemPoolInterface $cache)
     {
         parent::__construct($serializer);
         $this->cache = $cache;
