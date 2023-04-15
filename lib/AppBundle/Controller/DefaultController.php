@@ -21,6 +21,7 @@ use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 // use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 // use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 class DefaultController extends BaseController
 {

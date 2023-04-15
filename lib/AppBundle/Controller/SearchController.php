@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use JMS\Serializer\SerializerInterface;
 use DateTime;
+use Doctrine\Persistence\ManagerRegistry;
 
 class SearchController extends BaseController
 {
