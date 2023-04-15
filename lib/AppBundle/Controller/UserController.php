@@ -30,6 +30,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use Doctrine\Persistence\ManagerRegistry;
 
 
 /**
