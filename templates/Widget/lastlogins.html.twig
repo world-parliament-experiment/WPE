@@ -11,8 +11,8 @@
                 <div class="p-2"><img src=" {{ path('user_profile_avatar', {'id': user.id}) }}" alt="user avatar" class="small-user-avatar" /></div>
                 {# <div class="p-2"><a href="{{ path('user_profile_show', { 'id': user.id}) }}" title="{{ user.username }}">{{ user.username|truncate(12) }}</a></div> #}
                 <div class="p-2"><a href="{{ path('user_profile_show', { 'id': user.id}) }}" title="{{ user.username }}">{{ user.username }}</a></div>
-                {# <div class="ml-auto p-2"> {{ user.lastLogin|time_diff }}</div> #}
-                <div class="ml-auto p-2"> {{ user.lastLogin }}</div>
+                <div class="ml-auto p-2"> {{ user.lastLogin|time_diff }}</div>
+                {# <div class="ml-auto p-2"> {{ user.lastLogin }}</div> #}
         </div>
         {% endfor %}
     </div>
