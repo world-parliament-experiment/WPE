@@ -41,9 +41,9 @@ class UserController extends BaseController
 {
     private $kernel;
 
-    public function __construct(SerializerInterface $serializer,KernelInterface $kernel)
+    public function __construct(SerializerInterface $serializer,KernelInterface $kernel,ManagerRegistry $managerRegistry)
     {
-        parent::__construct($serializer);
+        parent::__construct($serializer,$managerRegistry);
         $this->_serializeGroups = ["simple"];
         $this->kernel = $kernel;
     }
