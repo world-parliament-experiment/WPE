@@ -101,7 +101,7 @@ class ScraperCommand extends Command
 
         if ($input->getOption('update') === true) {
    
-            $script = 'python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py';
+            $script = explode(',','python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py');
             $process = new Process($script);
             $process->setTimeout(600);
             $process->run();
@@ -133,7 +133,6 @@ class ScraperCommand extends Command
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow" target="_blank">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
-                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
                 
                 if(!is_null($checkdata)) {
                     $duplicate = $checkdata->getTitle();
