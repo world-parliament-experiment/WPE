@@ -20,9 +20,9 @@ use DateTime;
 class SearchController extends BaseController
 {
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer,ManagerRegistry $managerRegistry)
     {
-        parent::__construct($serializer);
+        parent::__construct($serializer,$managerRegistry);
         $this->_serializeGroups = ["simple"];
     }
 

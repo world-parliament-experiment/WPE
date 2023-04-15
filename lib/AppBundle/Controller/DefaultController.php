@@ -27,9 +27,9 @@ class DefaultController extends BaseController
     private $cache;
     public $serializer;
 
-    public function __construct(SerializerInterface $serializer,CacheItemPoolInterface $cache)
+    public function __construct(SerializerInterface $serializer,CacheItemPoolInterface $cache,ManagerRegistry $managerRegistry)
     {
-        parent::__construct($serializer);
+        parent::__construct($serializer,$managerRegistry);
         $this->cache = $cache;
         $this->_serializeGroups = ["simple"];
 
