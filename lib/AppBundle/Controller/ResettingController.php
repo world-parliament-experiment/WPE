@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use AppBundle\Service\Mailer;
+use Doctrine\Persistence\ManagerRegistry;
 
 class ResettingController extends AbstractController
 {
@@ -22,11 +23,13 @@ class ResettingController extends AbstractController
     private $mailer;
 
 
-    public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer)
+    public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer,ManagerRegistry $managerRegistry)
     {
+        parent::__construct($serializer,$managerRegistry);
         $this->tokenGenerator = $tokenGenerator;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
+        
     }
 
     /**

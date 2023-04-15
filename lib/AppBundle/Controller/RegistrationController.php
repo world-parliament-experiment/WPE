@@ -20,6 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use AppBundle\Service\Mailer;
+use Doctrine\Persistence\ManagerRegistry;
 
 class RegistrationController extends AbstractController
 {
@@ -32,8 +33,9 @@ class RegistrationController extends AbstractController
     private $userManager;
     private $mailer;
 
-    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer)
+    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer,ManagerRegistry $managerRegistry)
     {
+        parent::__construct($serializer,$managerRegistry);
         $this->formFactory = $formFactory;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
