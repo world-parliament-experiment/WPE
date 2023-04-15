@@ -83,7 +83,7 @@ class Vote
     /**
      * @return mixed
      */
-    public function getValue(): mixed
+    public function getValue()
     {
         return $this->value;
     }
