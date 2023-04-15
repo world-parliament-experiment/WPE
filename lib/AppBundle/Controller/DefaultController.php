@@ -25,7 +25,7 @@ use Psr\Cache\CacheItemPoolInterface;
 class DefaultController extends BaseController
 {
     private $cache;
-
+    private $managerRegistry;
     public $serializer;
 
     public function __construct(SerializerInterface $serializer,CacheItemPoolInterface $cache)
@@ -46,7 +46,7 @@ class DefaultController extends BaseController
     public function indexAction(Request $request)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         $initiatives = $em->getRepository(Initiative::class)->slider(25);
 
@@ -175,7 +175,7 @@ class DefaultController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $delegations = $em->getRepository(User::class)
                 ->getMostDelegationsByUser(20);
@@ -221,7 +221,7 @@ class DefaultController extends BaseController
     public function assemblySearchAction(Request $request)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $draw = $request->request->getInt('draw', 1);
         $start = $request->request->getInt('start', 0);
         $length = $request->request->getInt('length', 10);
@@ -257,7 +257,7 @@ class DefaultController extends BaseController
     {
 
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $users = $em->getRepository(User::class)->getMostDelegationsByUser();
 
         exit();

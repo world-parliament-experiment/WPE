@@ -36,7 +36,7 @@ class CommentAdminController extends BaseController
     public function indexAction(Request $request)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         return $this->render('Admin/Comment/index.html.twig', array(
         ));
     }
@@ -49,7 +49,7 @@ class CommentAdminController extends BaseController
      */
     public function searchAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $draw = $request->request->getInt('draw', 1);
         $start = $request->request->getInt('start', 0);
         $length = $request->request->getInt('length', 10);
@@ -102,7 +102,7 @@ class CommentAdminController extends BaseController
 
             $comment = $editForm->getData();
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $em->persist($comment);
             $em->flush();
 
@@ -114,7 +114,7 @@ class CommentAdminController extends BaseController
             return $this->redirectToRoute('admin_comment_edit', array('id' => $comment->getId()));
         }
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         return $this->render('Admin/Comment/edit.html.twig', array(
             'comment' => $comment,
@@ -141,7 +141,7 @@ class CommentAdminController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $em->remove($comment);
             $em->flush();
 

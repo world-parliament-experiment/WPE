@@ -36,7 +36,7 @@ class InitiativeAdminController extends BaseController
     public function indexAction()
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $initiatives = $em->getRepository(Initiative::class)->findAll();
 
         return $this->render('Admin/Initiative/index.html.twig', array(
@@ -54,7 +54,7 @@ class InitiativeAdminController extends BaseController
     public function searchAction(Request $request)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $draw = $request->request->getInt('draw', 1);
         $start = $request->request->getInt('start', 0);
         $length = $request->request->getInt('length', 10);
@@ -105,7 +105,7 @@ class InitiativeAdminController extends BaseController
 
             // $initiative->setCreatedAt(new \DateTime());
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $em->persist($initiative);
             $em->flush();
 
@@ -132,7 +132,7 @@ class InitiativeAdminController extends BaseController
      */
     public function editAction(Request $request, int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
 
         $deleteForm = $this->createDeleteForm($initiative);
@@ -170,7 +170,7 @@ class InitiativeAdminController extends BaseController
      */
     public function deleteAction(Request $request, int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
         $form = $this->createDeleteForm($initiative);
         $form->handleRequest($request);
@@ -199,7 +199,7 @@ class InitiativeAdminController extends BaseController
     {
         $showForm = $this->createForm('AppBundle\Form\InitiativeForm', $initiative);
         $id = $showForm->getData();
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         $id = $em->getRepository(Initiative::class)
             ->findOneBy(['id' => $id]);

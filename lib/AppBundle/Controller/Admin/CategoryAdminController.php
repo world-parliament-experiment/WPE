@@ -30,7 +30,7 @@ class CategoryAdminController extends AbstractController
     public function indexAction(Request $request)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $categories = $em->getRepository(Category::class)->findAll();
 
         return $this->render('Admin/Category/index.html.twig', array(
@@ -61,7 +61,7 @@ class CategoryAdminController extends AbstractController
             $category->setSlug($slugger);
             $category = $form->getData();
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $em->persist($category);
             $em->flush();
 
@@ -90,7 +90,7 @@ class CategoryAdminController extends AbstractController
      */
     public function editAction (Request $request, int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $category = $em->getRepository(Category::class)->find($id);
         $deleteForm = $this->createDeleteForm($category);
         $editForm = $this->createForm('AppBundle\Form\CategoryForm', $category);
@@ -130,7 +130,7 @@ class CategoryAdminController extends AbstractController
      */
     public function deleteAction(Request $request, int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $category = $em->getRepository(Category::class)->find($id);
         $form = $this->createDeleteForm($category);
         $form->handleRequest($request);

@@ -36,7 +36,7 @@ class SearchController extends BaseController
      */
     public function quicksearchAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $submittedToken = $request->request->get('search_token');
 
         $searchForm = $this->createForm('AppBundle\Form\QuicksearchForm',null,array('csrf_protection' => false));

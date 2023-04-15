@@ -37,7 +37,7 @@ class CategoryController extends BaseController
     public function listCategoryOverviewAction($type)
     {
         // dd($type);
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         if ($type === 'future') {
 
@@ -91,7 +91,7 @@ class CategoryController extends BaseController
      */
     public function listCategoryAction(int $id, $type)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $category = $em->getRepository(Category::class)->find($id);
 
         if ($type === 'program') {
@@ -143,7 +143,7 @@ class CategoryController extends BaseController
     public function listCategorySearchAction(Request $request, int $id, $type)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $category = $em->getRepository(Category::class)->find($id);
 
         $draw = $request->request->getInt('draw', 1);
@@ -186,7 +186,7 @@ class CategoryController extends BaseController
     public function indexAction()
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $categories = $em->getRepository(Category::class)->findAll();
 
         return $this->render('Delegation/category.html.twig', array(

@@ -50,7 +50,7 @@ class ResettingController extends AbstractController
             $user->setConfirmationToken($user->generateToken());
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $this->managerRegistry->getManager();
         $entityManager->persist($user);
         $entityManager->flush();
 

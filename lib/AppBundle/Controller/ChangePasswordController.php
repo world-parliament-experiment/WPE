@@ -43,7 +43,7 @@ class ChangePasswordController extends AbstractController
             $user->setPassword($encodedPassword);
 
             // Update the user in your database
-            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $this->managerRegistry->getManager();
             $entityManager->flush();
 
             // Redirect the user to a success page
