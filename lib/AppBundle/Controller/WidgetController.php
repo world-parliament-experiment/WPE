@@ -12,15 +12,16 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Intl\Intl;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\Intl\Countries;
+use Doctrine\Persistence\ManagerRegistry;
 
 class WidgetController extends BaseController
 {
     private $cache;
 
-    public function __construct(CacheInterface $cache, SerializerInterface $serializer)
+    public function __construct(CacheInterface $cache, SerializerInterface $serializer,ManagerRegistry $managerRegistry)
     {
         $this->cache = $cache;
-        // parent::__construct($serializer);
+        parent::__construct($serializer,$managerRegistry);
         // $this->_serializeGroups = ["simple"];
     }
 
