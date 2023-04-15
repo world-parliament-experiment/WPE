@@ -44,7 +44,7 @@ class VoteController extends BaseController
     public function saveReplyAction(Request $request, $type, $id)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         if ($type == 'initiative') {
             $initiative = $em->getRepository(Initiative::class)->find($id);
         } else {
@@ -75,7 +75,7 @@ class VoteController extends BaseController
             if ($type == 'comment') {
                 $comment->setParent($parentComment);
             }
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $em->persist($comment);
 
             $em->flush();
@@ -119,7 +119,7 @@ class VoteController extends BaseController
         } else {
             $comment->setReported($comment->getReported() + 1);
         }
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $em->persist($comment);
 
         $em->flush();
@@ -150,7 +150,7 @@ class VoteController extends BaseController
      */
     public function showAction(int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
         // dd($initiative);
 
@@ -361,7 +361,7 @@ class VoteController extends BaseController
     public function showVoteAction(int $id)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
 
         $this->denyAccessUnlessGranted("view", $initiative);
@@ -578,7 +578,7 @@ class VoteController extends BaseController
             if ($form->isSubmitted() && $form->isValid()) {
 
                 if ($form->get('vote')->isClicked()) {
-                    $em = $this->getDoctrine()->getManager();
+                    $em = $this->managerRegistry->getManager();
                     $voting = $initiative->getFutureVoting();
                     $vote->setUser($this->getUser());
                     $vote->setVoting($voting);
@@ -634,7 +634,7 @@ class VoteController extends BaseController
 
                 if ($form->get('voteYes')->isClicked() || $form->get('voteAbstention')->isClicked() || $form->get('voteNo')->isClicked()) {
 
-                    $em = $this->getDoctrine()->getManager();
+                    $em = $this->managerRegistry->getManager();
                     $voting = $initiative->getCurrentVoting();
                     $vote->setUser($this->getUser());
                     $vote->setVoting($voting);

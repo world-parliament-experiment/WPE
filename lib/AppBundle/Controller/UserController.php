@@ -57,7 +57,7 @@ class UserController extends BaseController
     {
 
         $this->denyAccessUnlessGranted('ROLE_USER');
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $this->getUser();
 
         $initiativesDraft = $em->getRepository(Initiative::class)
@@ -92,7 +92,7 @@ class UserController extends BaseController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $em->getRepository(User::class)->find($id);
 
         $initiativesDraft = $em->getRepository(Initiative::class)
@@ -141,7 +141,7 @@ class UserController extends BaseController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         // get global delegations for user
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $this->getUser();
 
         $delegation = $em->getRepository(Delegation::class)->getDelegationGlobalByUser($user);
@@ -204,7 +204,7 @@ class UserController extends BaseController
 
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $this->getUser();
 
         
@@ -267,7 +267,7 @@ class UserController extends BaseController
 
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $this->getUser();
         if ($id != 0) {
             $category = $em->getRepository(Category::class)->find($id);
@@ -318,7 +318,7 @@ class UserController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $initiative = $form->getData();
             $initiative->setDuration("7");
@@ -397,7 +397,7 @@ class UserController extends BaseController
      */
     public function editAction(Request $request, int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
 
         $this->denyAccessUnlessGranted("edit", $initiative);
@@ -500,7 +500,7 @@ class UserController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $em->remove($initiative);
             $em->flush();
 
@@ -562,7 +562,7 @@ class UserController extends BaseController
 
                     // dd(is_writable( $dir ));
                     if ( is_dir( $dir ) && is_writable( $dir ) ) {
-                        $em = $this->getDoctrine()->getManager();
+                        $em = $this->managerRegistry->getManager();
                         $image = $em->getRepository(User::class)->getUserAvatarImage($user);
 
                         if (is_null($image)) {
@@ -610,7 +610,7 @@ class UserController extends BaseController
 
     public function avatarAction(int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $em->getRepository(User::class)->find($id);
         $image = $em->getRepository(User::class)->getUserAvatarImage($user);
 
@@ -651,7 +651,7 @@ class UserController extends BaseController
 
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         try {
 
@@ -709,7 +709,7 @@ class UserController extends BaseController
 
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         try {
 
@@ -769,7 +769,7 @@ class UserController extends BaseController
 
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         $friends = $em->getRepository(User::class)->getFriendsByUser($this->getUser());
         return $this->render('User/friends.html.twig', array(
@@ -794,7 +794,7 @@ class UserController extends BaseController
 
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
 
         $rep = $em->getRepository(Initiative::class);
         return $this->render('User/favourites.html.twig', array(

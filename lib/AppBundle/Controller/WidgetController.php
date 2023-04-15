@@ -29,7 +29,7 @@ class WidgetController extends BaseController
      */
     public function footerAction()
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $categories = $em->getRepository(Category::class)
             ->getCategoryOverview('program');
 
@@ -46,7 +46,7 @@ class WidgetController extends BaseController
     public function CategoriesOverviewAction(string $type)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $cacheKey = 'widget_program_catgories';
         $cacheItem = $this->cache->getItem($cacheKey);
 
@@ -109,7 +109,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $countries = $em->getRepository(User::class)
                 ->getMostCitizensByCountry();
@@ -140,7 +140,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $delegations = $em->getRepository(User::class)
                 ->getMostDelegationsByUser(10);
@@ -172,7 +172,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $logins = $em->getRepository(User::class)
                 ->getLastLogins();
@@ -203,7 +203,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $registrations = $em->getRepository(User::class)
                 ->getLastRegistrations();
@@ -235,7 +235,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $comments = $em->getRepository(User::class)
                 ->getMostCommentsByUser();
@@ -266,7 +266,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $initiatives = $em->getRepository(User::class)
                 ->getMostInitiativesByUser();
@@ -296,7 +296,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $initiatives = $em->getRepository(Initiative::class)
                 ->getMostViewedInitiatives();
@@ -325,7 +325,7 @@ class WidgetController extends BaseController
         // $cache = $this->get('cache.app')->getItem('widget_most_popular');
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
             $initiatives = $em->getRepository(Initiative::class)
                 ->getMostPopularInitiatives();
 
@@ -354,7 +354,7 @@ class WidgetController extends BaseController
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->managerRegistry->getManager();
 
             $initiatives = $em->getRepository(Initiative::class)
                 ->getMostCommentedInitiatives();

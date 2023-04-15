@@ -14,20 +14,22 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Doctrine\Persistence\ManagerRegistry;
 
 class BaseController extends AbstractController
 {
 
     public $_serializeGroups = array();
-
     public $serializer;
+    protected $managerRegistry;
     /**
      * BaseController constructor.
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, ManagerRegistry $managerRegistry)
     {
         $this->_serializeGroups = ["default"];
         $this->serializer = $serializer;
+        $this->managerRegistry = $managerRegistry;
     }
 
     /**

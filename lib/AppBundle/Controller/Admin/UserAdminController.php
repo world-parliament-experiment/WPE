@@ -42,7 +42,7 @@ class UserAdminController extends BaseController
     public function searchAction(Request $request)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $draw = $request->request->getInt('draw', 1);
         $start = $request->request->getInt('start', 0);
         $length = $request->request->getInt('length', 10);
@@ -86,7 +86,7 @@ class UserAdminController extends BaseController
      */
     public function deleteAction(Request $request, int $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $em->getRepository(User::class)->find($id);
 
         $form = $this->createDeleteForm($user);
@@ -134,7 +134,7 @@ class UserAdminController extends BaseController
     public function editAction(Request $request, int $id, UserManager $userManager)
     {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->managerRegistry->getManager();
         $user = $em->getRepository(User::class)->find($id);
 
         $deleteForm = $this->createDeleteForm($user);
