@@ -100,11 +100,12 @@ class ScraperCommand extends Command
         }
 
         if ($input->getOption('update') === true) {
-   
-            $process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py', '-p'],null, null, null, null, ['useProcOpen' => true]);
-            var_dump($process->getCommandLine());
+            
+            $command = '/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py';
+            $process = Process::fromShellCommandline($command);
+            //var_dump($process->getCommandLine());
             $process->setTimeout(600);
-            $process->run();
+            $process->mustRun();
             
             // executes after the command finishes
             if (!$process->isSuccessful()) {
@@ -133,7 +134,7 @@ class ScraperCommand extends Command
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow" target="_blank">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
                 
-                
+                $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
                 if(!is_null($checkdata)) {
                     $duplicate = $checkdata->getTitle();
                 } else {
