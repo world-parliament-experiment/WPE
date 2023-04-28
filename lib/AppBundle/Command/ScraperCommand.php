@@ -101,10 +101,9 @@ class ScraperCommand extends Command
 
         if ($input->getOption('update') === true) {
    
-            $process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py']);
+            $process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py'],null, null, null, null, ['useProcOpen' => true]);
             var_dump($process->getCommandLine());
             $process->setTimeout(600);
-            $process->setUseProcOpen(true);
             $process->run();
             
             // executes after the command finishes
