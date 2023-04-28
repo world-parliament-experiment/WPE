@@ -103,7 +103,7 @@ class ScraperCommand extends Command
    
             $process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py'], null, null, null, null, false);
             $process->setTimeout(600);
-            $contents = $process->run()->getOutput();
+            $contents = $process->run();
             
             // executes after the command finishes
             if (!$process->isSuccessful()) {
