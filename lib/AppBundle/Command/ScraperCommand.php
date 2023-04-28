@@ -101,10 +101,10 @@ class ScraperCommand extends Command
 
         if ($input->getOption('update') === true) {
    
-            $script = explode(',','/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py');
+            $script = explode(',','/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py', null, null, null, null, false);
             $process = new Process($script);
             $process->setTimeout(600);
-            $process->run();
+            $contents = $process->run()->getOutput();
             
             // executes after the command finishes
             if (!$process->isSuccessful()) {
