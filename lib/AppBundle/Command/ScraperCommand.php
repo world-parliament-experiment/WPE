@@ -54,7 +54,7 @@ class ScraperCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $country = $input->getArgument('country');
         $user = $this->em->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => $input->getArgument('user')));
