@@ -16,7 +16,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 use DateTime;
 
 class ScraperCommand extends Command
@@ -101,16 +100,10 @@ class ScraperCommand extends Command
         }
 
         if ($input->getOption('update') === true) {
-
-            $builder = new ProcessBuilder();
-            $builder->setPrefix('/usr/bin/python3')
-                    ->add('/data/httpd/demo.tgde.org/scrape_'.$country.'..py')
-                    ->setTimeout(600);
-            $process = $builder->getProcess();
    
-            //$process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py'], null, null, null, null, false);
+            $process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py'], null, null, null, null, false);
             var_dump($process->getCommandLine());
-            //$process->setTimeout(600);
+            $process->setTimeout(600);
             $process->run();
             
             // executes after the command finishes
