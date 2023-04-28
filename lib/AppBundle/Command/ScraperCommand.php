@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use DateTime;
 
 class ScraperCommand extends Command
@@ -59,6 +60,7 @@ class ScraperCommand extends Command
         $user = $this->em->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => $input->getArgument('user')));
         $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('name' => $input->getArgument('category')));
         $explchar = self::$_explchar;
+        $slugger = new AsciiSlugger();
 
         if ($input->getOption('delete') === true) {
             $del_initiatives = $this->em->getRepository('AppBundle\Entity\Initiative')->findBy(array('createdBy' => $user, 'category' => $category));
@@ -157,6 +159,8 @@ class ScraperCommand extends Command
                     $initiative->setCreatedBy($user);
                     $initiative->setDuration("7");
                     $initiative->setPublishedAt($startdate);
+                    $initiative->setCreatedAt($startdate);
+                    $initiative->setSlug($slugger);
                     $initiative->setType(InitiativeEnum::TYPE_FUTURE);
                     $initiative->setState(InitiativeEnum::STATE_ACTIVE);
     
@@ -195,6 +199,7 @@ class ScraperCommand extends Command
         // return this if there was no problem running the command
         // (it's equivalent to returning int(0))
         //return int(0);
+        return Command::SUCCESS;
 
         // or return this if some error happened during the execution
         // (it's equivalent to returning int(1))
