@@ -104,7 +104,6 @@ class ScraperCommand extends Command
             $process = new Process(['/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py']);
             var_dump($process->getCommandLine());
             $process->setTimeout(600);
-            $process->setUser('scraper');
             $process->run();
             
             // executes after the command finishes
