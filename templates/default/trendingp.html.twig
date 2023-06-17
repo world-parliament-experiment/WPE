@@ -1,0 +1,19 @@
+{% block body %}
+
+
+    {% trans_default_domain 'messages' %}
+
+
+
+        {% for votep in votesp %}
+
+            <a href="http://tgde.local/app_dev.php/pvotes" class="post-title"> {{ votep.title }}</a> <br>
+
+
+
+        {% endfor %}
+
+
+
+
+{% endblock %}

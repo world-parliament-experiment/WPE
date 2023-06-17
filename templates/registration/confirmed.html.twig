@@ -1,0 +1,31 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% extends "base.html.twig" %}
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Confirmation', background: asset('assets/img/header/register_large.jpg')}, with_context = false) }}
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <!-- ##### register Area Start ##### -->
+    <div class="wpe-content-area py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="register-content form-submit-content bg-white p-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h5>Confirmation</h5>
+                        </div>
+
+                        <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
+                        {% if targetUrl %}
+                            <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Login Area End ##### -->
+
+{% endblock body %}

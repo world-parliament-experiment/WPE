@@ -1,0 +1,37 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Password Request', background: '/assets/img/header/register_large.jpg' }, with_context = false) }}
+
+    <!-- ##### register Area Start ##### -->
+    <div class="mag-login-area py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="register-content form-submit-content bg-white p-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h5>Request a new password!</h5>
+                        </div>
+
+                        {% trans_default_domain 'FOSUserBundle' %}
+
+                        <form action="{{ path('app_resetting_sendmail') }}" method="POST" class="fos_user_resetting_request margin-bottom-0">
+                            <div class="form-group m-b-20">
+                                <input type="text" id="username" name="username" required="required" class="form-control input-lg" placeholder="{{ 'resetting.request.username'|trans }}" />
+                            </div>
+                            <div class="login-buttons">
+                                <button type="submit" id="_submit" name="_submit" class="btn btn-success btn-block btn-lg">{{ 'resetting.request.submit'|trans }}</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Login Area End ##### -->
+
+{% endblock body %}
+

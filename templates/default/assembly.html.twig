@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'General Assembly', background: '/assets/img/header/generalassembly_large.jpg'}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <div class="wpe-content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="default-content bg-white mb-30 p-30 box-shadow">
+                    <!-- Section Title -->
+                    <div class="section-heading">
+                        <h5>General Assembly</h5>
+                    </div>
+                    <table id="users" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th class="no-sort" style="width:50px"></th>
+                            <th>Name</th>
+                            <th>Country</th>
+                            <th>City</th>
+                            <th>Registered since</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                        <tfoot>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Country</th>
+                            <th>City</th>
+                            <th>Registered since</th>
+
+                        </tr>
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ##### Delegation Area End ##### -->
+</div>
+
+{% endblock body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="assets/plugins/DataTables/datatables.min.js"></script>
+    <script type="text/javascript" >
+        $(document).ready(function () {
+            var app = App.getInstance();
+            app.configureDTAssembly($('#users'));
+        });
+    </script>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" type="text/css" href="assets/plugins/DataTables/datatables.min.css"/>
+
+{% endblock %}

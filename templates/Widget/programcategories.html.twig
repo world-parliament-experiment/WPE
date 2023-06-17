@@ -1,0 +1,19 @@
+<!-- Section Title -->
+<div class="section-heading">
+    <h5>Decisions by Category</h5>
+</div>
+
+<!-- Catagory Widget -->
+<ul class="catagory-widgets">
+    {% for category in categories %}
+        {% if app.user %}
+            {% if app.user.country == category.description or category.description|length > 2 %}
+                <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": "program"}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+            {% endif %}
+        {% else %}
+            {% if category.description|length > 2 %}
+                <li><a href="{{ path("category_type", {"id": category.id, "slug": category.slug, "type": "program"}) }}"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i> {{ category.name }}</span><span>{{ category.count_initiative }}</span></a></li>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</ul>
