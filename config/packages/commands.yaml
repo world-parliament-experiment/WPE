@@ -1,0 +1,18 @@
+services:
+
+  # AppBundle\Command\CreateUser:
+  #         class: AppBundle\Command\CreateUserCommand
+  #         tags:
+  #             - { name: 'console.command' }
+
+  AppBundle\Command\:
+      resource: '../../lib/AppBundle/Command/'
+      tags:
+              - { name: 'console.command' }
+      autowire: true
+
+
+
+
+
+  

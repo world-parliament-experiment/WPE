@@ -1,0 +1,15 @@
+<!-- Section Title -->
+<div class="section-heading">
+    <h5>Countries with most Citizens</h5>
+</div>
+
+<div class="single-blog-post d-flex">
+
+    <div class="post-content w-100">
+        <div class="post-meta d-flex flex-wrap">
+            {% for country in countries %}
+                <span class="m-5 flag-icon flag-icon-{{ country.country|lower }}" title="{{ country.country  }} ({{ country.citizens }} Citizens)"></span>
+            {% endfor %}
+        </div>
+    </div>
+</div>

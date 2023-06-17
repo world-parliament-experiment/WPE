@@ -1,0 +1,319 @@
+{% extends 'base.html.twig' %}
+
+{% import 'Widget/macros.html.twig' as m %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: type|capitalize, background: asset(category.image)}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <section class="wpe-content-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Post Details Content Area -->
+                <div class="col-12 col-xl-8">
+                    <div class="default-content bg-white mb-30 p-30 box-shadow">
+                        <div class="blog-content">
+                            <div class="post-meta">
+                                <a href="#">{{ initiative.createdAt|date('F j, Y') }}</a>
+                                <a href="">{{ initiative.category.name }}</a>
+                            </div>
+                            <h4 class="post-title">{{ initiative.title }}</h4>
+                            <!-- Post Meta -->
+                            <div class="post-meta-2">
+                                <a href="#" class="mr-3"><i class="fas fa-eye fa-fw" aria-hidden="true"></i> {{ initiative.views }}</a>
+                                <a href="#" class="mr-3"><i class="fas fa-comments fa-fw" aria-hidden="true"></i> {{ initiative.countComments }}</a>
+                                {% if app.user %}
+                                    {% if initiative.isFavored(app.user) %}
+                                        <a href="#" title="Delete Bookmark" data-initiative-id="{{ initiative.id }}" class="btn btn-favourite btn-sm"><i class="favourite fas fa-bookmark" aria-hidden="true"></i></a>
+                                    {% else %}
+                                        <a href="#" title="Bookmark this initiative" data-initiative-id="{{ initiative.id }}" class="btn btn-favourite btn-sm"><i class="favourite far fa-bookmark" aria-hidden="true"></i></a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+
+                            {% autoescape false %}
+                                {{ initiative.description }}
+                            {% endautoescape %}
+
+                            <!-- Vote Area -->
+
+                            <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
+                                <!-- Section Title -->
+                                <div class="section-heading">
+                                    <h5>VOTE</h5>
+                                </div>
+
+                                <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
+                                    data-slug="{{ initiative.slug }}"></div>
+
+                                {% if initiative.type == 1 and  initiative.state == 1 %}
+                                    <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted in either direction, the vote will end and the results will be evaluated immediately.</p><p>You can see the support result history of this initiative <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
+                                {% endif %}
+
+                            </div>
+
+                            {#                    {{ dump(initiative) }}#}
+                            {#                    {% for voting in initiative.votings %}#}
+                            {#                        {{ dump(voting) }}#}
+                            {#                    {% endfor %}#}
+
+                            <!-- Comment Area -->
+                            <div class="comment_area clearfix bg-white mb-30 p-30 box-shadow">
+                                <!-- Section Title -->
+                                <div class="section-heading">
+                                    <h5>DISCUSSION</h5>
+                                </div>
+
+                                {{ m.comment_tree(initiative.comments, repo, 0) }}
+
+                            </div>
+                            <!-- Post A Comment Area -->
+                            <div class="post-a-comment-area bg-white mb-30 p-30 box-shadow clearfix">
+                                <!-- Section Title -->
+                                <div class="section-heading">
+                                    <h5>NEW COMMENT</h5>
+                                </div>
+
+                            {% if is_granted('ROLE_USER') %}
+
+                                <!-- Reply Form -->
+                                <div id="contact-form-area" class="contact-form-area">
+                                    {{ form_start(form) }}
+
+                                    {{ form_row(form.message) }}
+
+                                    <button type="submit" class="btn btn-primary" formnovalidate><i class="fas fa-save"></i> {{ 'comment.button.submit'|trans }} </button>
+                                    {{ form_end(form) }}
+                                </div>
+
+                            {% else %}
+
+                                <div class="text-center">Only registered users can comment on this initiative! Please <a href="{{ path("fos_user_security_login") }}">login</a> or <a href="{{ path("fos_user_registration_register") }}">register</a> to continue.</div>
+
+                            {% endif %}
+                            </div>
+
+                            <!-- Like Dislike Share -->
+                            <div class="like-dislike-share my-5">
+                                {#                                <h4 class="share">240<span>Share</span></h4>#}
+                                <a href="#" class="facebook js-share-facebook"><i class="fab fa-facebook" aria-hidden="true"></i> Share on
+                                    Facebook</a>
+                                <a href="#" class="twitter js-share-twitter"><i class="fab fa-twitter" aria-hidden="true"></i> Share on
+                                    Twitter</a>
+                            </div>
+
+                            <!-- Post Author -->
+                            <div class="post-author d-flex align-items-center">
+
+                                <div class="blog-thumb mb-30">
+                                    <img src=" {{ path('user_profile_avatar', {'id': initiative.createdBy.id}) }}" alt="user avatar" class="post-author-thumb" />
+                                </div>
+
+                                <div class="post-author-desc pl-4">
+                                    <h6>
+                                    <a href="{{ path('user_profile_show', { 'id':initiative.createdBy.id }) }}" class="author-name">{{ initiative.createdBy.username }}</a>
+                                    {% if app.user and app.user.id != initiative.createdBy.id %}
+                                        {% if initiative.createdBy.isFriend(app.user) %}
+                                            <a href="#" title="Remove as friend" data-user-id="{{ initiative.createdBy.id }}" class="author-friend btn btn-friend btn-sm"><i class="friend fas fa-heart" aria-hidden="true"></i></a>
+                                        {% else %}
+                                            <a href="#" title="Add as friend" data-user-id="{{ initiative.createdBy.id }}" class="author-friend btn btn-friend btn-sm"><i class="friend far fa-heart" aria-hidden="true"></i></a>
+                                        {% endif %}
+                                    {% endif %}
+                                    </h6>
+                                    <p>
+                                        {% autoescape false %}
+                                            {{ initiative.createdBy.description}}
+                                        {% endautoescape %}
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sidebar Widget -->
+
+                <div class="col-12 col-md-6 col-lg-5 col-xl-4">
+                    <div class="sidebar-area bg-white mb-30 box-shadow">
+                        <!-- Sidebar Widget -->
+
+                        <div class="single-sidebar-widget p-30">
+                            {{ render(controller('AppBundle\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': initiative.typeName })) }}
+                        </div>
+                        <div class="single-sidebar-widget p-30">
+                            {{ render(controller('AppBundle\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+                        </div>
+                        <div class="single-sidebar-widget p-30">
+                            {{ render(controller('AppBundle\\Controller\\WidgetController::lastLoginsAction')) }}
+                        </div>
+                        <div class="single-sidebar-widget p-30">
+                            {{ render(controller('AppBundle\\Controller\\WidgetController::lastRegistrationsAction')) }}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('/assets/plugins/jquery-confirm/jquery-confirm.min.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script type="text/template" id="js-vote-message-template">
+        <p><%= content %></p>
+    </script>
+    <script type="text/template" id="js-vote-info-template">
+        <p><%= content %></p>
+        <div data-countdown="<%= enddate %>" class="countdown"></div>
+    </script>
+    <script type="text/template" id="js-vote-counter-template">
+        <div data-countdown="<%= startdate %>" class="countdown"></div>
+    </script>
+    <script type="text/template" id="js-vote-future-form-template">
+
+        <form name="app_bundle_future_vote_form" method="post" class="form-horizontal">
+            <div id="app_bundle_future_vote_form">
+                <div class="form-group">
+                    <div class="col-md-12 col-sm-12">
+                        <button type="submit" id="app_bundle_future_vote_form_vote"
+                                name="app_bundle_future_vote_form[vote]"
+                                data-title="{{ 'vote.future.button.vote_yes'|trans }}"
+                                class="voteBtn btn btn-light">{{ 'vote.future.button.vote_yes'|trans }}</button>
+                    </div>
+                </div>
+                <input type="hidden" id="app_bundle_future_vote_form__token"
+                       name="app_bundle_future_vote_form[_token]"
+                       value="{{ csrf_token('app_bundle_future_vote_form') }}">
+            </div>
+        </form>
+
+        <!-- <div data-countdown="<%= enddate %>" class="countdown"></div> -->
+
+    </script>
+    <script type="text/template" id="js-vote-current-form-template">
+
+        <form name="app_bundle_current_vote_form" method="post" class="form-horizontal">
+            <div id="app_bundle_current_vote_form">
+                <div class="form-group">
+                    <div class="col-md-12 col-sm-12">
+                        <div class="btn-group" role="group" aria-label="Voting options">
+                            <button type="submit" id="app_bundle_current_vote_form_voteYes"
+                                    name="app_bundle_current_vote_form[voteYes]"
+                                    data-title="{{ 'vote.current.button.vote_yes'|trans }}"
+                                    class="voteBtn btn btn-light">{{ 'vote.current.button.vote_yes'|trans }}</button>
+                            <button type="submit" id="app_bundle_current_vote_form_voteAbstention"
+                                    name="app_bundle_current_vote_form[voteAbstention]"
+                                    data-title="{{ 'vote.current.button.vote_abstention'|trans }}"
+                                    class="voteBtn btn btn-light">{{ 'vote.current.button.vote_abstention'|trans }}</button>
+                            <button type="submit" id="app_bundle_current_vote_form_voteNo"
+                                    name="app_bundle_current_vote_form[voteNo]"
+                                    data-title="{{ 'vote.current.button.vote_no'|trans }}"
+                                    class="voteBtn btn btn-light">{{ 'vote.current.button.vote_no'|trans }}</button>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="app_bundle_current_vote_form__token"
+                       name="app_bundle_current_vote_form[_token]"
+                       value="{{ csrf_token('app_bundle_current_vote_form') }}">
+            </div>
+        </form>
+
+        <div data-countdown="<%= enddate %>" class="countdown"></div>
+
+    </script>
+    <script type="text/template" id="js-comment-root-block-template">
+        <div class="comment-content d-flex">
+            <!-- Comment Author -->
+            <div class="comment-author">
+                <img src="<%= avatar %>" alt="user avatar" />
+            </div>
+            <!-- Comment Meta -->
+            <div class="comment-meta w-100">
+{#                <h6><%= comment.id %></h6>#}
+                <a href="#" class="comment-date"><%= comment.createdAt %></a>
+                <h6><%= comment.createdBy.username %></h6>
+                <p><%= comment.message %></p>
+                <div class="d-flex align-items-center">
+                    <a href="#" class="like">like</a>
+                    <a href="#" class="like">dislike</a>
+                    <a href="#" class="reply">Report</a>
+                    <a href="<%= reply_path %>" class="reply" >Reply</a>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="text/template" id="js-comment-reply-block-template">
+        <div class="comment-content d-flex">
+            <!-- Comment Author -->
+            <div class="comment-author">
+                <img src="<%= avatar %>" alt="user avatar" />
+            </div>
+            <!-- Comment Meta -->
+            <div class="comment-meta w-100">
+{#                <h6><%= comment.parent.id %> / <%= comment.id %></h6>#}
+                <a href="#" class="comment-date"><%= comment.createdAt %></a>
+                <h6><a href="<%= profile %>" class="author-name"><%= comment.createdBy.username %></a></h6>
+                <p><%= comment.message %></p>
+                <div class="d-flex align-items-center">
+                    <a href="#" class="like">like</a>
+                    <a href="#" class="like">dislike</a>
+                    <a href="#" class="reply">Report</a>
+                    <a href="<%= reply_path %>" class="reply" >Reply</a>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MODERATOR') %}
+                        <a href="<%= edit_path %>" class="edit" >edit</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="text/template" id="js-comment-reply-form-template">
+        <div class="comment-reply">
+            <div class="contact-form-area">
+                <form class="form-horizontal comment-reply" name="app_bundle_comment_reply_form" action="<%= action %>">
+                    <div class="form-group">
+                        <label for="<%= messageId %>">{{ 'comment.edit.message'|trans }}</label>
+                        <div class="col-md-12 col-sm-12">
+                            <textarea id="<%= messageId %>" name="app_bundle_comment_form[message]" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" formnovalidate><i class="fas fa-save"></i> {{ 'comment.button.submit'|trans }} </button>
+                    <input type="hidden" class="token" name="app_bundle_comment_form[_token]" value="<%= token %>"/>
+                </form>
+            </div>
+        </div>
+    </script>
+
+    <script src="{{ asset('/assets/plugins/underscore/underscore.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/assets/plugins/jquery.countdown/jquery.countdown.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/assets/plugins/jquery-confirm/jquery-confirm.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/assets/js/vote.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/assets/js/comment.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/assets/js/social.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var vote = new VoteApp($('.js-vote-area'));
+            var comment = new CommentApp($('.wpe-content-area'));
+            var social = new SocialApp($('.like-dislike-share'));
+
+        });
+    </script>
+
+{% endblock %}

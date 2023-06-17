@@ -1,0 +1,64 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+<!-- ##### Breadcrumb Area Start ##### -->
+<section class="breadcrumb-area bg-img bg-overlay" style="background-image: url('{{ asset("assets/img/header/profile_large.jpg")}}');">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12">
+                <div class="breadcrumb-content">
+                    <h2>Your Profile</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ##### Breadcrumb Area End ##### -->
+
+<!-- ##### Login Area Start ##### -->
+<div class="mag-login-area py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-6">
+                <div class="login-content bg-white p-30 box-shadow">
+                    <!-- Section Title -->
+                    <div class="section-heading">
+                        <h5>Your Profile!</h5>
+                    </div>
+
+                    {% trans_default_domain 'FOSUserBundle' %}
+
+                    <dl class="dl-horizontal">
+                        <dt>{{ 'profile.show.username'|trans }}</dt>
+                        <dd>{{ user.username }}</dd>
+                        <dt>{{ 'profile.show.email'|trans }}</dt>
+                        <dd>{{ user.email }}</dd>
+                        <dt>{{ 'profile.show.firstname'|trans }}</dt>
+                        <dd>{{ user.firstname }}</dd>
+                        <dt>{{ 'profile.show.lastname'|trans }}</dt>
+                        <dd>{{ user.lastname }}</dd>
+                        {# <dt>{{ 'profile.show.lastlogin'|trans }}</dt> #}
+                        {# <dd>{{ user.lastlogin|date }}</dd> #}
+                        <dt>{{ 'profile.show.gender'|trans }}</dt>
+                        <dd>{{ user.gender }}</dd>
+                        <dt>{{ 'profile.show.country'|trans }}</dt>
+                        <dd>{{ user.country }}</dd>
+                        <dt>{{ 'profile.show.city'|trans }}</dt>
+                        <dd>{{ user.city }}</dd>
+                        <dt>{{ 'profile.show.birthday'|trans }}</dt>
+                        <dd>{{ user.birthday|date }}</dd>
+                        <dt>{{ 'profile.show.description'|trans }}</dt>
+                        <dd>{{ user.description }}</dd>
+
+                    </dl>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- ##### Login Area End ##### -->
+
+{% endblock body %}

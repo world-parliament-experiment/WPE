@@ -1,0 +1,156 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <!-- ##### Breadcrumb Area Start ##### -->
+    <section class="breadcrumb-area bg-img bg-overlay"
+             style="background-image: url('https://via.placeholder.com/1920x850');">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="breadcrumb-content">
+                        <h2>{{ page_title() }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Breadcrumb Area End ##### -->
+    {{ apy_breadcrumb_trail_render() }}
+    <!-- ##### Login Area Start ##### -->
+    <div class="admin-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="login-content bg-white p-30 mb-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h5>{{ page_title() }}</h5>
+                        </div>
+
+                        <table id="comments" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>user</th>
+                                <th>category</th>
+                                <th>initiative</th>
+                                <th>created</th>
+                                <th>liked</th>
+                                <th>disliked</th>
+                                <th>reported</th>
+                            </tr>
+                            </thead>
+
+
+                            <tbody>
+                            </tbody>
+
+                            <tfoot>
+                            <tr>
+                                <th>id</th>
+                                <th>user</th>
+                                <th>category</th>
+                                <th>initiative</th>
+                                <th>created</th>
+                                <th>liked</th>
+                                <th>disliked</th>
+                                <th>reported</th>
+                            </tr>
+                            </tfoot>
+
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ##### Login Area End ##### -->
+
+{% endblock body %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('/assets/plugins/DataTables/datatables.min.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('/assets/plugins/DataTables/datatables.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#comments').DataTable({
+                responsive: false,
+                autoWidth: true,
+                "processing": true,
+                "serverSide": true,
+                "searching": true,
+                "ordering": true,
+                "ajax": {
+                    "url": Routing.generate('admin_comment_search'),
+                    "dataSrc": "items",
+                    "type": "POST"
+                },
+                "columns": [
+                    {
+                        "data": "id",
+                        "width": "5%",
+                        "className": "text-right",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<a href='" + Routing.generate('admin_comment_edit', {'id': oData.id})+"'>"+oData.id+"</a>");
+                        }
+                    },
+                    {
+                        "data": "createdBy.username",
+                        "width": "15%",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<a href='" + Routing.generate('user_profile_show', {'id': oData.createdBy.id})+"'>"+oData.createdBy.username+"</a>");
+                        }
+                    },
+                    {
+                        "data": "initiative.category.name",
+                        "width": "2%"
+                    },
+                    {
+                        "data": "initiative.title",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html(oData.initiative.shorttitle);
+                        }
+                    },
+                    {
+                        "data": "createdAt",
+                        "width": "15%",
+                        "className": "text-center"
+
+                    },
+                    {
+                        "data": "liked",
+                        "width": "5%",
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "disliked",
+                        "width": "5%",
+                        "className": "text-center"
+
+                    },
+                    {
+                        "data": "reported",
+                        "width": "5%",
+                        "className": "text-center"
+                    }
+                ],
+                "columnDefs": [ {
+                    "targets": 'no-sort',
+                    "orderable": false,
+                } ],
+                "order": [[0, "asc"]],
+                deferRender: true
+            });
+        });
+    </script>
+
+{% endblock %}

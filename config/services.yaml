@@ -1,0 +1,104 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    AppBundle\Controller\:
+        resource: '../lib/AppBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    AppBundle\Service\:
+        resource: '../lib/AppBundle/Service/'
+        autowire: true
+
+    AppBundle\Util\:
+        resource: '../lib/AppBundle/Util/'
+        autowire: true
+
+    AppBundle\Service\Mailer:
+        class: AppBundle\Service\Mailer
+        arguments:
+            $senderEmail: '%env(SENDER_EMAIL)%'
+        autowire: true
+
+    # AppBundle\Twig\PageExtension:
+    #     public: false
+    #     autowire: true
+    #     tags:
+    #         - { name: twig.extension }
+
+    # AppBundle\Twig\WidgetExtension:
+    #     public: false
+    #     tags:
+    #         - { name: twig.extension }
+
+    # AppBundle\Twig\TimeDiffExtension:
+    #     tags:
+    #         - { name: twig.extension }
+
+    # AppBundle\Twig\TextExtension:
+    #     tags:
+    #         - { name: twig.extension }
+
+    AppBundle\Twig\:
+        resource: '../lib/AppBundle/Twig/'
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Annotation\Page:
+        public: true
+
+    AppBundle\Menu\MenuBuilder:
+        arguments: ["@knp_menu.factory", '@security.authorization_checker']
+        # arguments: ['@security.authorization_checker']
+        autowire: true        
+        tags:
+            - { name: knp_menu.menu_builder, method: createMainMenu, alias: main } # The alias is what is used to retrieve the menu
+
+    AppBundle\EventSubscriber\LoginSubscriber:
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # AppBundle\Form\DelegationForm:
+    #     public: false
+    #     autowire: true
+
+    # AppBundle\Form\InitiativeUserForm:
+    #     public: false
+    #     autowire: true
+
+    AppBundle\Form\:
+        resource: '../lib/AppBundle/Form/'
+        autowire: true
+
+    AppBundle\Security\InitiativeVoter:
+        public: false
+        arguments:
+            - '@security.access.decision_manager'
+        tags:
+            - { name: security.voter }
+
+    # Symfony\Component\Mailer\MailerInterface: 

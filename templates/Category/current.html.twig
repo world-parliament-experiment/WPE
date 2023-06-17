@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Ongoing Votes', background: '/assets/img/header/current_large.jpg'}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <div class="wpe-content-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="default-content bg-white mb-30 p-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h6>Votes</h6>
+                        </div> 
+                            <table class="table table-categories table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Creator</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Views</th>
+                                    <th>Comments</th>
+                                    <th>Voting</th>
+                                </tr>
+                                </thead>
+                                <tbody>                  
+                                {% if app.user %}
+                                    {% for category in initiatives %}
+                                        {% if app.user.country == category.description or category.description|length > 2 %}
+                                            {% for initiative in category.initiatives %}
+                                                <tr>
+                                                    <td>
+                                                        <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                                    </td>
+                                                    <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                                    <td>{{ category.name }}</td>
+                                                    <td>{{ initiative.createdAt|date('Y-m-d') }}</td>
+                                                    <td>{{ initiative.views }}</td>
+                                                    <td>{{ initiative.countComments }}</td>
+                                                    <td class="text-center">
+                                                        {% if initiative.voteStatus == 'now' %}
+                                                            <span class="badge badge-danger"> NOW </span>
+                                                        {% elseif initiative.voteStatus == 'soon' %}
+                                                            <span class="badge badge-warning"> SOON </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}                              
+                                    {% for category in initiatives %}
+                                        {% if category.description|length > 2 %}
+                                            {% for initiative in category.initiatives %}
+                                                <tr>
+                                                    <td>
+                                                        <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
+                                                    </td>
+                                                    <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
+                                                    <td>{{ category.name }}</td>
+                                                    <td>{{ initiative.createdAt|date('Y-m-d') }}</td>
+                                                    <td>{{ initiative.views }}</td>
+                                                    <td>{{ initiative.countComments }}</td>
+                                                    <td class="text-center">
+                                                        {% if initiative.voteStatus == 'now' %}
+                                                            <span class="badge badge-danger"> NOW </span>
+                                                        {% elseif initiative.voteStatus == 'soon' %}
+                                                            <span class="badge badge-warning"> SOON </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                {% endif %}
+                         </table>  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="/assets/plugins/DataTables/datatables.min.cs"/>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+    <script type="text/javascript" src="/assets/plugins/DataTables/datatables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('.table-categories').DataTable({
+                initComplete: function () {
+                    this.api().order( [[ 3, 'desc' ], [ 5, 'desc' ], [ 4, 'desc' ]] )
+                    this.api().draw()
+                    this.api().columns([2]).every( function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo( $(column.header()) )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+        
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+        
+                        column.data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );
+                    } );           
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

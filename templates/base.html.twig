@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+{#    {{ ayrel_seo() }}#}
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>The World Parliament Experiment | {% block title %}Welcome!{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="/assets/plugins/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+
+    <!-- ================== BEGIN BASE CSS STYLE ================== -->
+    {% block stylesheets %}
+        <link href="/assets/css/fonts.css" rel="stylesheet" />
+        <link href="/assets/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+        <link href="/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="/assets/plugins/animate/animate.min.css" rel="stylesheet" />
+        <link href="/assets/plugins/jquery.magnific-popup/magnific-popup.css" rel="stylesheet" />
+        <link href="/assets/plugins/classyNav/classy-nav.css" rel="stylesheet" />
+        <link href="/assets/plugins/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
+        <link href="/assets/plugins/cookieconsent/cookieconsent.min.css" rel="stylesheet">
+        <link href="/assets/plugins/flag-icon/css/flag-icon.min.css" rel="stylesheet" />
+        <link href="/assets/css/style.css" rel="stylesheet" />
+
+    {% endblock %}
+    <!-- ================== END BASE CSS STYLE ================== -->
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/icon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/icon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/icon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/icon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/icon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/icon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/icon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/icon/manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c"/>
+    <meta name="msapplication-TileImage" content="/assets/img/icon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+
+<!-- Preloader -->
+<div class="preloader d-flex align-items-center justify-content-center">
+    <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
+</div>
+
+<!-- ##### Header Area Start ##### -->
+<header class="header-area">
+
+    <!-- Navbar Area -->
+    <div class="mag-main-menu" id="sticker">
+        <div class="classy-nav-container breakpoint-off">
+            <!-- Menu -->
+            <nav class="classy-navbar justify-content-between" id="magNav">
+
+                <!-- Nav brand -->
+                <a href="{{ path("homepage") }}" class="nav-brand"><img src="/assets/img/small.png" alt=""></a>
+
+                <!-- Navbar Toggler -->
+                <div class="classy-navbar-toggler">
+                    <span class="navbarToggler"><span></span><span></span><span></span></span>
+                </div>
+
+                <!-- Nav Content -->
+                <div class="nav-content d-flex align-items-center">
+                    <div class="classy-menu">
+
+                        <!-- Close Button -->
+                        <div class="classycloseIcon">
+                            <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                        </div>
+
+                        <!-- Nav Start -->
+                        <div class="classynav">
+                        {{ knp_menu_render('main', {'currentClass': 'active'}) }}
+                        </div>
+                        <!-- Nav End -->
+                    </div>
+
+
+                    <div class="top-meta-data d-flex align-items-center">
+                        <!-- Top Search Area -->
+                        <div class="top-search-area">
+                            <form action="{{ path('quicksearch') }}" method="post">
+                                <input type="search" name="search[query]" id="topSearch" placeholder="Search and hit enter...">
+                                <input type="hidden" name="search_token" id="topToken" value="{{ csrf_token('top-search') }}">
+                                <button type="submit" class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+<!-- ##### Header Area End ##### -->
+
+    {% block body %}{% endblock %}
+
+<!-- ##### Footer Area Start ##### -->
+
+    {{ render(controller('AppBundle\\Controller\\WidgetController::footerAction')) }}
+
+<!-- ##### Footer Area End ##### -->
+
+
+<!-- ================== BEGIN BASE JS ================== -->
+{% block javascripts %}
+
+    <script src="/assets/plugins/console/console.js" type="text/javascript"></script>
+    <script src="/assets/plugins/font-awesome/js/all.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery-migrate/jquery-migrate.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/popper/popper.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/owlcarousel/owl.carousel.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery.magnific-popup/jquery.magnific-popup.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery.counterup/jquery.counterup.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery.scrollUp/jquery.scrollUp.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery.waypoints/jquery.waypoints.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/cookieconsent/cookieconsent.min.js"></script>
+    <script src="/assets/plugins/wow/wow.min.js" type="text/javascript"></script>
+    <script src="/assets/plugins/classyNav/classy-nav.js" type="text/javascript"></script>
+    <script src="/assets/plugins/jquery.sticky/jquery.sticky.js" type="text/javascript"></script>
+    <!--[if lt IE 9]>
+    <script src="/assets/crossbrowserjs/html5shiv.js" type="text/javascript"></script>
+    <script src="/assets/crossbrowserjs/respond.min.js" type="text/javascript"></script>
+    <script src="/assets/crossbrowserjs/excanvas.min.js" type="text/javascript"></script>
+    <![endif]-->
+    <script src="/assets/js/active.js"></script>
+    <script src="/bundles/fosjsrouting/js/router.js"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="/assets/js/apps.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var app = App.getInstance();
+        });
+    </script>
+{% endblock %}
+<!-- ================== END BASE JS ================== -->
+
+</body>
+</html>
