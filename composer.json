@@ -69,12 +69,6 @@
         },
         "sort-packages": true
     },
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/",
-            "AppBundle\\": "lib/AppBundle/"
-        }
-    },
     "autoload-dev": {
         "psr-4": {
             "App\\Tests\\": "tests/"
