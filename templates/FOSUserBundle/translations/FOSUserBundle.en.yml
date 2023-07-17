@@ -23,6 +23,7 @@ profile:
         email: Email
         firstname: Firstname
         lastname: Lastname
+        mobileNumber: Mobile number
         gender: Gender
         country: Country
         city: City
@@ -108,6 +109,8 @@ form:
     firstname_help: 'Your firstname is not visible'
     lastname: 'Lastname'
     lastname_help: 'Your lastname is not visible'
+    mobileNumber: 'Mobile number'
+    mobileNumber_help: 'Your mobile number is not visible'
     country: 'Country'
     country_help: 'Please choose a country'
     city: 'City'

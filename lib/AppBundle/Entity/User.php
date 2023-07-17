@@ -94,7 +94,13 @@ class User implements UserInterface
      */
     protected $lastname;
 
-
+     /**
+     * @ORM\Column(type="string", nullable=true)
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default", "simple"})
+  
+     */
+    protected $mobileNumber;
     /**
      * @ORM\Column(type="string", nullable=true)
      * @JMSSerializer\Type("string")
@@ -114,6 +120,7 @@ class User implements UserInterface
      * @JMSSerializer\Groups({"default", "simple"})
    
      */
+    
     protected $country;
 
     /**
@@ -238,7 +245,6 @@ class User implements UserInterface
      */
     protected $lastLogin;
 
-
     public function __construct()
     {
         // parent::__construct();
@@ -321,6 +327,22 @@ class User implements UserInterface
     public function setCity($city)
     {
         $this->city = $city;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMobileNumber()
+    {
+        return $this->mobileNumber;
+    }
+
+    /**
+     * @param string $city
+     */
+    public function setMobileNumber($mobileNumber)
+    {
+        $this->mobileNumber = $mobileNumber;
     }
    
     /**
