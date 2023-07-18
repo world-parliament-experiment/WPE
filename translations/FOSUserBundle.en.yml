@@ -24,6 +24,7 @@ profile:
         firstname: Firstname
         lastname: Lastname
         mobileNumber: Mobile number
+        otp: 'Enter OTP'
         gender: Gender
         country: Country
         city: City
@@ -111,6 +112,8 @@ form:
     lastname_help: 'Your lastname is not visible'
     mobileNumber: 'Mobile number'
     mobileNumber_help: 'Your mobile number is not visible'
+    otp: 'Enter OTP'
+    otp_help: 'Enter your otp'
     country: 'Country'
     country_help: 'Please choose a country'
     city: 'City'

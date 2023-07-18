@@ -101,11 +101,24 @@ class User implements UserInterface
   
      */
     protected $mobileNumber;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @JMSSerializer\Type("string")  
+     */
+    protected $otp;
+
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
+     * @JMSSerializer\SerializedName("verifiedAt")*
+     * 
+     */
+    protected $verifiedAt;
     /**
      * @ORM\Column(type="string", nullable=true)
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default", "simple"})
-  
      */
     protected $gender;
 
@@ -689,5 +702,45 @@ class User implements UserInterface
     
     public function isAccountNonLocked () {
         return true;
+    }
+
+    /**
+     * Get the value of verifiedAt
+     */ 
+    public function getVerifiedAt()
+    {
+        return $this->verifiedAt;
+    }
+
+    /**
+     * Set the value of verifiedAt
+     *
+     * @return  self
+     */ 
+    public function setVerifiedAt($verifiedAt)
+    {
+        $this->verifiedAt = $verifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of otp
+     */ 
+    public function getOtp()
+    {
+        return $this->otp;
+    }
+
+    /**
+     * Set the value of otp
+     *
+     * @return  self
+     */ 
+    public function setOtp($otp)
+    {
+        $this->otp = $otp;
+
+        return $this;
     }
 }

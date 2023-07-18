@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Form\RegistrationForm;
+use AppBundle\Form\VerifyForm;
 use Symfony\Component\Form\FormFactoryInterface;
 // use FOS\UserBundle\Model\UserManagerInterface;
 use AppBundle\Service\UserManager;
@@ -12,15 +13,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Validator\Validation;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use AppBundle\Service\Mailer;
+use AppBundle\Service\SendOtpVerificationService;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class RegistrationController extends AbstractController
 {
@@ -32,13 +31,15 @@ class RegistrationController extends AbstractController
     private $managerRegistry;
     private $userManager;
     private $mailer;
+    private $sendOtpService;
 
-    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer,ManagerRegistry $managerRegistry)
+    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer,ManagerRegistry $managerRegistry,SendOtpVerificationService $sendOtpService)
     {
         $this->formFactory = $formFactory;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
         $this->managerRegistry = $managerRegistry;
+        $this->sendOtpService = $sendOtpService;
     }
 
     /**
@@ -57,7 +58,7 @@ class RegistrationController extends AbstractController
                 $user->setRegisteredAt(new \DateTime());
                 $user->setUsernameCanonical($form->get('username')->getData());
                 $user->setEmailCanonical($form->get('email')->getData());
-
+                $user->setMobileNumber($form->get('mobileNumber')->getData());
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
@@ -134,11 +135,17 @@ class RegistrationController extends AbstractController
      */
     public function confirmedAction(Request $request)
     {
+        $userManager = $this->userManager;
         $user = $this->getUser();
+        $form = $this->createForm(VerifyForm::class, $user);
+        $getOtp = $this->getOtp($user);
+        $user->setOtp($getOtp);
 
-        return $this->render('registration/confirmed.html.twig', array(
+        $userManager->updateUser($user);
+        return $this->render('registration/otp-verification.html.twig', array(
             'username' => $user->getUsername(),
             'user' => $user,
+            'form' => $form->createView(),
             'targetUrl' => 'homepage',
         ));
     }
@@ -161,5 +168,16 @@ class RegistrationController extends AbstractController
         return $this->render('registration/check_email.html.twig', array(
             'user' => $user,
         ));
+    }
+
+    public function getOtp(User $user){
+        $sendOtpService = $this->sendOtpService;
+        $bytes = random_bytes(4);
+        $otp = bin2hex($bytes);
+        $slugger = new AsciiSlugger();
+        $otp = $slugger->slug($otp)->toString();
+
+        // $sendOtpService->send($user,$otp);
+        return $otp;
     }
 }

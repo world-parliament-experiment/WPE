@@ -1,0 +1,78 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+	{{ include ('Widget/_breadcrumb.html.twig', {title: 'Verification', background: asset('assets/img/header/register_large.jpg')}, with_context = false) }}
+
+	<!-- ##### Breadcrumb Area End ##### -->
+
+	{#{% if isset error %}#}
+	{#<div class="mag-error-area pt-5">#}
+	{#<div class="container">#}
+	{#<div class="row justify-content-center">#}
+	{#<div class="col-12 col-lg-6">#}
+	{#<div class="error-content bg-danger p-30 box-shadow">#}
+	{#{{ error.messageKey|trans(error.messageData, 'security') }}#}
+	{#</div>#}
+	{#</div>#}
+	{#</div>#}
+	{#</div>#}
+	{#</div>#}
+	{#{% endif %}#}
+
+	<!-- ##### register Area Start ##### -->
+		<div class="wpe-content-area py-5"> <div class="container">
+			<div class="row justify-content-center">
+				<div class="col-12 col-lg-8">
+					<div
+						class="register-content form-submit-content bg-white p-30 box-shadow">
+						<!-- Section Title -->
+						<div class="section-heading">
+							<h5>Verify your number!</h5>
+						</div>
+
+						{% trans_default_domain 'FOSUserBundle' %}
+
+						{{ form_start(form, { 'action': '/action', 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0' } }) }}
+						<div class="row">
+							<div class="col-6">
+								{{ form_row(form.mobileNumber) }}
+							</div>
+							<div class="col-6">
+								<div class="row mt-4">
+									<div class="col-3">
+										<div class="login-buttons">
+											<button type="submit" id="submit" name="submit" class="btn btn-success">update</button>
+										</div>
+									</div>
+									<div class="col-3">
+										<div class="login-buttons">
+											<button type="submit" id="submit" name="submit" class="btn btn-danger">cancel</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group">
+									{{ form_row(form.otp) }}
+								</div>
+							</div>
+							<div class="col-6">
+								<div class="login-buttons mt-4">
+									<button type="submit" id="submit" name="submit" class="btn btn-success">{{ 'verification.verify.send' |trans }}</button>
+								</div>
+							</div>
+						</div>
+
+						{{ form_end(form) }}
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ##### Login Area End ##### -->
+{% endblock body %}
