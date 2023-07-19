@@ -4,6 +4,8 @@
 
 	{{ include ('Widget/_breadcrumb.html.twig', {title: 'Verification', background: asset('assets/img/header/register_large.jpg')}, with_context = false) }}
 
+	{{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
+
 	<!-- ##### Breadcrumb Area End ##### -->
 
 	{#{% if isset error %}#}
@@ -21,6 +23,11 @@
 	{#{% endif %}#}
 
 	<!-- ##### register Area Start ##### -->
+	<div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" data-delay="500">
+		<div class="toast-body">
+			Otp send successfully..
+		</div>
+	</div>
 		<div class="wpe-content-area py-5"> <div class="container">
 			<div class="row justify-content-center">
 				<div class="col-12 col-lg-8">
@@ -32,28 +39,33 @@
 						</div>
 
 						{% trans_default_domain 'FOSUserBundle' %}
-
-						{{ form_start(form, { 'action': '/action', 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0' } }) }}
-						<div class="row">
-							<div class="col-6">
-								{{ form_row(form.mobileNumber) }}
-							</div>
-							<div class="col-6">
-								<div class="row mt-4">
-									<div class="col-3">
-										<div class="login-buttons">
-											<button type="submit" id="submit" name="submit" class="btn btn-success">update</button>
+						<form action="{{ path('app_otp_getotp') }}" autocomplete="off" id="submitPhoneNumber">
+							<div class="row">
+								<div class="col-6">
+									{{ form_row(form.mobileNumber) }}
+								</div>
+								<div class="col-6">
+									<div class="row mt-4">
+										<div class="col-3">
+											<div class="login-buttons">
+												<button type="button" id="changeNumber" name="submit" class="btn btn-success">
+													<span id="changeNumberBtn">Change</span>
+												</button>
+											</div>
 										</div>
-									</div>
-									<div class="col-3">
-										<div class="login-buttons">
-											<button type="submit" id="submit" name="submit" class="btn btn-danger">cancel</button>
+										<div class="col-3">
+											<div class="login-buttons">
+												<button type="submit"  name="submit" class="btn btn-success">
+													<span>Send</span>
+												</button>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
 
-						</div>
+							</div>
+						</form>
+						{{ form_start(form, { 'action': path('app_otp_verify_otp'), 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0'} }) }}
 						<div class="row">
 							<div class="col-6">
 								<div class="form-group">
@@ -62,13 +74,17 @@
 							</div>
 							<div class="col-6">
 								<div class="login-buttons mt-4">
-									<button type="submit" id="submit" name="submit" class="btn btn-success">{{ 'verification.verify.send' |trans }}</button>
+									<button type="submit" id="submitOtpVerify" name="submit" class="btn btn-success">{{ 'verification.verify.send' |trans }}</button>
 								</div>
 							</div>
 						</div>
 
 						{{ form_end(form) }}
-
+						<div class="text-center" id="timerDiv">
+							<span>Resend otp after
+							</span>
+							<span id="timer"></span>
+						</div>
 					</div>
 				</div>
 			</div>

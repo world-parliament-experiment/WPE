@@ -1,0 +1,22 @@
+{% if flashes is not empty %}
+    <div class="mag-flash-area py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="flash-content bg-danger p-30 box-shadow">
+                        <ul>
+                            {% for label, messages in flashes %}
+                                {% for message in messages %}
+                                    <li class="d-block">
+                                        <span class="form-flash-icon badge badge-danger text-uppercase">{{ label }}</span>
+                                        <span class="form-flash-message">{{ message|trans }}</span>
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

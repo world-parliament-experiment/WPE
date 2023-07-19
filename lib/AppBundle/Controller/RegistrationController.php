@@ -20,6 +20,7 @@ use AppBundle\Service\Mailer;
 use AppBundle\Service\SendOtpVerificationService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use DateTime;
 
 class RegistrationController extends AbstractController
 {
@@ -55,6 +56,7 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted()) {
 
             if($form->isValid()) {
+                //How we will get the country code.
                 $user->setRegisteredAt(new \DateTime());
                 $user->setUsernameCanonical($form->get('username')->getData());
                 $user->setEmailCanonical($form->get('email')->getData());
@@ -122,9 +124,6 @@ class RegistrationController extends AbstractController
         // Set the token in the security context
         $this->get('security.token_storage')->setToken($tokenKey);
 
-        $user->setConfirmationToken(null);
-        $user->setEnabled(true);
-
         $userManager->updateUser($user);
 
         return $this->redirectToRoute('app_register_confirmed');
@@ -135,19 +134,7 @@ class RegistrationController extends AbstractController
      */
     public function confirmedAction(Request $request)
     {
-        $userManager = $this->userManager;
-        $user = $this->getUser();
-        $form = $this->createForm(VerifyForm::class, $user);
-        $getOtp = $this->getOtp($user);
-        $user->setOtp($getOtp);
-
-        $userManager->updateUser($user);
-        return $this->render('registration/otp-verification.html.twig', array(
-            'username' => $user->getUsername(),
-            'user' => $user,
-            'form' => $form->createView(),
-            'targetUrl' => 'homepage',
-        ));
+        return $this->redirectToRoute('app_otp_confirmed');
     }
 
      /**
@@ -168,16 +155,5 @@ class RegistrationController extends AbstractController
         return $this->render('registration/check_email.html.twig', array(
             'user' => $user,
         ));
-    }
-
-    public function getOtp(User $user){
-        $sendOtpService = $this->sendOtpService;
-        $bytes = random_bytes(4);
-        $otp = bin2hex($bytes);
-        $slugger = new AsciiSlugger();
-        $otp = $slugger->slug($otp)->toString();
-
-        // $sendOtpService->send($user,$otp);
-        return $otp;
     }
 }

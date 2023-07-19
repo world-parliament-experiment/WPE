@@ -4,9 +4,16 @@ namespace AppBundle\Service;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Log\LoggerInterface;
 
 class SendOtpVerificationService
-{ 
+{
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
     public function send($user,$otp): void
     {
         $code = $_ENV['COUNTRY_CODE'];
@@ -22,42 +29,18 @@ class SendOtpVerificationService
             $res = $client->sendAsync($request)->wait();
             
         } catch (RequestException $e) {
-            dd($e);
+            $this->logger->debug('Failed to send OTP:');
+            $this->logger->debug('Request URI : ' . sprintf($url,$phoneNumber,$message,$instanceId,$token));
+            $this->logger->debug('Exception : ' . json_encode($e->getTrace()));
             throw new RequestException('Something went wrong..');
         }
     }
 
-    public function sendConfirmationEmailMessage($user)
-    {
-        // $template = $this->parameters['resetting.template'];
-        $url = $this->router->generate('app_register_confirm', array('token' => $user->getConfirmationToken()), UrlGeneratorInterface::ABSOLUTE_URL);
-        $rendered = $this->twig->render('registration/email.txt.twig', array(
-            'user' => $user,
-            'confirmationUrl' => $url,
-        ));
-
-        $renderedLines = explode("\n", trim($rendered));
-        $subject = array_shift($renderedLines);
-        $body = implode("\n", $renderedLines);
-
-        $this->send((string) $user->getEmail(), $subject, $body, $this->senderEmail);
+    public function generateOtp(){
+        $bytes = random_bytes(2);
+        $otp = hexdec(bin2hex($bytes));
+        $otp = str_pad($otp, 3, '0', STR_PAD_LEFT);
+        return $otp;
     }
 
-    public function sendResettingEmailMessage($user)
-    {
-        $url = $this->router->generate('app_resetting_resetpass', array('token' => $user->getConfirmationToken()), UrlGeneratorInterface::ABSOLUTE_URL);
-        $rendered = $this->twig->render('Resetting/email.txt.twig', array(
-            'user' => $user,
-            'confirmationUrl' => $url,
-        ));
-
-        $renderedLines = explode("\n", trim($rendered));
-        $subject = array_shift($renderedLines);
-        $body = implode("\n", $renderedLines);
-
-        $this->send((string) $user->getEmail(), $subject, $body, $this->senderEmail);
-    }
-
-
-    
 }
