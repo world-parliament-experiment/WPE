@@ -3827,4 +3827,13 @@ textarea.form-control {
   color: #ffffff;
 }
 
+.changeNumbercls{
+  height: 48px !important;
+  margin-top: 4px;
+}
+
+#verify_form_mobileNumber:read-only{
+  cursor: not-allowed;
+  border: none !important;
+}
 /* ====== The End ====== */

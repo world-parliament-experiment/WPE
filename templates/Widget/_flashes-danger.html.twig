@@ -1,22 +1,38 @@
 {% if flashes is not empty %}
-    <div class="mag-flash-area py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-lg-8">
-                    <div class="flash-content bg-danger p-30 box-shadow">
-                        <ul>
-                            {% for label, messages in flashes %}
-                                {% for message in messages %}
-                                    <li class="d-block">
-                                        <span class="form-flash-icon badge badge-danger text-uppercase">{{ label }}</span>
-                                        <span class="form-flash-message">{{ message|trans }}</span>
-                                    </li>
-                                {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="mag-flash-area">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-12 col-lg-8">
+					{# <div class="flash-content bg-danger p-30 box-shadow">
+						<ul>
+							{% for label, messages in flashes %}
+								{% for message in messages %}
+									<li class="d-block">
+										<span class="form-flash-icon badge badge-danger text-uppercase">{{ label }}</span>
+										<span class="form-flash-message">{{ message|trans }}</span>
+									</li>
+								{% endfor %}
+							{% endfor %}
+						</ul>
+					</div> #}
+					<div class="alert alert-danger alert-dismissible fade show p-30 rounded" role="alert" id="success-alert">
+						<ul>
+							{% for label, messages in flashes %}
+								{% for message in messages %}
+									<li class="d-block">
+										<strong class="badge badge-danger text-uppercase">{{ label }}</strong>
+
+										<span class="form-flash-message">{{ message|trans }}</span>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</li>
+								{% endfor %}
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endif %}

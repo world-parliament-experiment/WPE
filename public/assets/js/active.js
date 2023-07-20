@@ -1,8 +1,10 @@
 (function ($) {
   "use strict";
+  console.log($('#submitPhoneNumberForm'));
 
   var browserWindow = $(window);
-
+  var countdown;
+  var duration = 60;
   // :: 1.0 Preloader Active Code
   browserWindow.on("load", function () {
     $(".preloader").fadeOut("slow", function () {
@@ -193,108 +195,70 @@
     new WOW().init();
   }
 
+  function startCountdown() {
+    console.log('This is after load');
+    var timerElement = $("#timer");
+    var buttonElement = '<b><a id="resendButton" href="">resend otp</a></b>';
+
+    timerElement.text("(" + duration + "s)");
+
+    countdown = setInterval(function () {
+      duration--;
+      timerElement.text("(" + duration + "s)");
+
+      if (duration <= 0) {
+        clearInterval(countdown);
+        $("#timerDiv").append(buttonElement.toString());
+        timerElement.text("");
+      }
+    }, 1000);
+  }
   $("#changeNumber").click(function () {
     var currentHtml = $(this).html();
-    var newHtml = (currentHtml === 'update') ? 'Change' : 'update';
-    $(this).html(newHtml);  
-    
-    var disabled = $("#verify_form_mobileNumber").attr('disabled');
-    $("#verify_form_mobileNumber").prop('disabled',!disabled);
 
-    if(currentHtml === 'update'){
-        var formData = $('#submitPhoneNumber').serialize();
-        $.ajax({
-        url: '/otp/get-otp' ,
-        method: "POST",
-        data: formData,
-        success: function (response) {
-            $('.toast').toast('show')
-            window.location.reload();
-        },
-        error: function (xhr, status, error) {
-            console.error(error);
-        },
-        });
-    }
-    // //   var isDisabled = $("#changeNumberBtn").prop('disabled');
+    var newHtml = currentHtml === "update" ? "Change" : "update";
+    $(this).html(newHtml);
 
-    // //   if (!isDisabled) {
-    // //     var formData = $(this).serialize(); // Serialize form data
-      
-    // //     $.ajax({
-    // //     url: '/register/get-otp' ,
-    // //     method: "POST",
-    // //     data: formData,
-    // //     success: function (response) {
-    // //         $('.toast').toast('show')
-    // //         window.location.reload();
-    // //     },
-    // //     error: function (xhr, status, error) {
-    // //         console.error(error);
-    // //     },
-    // //     });
-    // } 
-  
+    var disabled = $("#verify_form_mobileNumber").prop("readonly");
+    disabled = !disabled;
+    $("#verify_form_mobileNumber").prop("readonly", disabled);
   });
 
-  if($('.updateNumber').length > 0)
-  
-    var countdown;
-    var duration = 60;
 
-    function startCountdown() {
-      var timerElement = $('#timer');
-      var buttonElement ='<b><a id="resendButton" href="">resend otp</a></b>';
-      
-      timerElement.text('(' + duration + 's)');
-      
-      countdown = setInterval(function() {
-        duration--; 
-        timerElement.text('(' + duration + 's)'); 
-        
-        if (duration <= 0) {
-          clearInterval(countdown); 
-          $('#timerDiv').append(buttonElement.toString())
-          $('#submitOtpVerify').prop('disabled',true);
-          timerElement.text('');
+  $(document).on('submit','#submitPhoneNumberForm',function (e) {
+    console.log('LOaded');
+    e.preventDefault();
+    var formData = $("#submitPhoneNumberForm").serialize();
+    var action = $("#submitPhoneNumberForm").attr('action');
+    $.ajax({
+      url: action,
+      async:false,
+      method: "POST",
+      data: formData,
+      success: function (response) {
+        $(".toast").toast("show");
+        $("#verify_form_mobileNumber").val(" #verify_form_mobileNumber");
+        if (duration > 0) {
+          clearInterval(countdown);
+          duration = 60;
+          startCountdown();
         }
-      }, 1000);
-    }
-    
-    $('#resendButton').click(function() {
-        window.location.href = '/otp/get-otp';
-        $('.toast').toast('show')
-        $('#submitOtpVerify').prop('disabled',false);
-        startCountdown();
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
     });
-    
+
+    return false;
+  });
+
+  $("#resendButton").click(function (e) {
+    e.preventDefault();
+    window.location.href = "/otp/get-otp";
+    $(".toast").toast("show");
+    $("#submitOtpVerify").prop("disabled", false);
     startCountdown();
-    
-    $("#verify_form_mobileNumber").change(function () {
-        // $("#changeNumberBtn").click(function (event) {
-        //   var formData = $(this).serialize(); // Serialize form data
-      
-        //   $.ajax({
-        //     url: '/register/get-otp' ,
-        //     method: "POST",
-        //     data: formData,
-        //     success: function (response) {
-        //         $('.toast').toast('show')
-        //         window.location.reload();
-        //     },
-        //     error: function (xhr, status, error) {
-        //       console.error(error);
-        //     },
-        //   });
-        // });
-      });
-    
-      $('#submitOtpVerify').click(function(e){
-        if (duration <= 0) {
-            e.preventDefault();
-            $('#submitOtpVerify').prop('disabled',true);
-            return;
-          }
-      
-      })
+  });
+
+  startCountdown();
 })(jQuery);

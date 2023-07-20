@@ -1,10 +1,14 @@
 <?php
 
 namespace AppBundle\Service;
+
+use DateInterval;
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use AppBundle\Entity\User;
 
 class SendOtpVerificationService
 {
@@ -39,8 +43,33 @@ class SendOtpVerificationService
     public function generateOtp(){
         $bytes = random_bytes(2);
         $otp = hexdec(bin2hex($bytes));
-        $otp = str_pad($otp, 3, '0', STR_PAD_LEFT);
+        $otp = str_pad($otp, 2, '0', STR_PAD_LEFT);
         return $otp;
     }
 
+    public function setExpirationOfOtp(){
+        $currentDateTime = new DateTime();
+       
+        $currentDateTime->add(new DateInterval('PT5M'))->format('Y-m-d H:i:s');
+
+        return $currentDateTime;
+    }
+
+    public function checkIfExpired(User $user){
+        $currentDate = new DateTime();
+        if($currentDate > $user->getExpireAt()){
+            return true;
+        }
+    }
+
+    public function checkIfAlreadyVerified(User $user)
+    {
+        if (null != $user->getVerifiedAt()) {
+            $user->setConfirmationToken(null);
+            $user->setEnabled(true);
+            $this->userManager->updateUser($user);
+            $this->addFlash('success', 'Already verified..');
+            return $this->redirectToRoute('app_otp_verification');
+        }
+    }
 }

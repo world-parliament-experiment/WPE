@@ -115,6 +115,14 @@ class User implements UserInterface
      * 
      */
     protected $verifiedAt;
+
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
+     * @JMSSerializer\SerializedName("expireAt")*
+     * 
+     */
+    protected $expireAt;
     /**
      * @ORM\Column(type="string", nullable=true)
      * @JMSSerializer\Type("string")
@@ -740,6 +748,26 @@ class User implements UserInterface
     public function setOtp($otp)
     {
         $this->otp = $otp;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of expireAt
+     */ 
+    public function getExpireAt()
+    {
+        return $this->expireAt;
+    }
+
+    /**
+     * Set the value of expireAt
+     *
+     * @return  self
+     */ 
+    public function setExpireAt($expireAt)
+    {
+        $this->expireAt = $expireAt;
 
         return $this;
     }

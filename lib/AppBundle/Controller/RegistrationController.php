@@ -132,7 +132,7 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/register/confirmed", name="app_register_confirmed")
      */
-    public function confirmedAction(Request $request)
+    public function confirmedAction()
     {
         return $this->redirectToRoute('app_otp_confirmed');
     }

@@ -19,7 +19,7 @@ class VerifyForm extends AbstractType
             'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
                 'pattern' => '[0-9]*',
                 'title' => 'Please enter phone number in digits.',
-                'disabled' => 'true'
+                'readonly' => 'true'
             ]
         ])        
         ->add('otp', TextType::class, [
