@@ -4,12 +4,6 @@
 
 	{{ include ('Widget/_breadcrumb.html.twig', {title: 'Verification', background: asset('assets/img/header/register_large.jpg')}, with_context = false) }}
 
-	<div role="alert" aria-live="assertive" aria-atomic="true" class="toast bg-success text-white" data-bs-autohide="true" , data-bs-delay="10000" data-delay="10000">
-		<div class="toast-body">
-			Otp send successfully..
-			<i class="fa-solid fa-circle-check" style="color: #fffafa;"></i>
-		</div>
-	</div>
 	{{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
 
 	<!-- ##### Breadcrumb Area End ##### -->
@@ -41,17 +35,31 @@
 						</div>
 
 						{% trans_default_domain 'FOSUserBundle' %}
-						<form action="{{ path('app_otp_getotp') }}" autocomplete="off" id="submitPhoneNumberForm">
+						<form action="{{ path('app_otp_getotp') }}" method="POST" id="submitPhoneNumberForm">
 							<div class="row">
 								<div class="col-6">
 									{{ form_row(form.mobileNumber) }}
 								</div>
 								<div class="col-6">
 									<div class="row mt-4">
-										<div class="col-3">
+										<div class="col-3" id="changeNumberDiv">
 											<div class="login-buttons">
-												<button type="button" id="changeNumber" name="submit" class="btn btn-success changeNumbercls">
-													<span id="changeNumberBtn">Change</span>
+												<button type="button" id="changeNumber" name="changeNumber" class="btn btn-success changeNumbercls">
+													<span id="changeNumberBtn">{{ 'verification.change' |trans }}</span>
+												</button>
+											</div>
+										</div>
+										<div class="col-3 d-none" id="changeNumberSubmit">
+											<div class="login-buttons">
+												<button type="submit" name="changeNumber" class="btn btn-success changeNumbercls">
+													<span>{{ 'verification.update' |trans }}</span>
+												</button>
+											</div>
+										</div>
+										<div class="col-4">
+											<div class="login-buttons">
+												<button type="button" id="disableMobileNumber" name="getOtp" class="btn btn-danger changeNumbercls">
+													<span>{{ 'verification.reset' |trans }}</span>
 												</button>
 											</div>
 										</div>
@@ -68,7 +76,7 @@
 							</div>
 							<div class="col-6">
 								<div class="login-buttons mt-4">
-									<button type="submit" id="submitOtpVerify" name="submit" class="btn btn-success changeNumbercls">{{ 'verification.verify.send' |trans }}</button>
+									<button type="submit" id="submitOtpVerify" name="submit" class="btn btn-success changeNumbercls">{{ 'verification.verify' |trans }}</button>
 								</div>
 							</div>
 						</div>
@@ -78,6 +86,7 @@
 							<span>Resend otp after
 							</span>
 							<span id="timer"></span>
+							<span><b><a id="resendButton" href="{{ path('app_otp_getotp') }}" class="d-none">resend otp</a></b></span>
 						</div>
 					</div>
 				</div>

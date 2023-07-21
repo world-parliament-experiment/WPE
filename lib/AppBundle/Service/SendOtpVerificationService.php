@@ -13,10 +13,12 @@ use AppBundle\Entity\User;
 class SendOtpVerificationService
 {
     private $logger;
+    private $userManager;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger,UserManager $userManager)
     {
         $this->logger = $logger;
+        $this->userManager = $userManager;
     }
     public function send($user,$otp): void
     {
@@ -57,9 +59,10 @@ class SendOtpVerificationService
 
     public function checkIfExpired(User $user){
         $currentDate = new DateTime();
-        if($currentDate > $user->getExpireAt()){
+        if(null != $user->getExpireAt() && $currentDate > $user->getExpireAt()){
             return true;
         }
+        return false;
     }
 
     public function checkIfAlreadyVerified(User $user)
@@ -68,8 +71,8 @@ class SendOtpVerificationService
             $user->setConfirmationToken(null);
             $user->setEnabled(true);
             $this->userManager->updateUser($user);
-            $this->addFlash('success', 'Already verified..');
-            return $this->redirectToRoute('app_otp_verification');
+            return true;
         }
+        return false;
     }
 }

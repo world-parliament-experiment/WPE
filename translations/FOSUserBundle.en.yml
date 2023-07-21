@@ -85,6 +85,14 @@ resetting:
             Regards,
             the Team.
 
+verification:
+    change: 'Change'
+    update: 'Update'
+    verify: 'Verify'
+    reset: 'Cancel'
+    verified: 'Verified'
+
+
 # Global strings
 layout:
     logout: 'Log out'
@@ -111,7 +119,7 @@ form:
     lastname: 'Lastname'
     lastname_help: 'Your lastname is not visible'
     mobileNumber: 'Mobile number'
-    mobileNumber_help: 'Your mobile number is not visible'
+    mobileNumber_help: 'Enter your mobile number.'
     otp: 'Enter OTP'
     otp_help: 'Enter your otp'
     country: 'Country'

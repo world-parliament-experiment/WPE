@@ -1,6 +1,6 @@
 (function ($) {
   "use strict";
-  console.log($('#submitPhoneNumberForm'));
+  console.log($("#submitPhoneNumberForm"));
 
   var browserWindow = $(window);
   var countdown;
@@ -196,9 +196,7 @@
   }
 
   function startCountdown() {
-    console.log('This is after load');
     var timerElement = $("#timer");
-    var buttonElement = '<b><a id="resendButton" href="">resend otp</a></b>';
 
     timerElement.text("(" + duration + "s)");
 
@@ -208,57 +206,35 @@
 
       if (duration <= 0) {
         clearInterval(countdown);
-        $("#timerDiv").append(buttonElement.toString());
+        $("#resendButton").removeClass('d-none');
         timerElement.text("");
       }
     }, 1000);
   }
-  $("#changeNumber").click(function () {
-    var currentHtml = $(this).html();
-
-    var newHtml = currentHtml === "update" ? "Change" : "update";
-    $(this).html(newHtml);
+  $("#changeNumber").click(function () {  
+    $('#changeNumberDiv').toggleClass('d-none');
+    $('#changeNumberSubmit').toggleClass('d-none');
 
     var disabled = $("#verify_form_mobileNumber").prop("readonly");
     disabled = !disabled;
     $("#verify_form_mobileNumber").prop("readonly", disabled);
   });
 
-
-  $(document).on('submit','#submitPhoneNumberForm',function (e) {
-    console.log('LOaded');
-    e.preventDefault();
-    var formData = $("#submitPhoneNumberForm").serialize();
-    var action = $("#submitPhoneNumberForm").attr('action');
-    $.ajax({
-      url: action,
-      async:false,
-      method: "POST",
-      data: formData,
-      success: function (response) {
-        $(".toast").toast("show");
-        $("#verify_form_mobileNumber").val(" #verify_form_mobileNumber");
-        if (duration > 0) {
-          clearInterval(countdown);
-          duration = 60;
-          startCountdown();
-        }
-      },
-      error: function (xhr, status, error) {
-        console.error(error);
-      },
-    });
-
-    return false;
-  });
-
   $("#resendButton").click(function (e) {
-    e.preventDefault();
-    window.location.href = "/otp/get-otp";
-    $(".toast").toast("show");
-    $("#submitOtpVerify").prop("disabled", false);
     startCountdown();
   });
+  
+  $('#disableMobileNumber').click(function(){
+    $('#changeNumberDiv').toggleClass('d-none');
+    $('#changeNumberSubmit').toggleClass('d-block');
 
+    var disabled = $("#verify_form_mobileNumber").prop("readonly");
+    disabled = !disabled;
+    $("#verify_form_mobileNumber").prop("readonly", disabled);
+  });
+
+  setTimeout(function () {
+    $(".alert").alert("close");
+  }, 5000);
   startCountdown();
 })(jQuery);
