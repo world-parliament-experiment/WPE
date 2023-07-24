@@ -156,33 +156,51 @@
             var $form = $btn.closest('form');
 
             if($btn.attr('name')) {
-
                 console.log('clicked: ' + $btn.attr('name'));
                 var title = $btn.data("title");
-
-                $.confirm({
-                    title: false,
-                    columnClass: 'medium',
-                    content: '<p>You will vote with ' +
-                        '<strong style="font-size: 20px;"> ' + title + ' </strong>' +
-                        ' if you proceed.</p>',
-                    buttons: {
-                        vote: {
-                            text: '<i class="fas fa-vote-yea fa-fw"></i> vote',
-                            keys: ['y', 'enter'],
-                            btnClass: 'btn-success',
-                            action: function () {
-                                self._storage.submitButton = $btn.attr('name');
-                                $form.submit();
+                var verify = $btn.data('verified');
+                if(verify == 1){
+                    $.confirm({
+                        title: false,
+                        columnClass: 'medium',
+                        content: '<p>You will vote with ' +
+                            '<strong style="font-size: 20px;"> ' + title + ' </strong>' +
+                            ' if you proceed.</p>',
+                        buttons: {
+                            vote: {
+                                text: '<i class="fas fa-vote-yea fa-fw"></i> vote',
+                                keys: ['y', 'enter'],
+                                btnClass: 'btn-success',
+                                action: function () {
+                                    self._storage.submitButton = $btn.attr('name');
+                                    $form.submit();
+                                }
+                            },
+                            cancel: {
+                                text: '<i class="fas fa-times fa-fw"></i> cancel',
+                                keys: ['N'],
+                                btnClass: 'btn-danger'
                             }
-                        },
-                        cancel: {
-                            text: '<i class="fas fa-times fa-fw"></i> cancel',
-                            keys: ['N'],
-                            btnClass: 'btn-danger'
                         }
-                    }
-                });
+                    });
+                }
+                else{
+                    $.confirm({
+                        title: false,
+                        columnClass: 'medium',
+                        content: '<p class="text-center center-align">You need to verify your number before voting. Click here to verify.</p>',
+                        buttons: {
+                            vote: {
+                                text: 'Verify number',
+                                keys: ['y', 'enter'],
+                                btnClass: 'btn-success text-center',
+                                action: function () {
+                                    window.location.href = $btn.data('redirect');
+                                }
+                            }
+                        }
+                    });
+                }
             }
 
         },

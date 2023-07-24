@@ -151,9 +151,11 @@ class VoteController extends BaseController
      */
     public function showAction(int $id)
     {
+        $user = $this->getUser();
+        $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? true : false;
+
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
-        // dd($initiative);
 
         $this->denyAccessUnlessGranted("view", $initiative);
 
@@ -182,6 +184,7 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'proposal',
+                'mobileVerified' => $isMobileNumberVerified,
                 'category' => $initiative->getCategory(),
             ));
         } elseif ($initiative->getType() === 1) {
@@ -190,6 +193,7 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'vote',
+                'mobileVerified' => $isMobileNumberVerified,
                 'category' => $initiative->getCategory(),
             ));
         } elseif ($initiative->getType() === 2) {
@@ -198,6 +202,7 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'unsuccessful initiative',
+                'mobileVerified' => $isMobileNumberVerified,
                 'category' => $initiative->getCategory(),
             ));
         } else {
@@ -206,6 +211,7 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'adopted vote',
+                'mobileVerified' => $isMobileNumberVerified,
                 'category' => $initiative->getCategory(),
             ));
         }

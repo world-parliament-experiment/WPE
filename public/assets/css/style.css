@@ -3844,4 +3844,13 @@ textarea.form-control {
 #changeNumberSubmit{
   display: none;
 }
+
+.center-align{
+  font-size: 20px;
+}
+
+.jconfirm-buttons{
+  text-align:center !important;
+  float: unset !important;
+}
 /* ====== The End ====== */
