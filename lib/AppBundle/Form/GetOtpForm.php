@@ -9,15 +9,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class VerifyForm extends AbstractType
+class GetOtpForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder     
-        ->add('otp', TextType::class, [
-            'label' => 'form.otp', 
-            'help' => 'form.otp_help', 'translation_domain' => 'FOSUserBundle'
-        ]);
+        $builder
+        ->add('mobileNumber', NumberType::class, [
+            'label' => 'form.mobileNumber', 
+            'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
+                'pattern' => '[0-9]*',
+                'title' => 'Please enter phone number in digits.',
+                'readonly' => 'true'
+            ]
+            ]);
     }
     // public function getParent()
     // {

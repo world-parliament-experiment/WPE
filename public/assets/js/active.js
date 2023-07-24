@@ -1,6 +1,5 @@
 (function ($) {
   "use strict";
-  console.log($("#submitPhoneNumberForm"));
 
   var browserWindow = $(window);
   var countdown;
@@ -195,6 +194,8 @@
     new WOW().init();
   }
 
+  let oldValue = $("#get_otp_form_mobileNumber").val();
+
   function startCountdown() {
     var timerElement = $("#timer");
 
@@ -212,12 +213,13 @@
     }, 1000);
   }
   $("#changeNumber").click(function () {  
-    $('#changeNumberDiv').toggleClass('d-none');
-    $('#changeNumberSubmit').toggleClass('d-none');
+    $('#changeNumberDiv').hide();
+    $('#disableMobileDiv').show();
+    $('#changeNumberSubmit').show();
 
-    var disabled = $("#verify_form_mobileNumber").prop("readonly");
+    var disabled = $("#get_otp_form_mobileNumber").prop("readonly");
     disabled = !disabled;
-    $("#verify_form_mobileNumber").prop("readonly", disabled);
+    $("#get_otp_form_mobileNumber").prop("readonly", disabled);
   });
 
   $("#resendButton").click(function (e) {
@@ -225,12 +227,15 @@
   });
   
   $('#disableMobileNumber').click(function(){
-    $('#changeNumberDiv').toggleClass('d-none');
-    $('#changeNumberSubmit').toggleClass('d-block');
-
-    var disabled = $("#verify_form_mobileNumber").prop("readonly");
+    $('#changeNumberDiv').show();
+    $('#changeNumberSubmit').hide();
+    
+    var disabled = $("#get_otp_form_mobileNumber").prop("readonly");
     disabled = !disabled;
-    $("#verify_form_mobileNumber").prop("readonly", disabled);
+    
+    $("#get_otp_form_mobileNumber").val(oldValue);
+    $("#get_otp_form_mobileNumber").prop("readonly", disabled);
+    $('#disableMobileNumber').hide();
   });
 
   setTimeout(function () {

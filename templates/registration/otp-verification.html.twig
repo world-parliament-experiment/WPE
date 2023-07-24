@@ -35,10 +35,10 @@
 						</div>
 
 						{% trans_default_domain 'FOSUserBundle' %}
-						<form action="{{ path('app_otp_getotp') }}" method="POST" id="submitPhoneNumberForm">
+						{{ form_start(formOtp, { 'action': path('app_otp_getotp'), 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0'} }) }}
 							<div class="row">
 								<div class="col-6">
-									{{ form_row(form.mobileNumber) }}
+									{{ form_row(formOtp.mobileNumber) }}
 								</div>
 								<div class="col-6">
 									<div class="row mt-4">
@@ -49,14 +49,14 @@
 												</button>
 											</div>
 										</div>
-										<div class="col-3 d-none" id="changeNumberSubmit">
+										<div class="col-3" id="changeNumberSubmit">
 											<div class="login-buttons">
 												<button type="submit" name="changeNumber" class="btn btn-success changeNumbercls">
 													<span>{{ 'verification.update' |trans }}</span>
 												</button>
 											</div>
 										</div>
-										<div class="col-4">
+										<div class="col-4"  id="disableMobileDiv">
 											<div class="login-buttons">
 												<button type="button" id="disableMobileNumber" name="getOtp" class="btn btn-danger changeNumbercls">
 													<span>{{ 'verification.reset' |trans }}</span>
@@ -66,7 +66,7 @@
 									</div>
 								</div>
 							</div>
-						</form>
+						{{ form_end(formOtp) }}
 						{{ form_start(form, { 'action': path('app_otp_verify_otp'), 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0'} }) }}
 						<div class="row">
 							<div class="col-6">
@@ -82,12 +82,22 @@
 						</div>
 
 						{{ form_end(form) }}
-						<div class="text-center" id="timerDiv">
-							<span>Resend otp after
-							</span>
-							<span id="timer"></span>
-							<span><b><a id="resendButton" href="{{ path('app_otp_getotp') }}" class="d-none">resend otp</a></b></span>
-						</div>
+
+						{% if resend == true %}
+							<div class="text-center">
+								<span>Resend otp after
+								</span>
+								<span></span>
+								<span><b><a href="{{ path('app_otp_getotp') }}">resend otp</a></b></span>
+							</div>
+						{% else %}
+							<div class="text-center" id="timerDiv">
+								<span>Resend otp after
+								</span>
+								<span id="timer"></span>
+								<span><b><a id="resendButton" href="{{ path('app_otp_getotp') }}" class="d-none">resend otp</a></b></span>
+							</div>
+						{% endif %}
 					</div>
 				</div>
 			</div>
