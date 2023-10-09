@@ -24,8 +24,8 @@ class SendOtpVerificationService
     {
         $code = $_ENV['COUNTRY_CODE'];
         $url = $_ENV['API_URL'];
-
-        $message = urlencode("Hello ".$user->getUsername()."\n"."Your OTP (One time password) is:".$otp);
+        $textMessage = $_ENV['SMS_MESSAGE'];
+        $message = sprintf($textMessage,$user->getUsername(),$otp);
         $phoneNumber = $code . $user->getMobileNumber();
 
         $headers = [
