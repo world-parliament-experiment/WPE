@@ -29,13 +29,13 @@ class SendOtpVerificationService
         $phoneNumber = $code . $user->getMobileNumber();
 
         $headers = [
-            'Content-Type' =>  $_ENV['APP_CONTENT_TYPE'],
-            'Authorization' => $_ENV['APP_AUTHORIZATION'],
+            'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],
+            'Authorization' => 'Basic ' . $_ENV['SMS_AUTHORIZATION'],
         ];
     
         $options = [
             'form_params' => [
-                'sender' => $_ENV['APP_SENDER'],
+                'sender' => $_ENV['SMS_SENDER'],
                 'message' => $message,
                 'recipients.0.msisdn' => $phoneNumber
             ]
