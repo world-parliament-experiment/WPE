@@ -14,16 +14,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use AppBundle\Service\Mailer;
 use AppBundle\Service\SendOtpVerificationService;
-use DateInterval;
-use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 use DateTime;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class OtpVerificationController extends AbstractController
 {
@@ -31,14 +24,16 @@ class OtpVerificationController extends AbstractController
      * @var FormFactoryInterface
      * @Autowired
      */
-
+    private const DEFAULT_OTP = 1234; 
     private $userManager;
     private $sendOtpService;
+    private $env;
 
-    public function __construct(UserManager $userManager, SendOtpVerificationService $sendOtpService)
+    public function __construct(UserManager $userManager, SendOtpVerificationService $sendOtpService,KernelInterface $kernel)
     {
         $this->userManager = $userManager;
         $this->sendOtpService = $sendOtpService;
+        $this->env = $kernel->getEnvironment();
     }
 
     /**
@@ -46,9 +41,6 @@ class OtpVerificationController extends AbstractController
      */
     public function confirmedAction(Request $request)
     {
-        $userManager = $this->userManager;
-        $sendOtpService = $this->sendOtpService;
-
         $user = $this->getUser();
         $formOtp = $this->createForm(GetOtpForm::class, $user);
         $form = $this->createForm(VerifyForm::class, $user);
@@ -74,13 +66,9 @@ class OtpVerificationController extends AbstractController
         }
         
         if($user->getOtp() == null){
-            $getOtp = $sendOtpService->generateOtp();
-            $getExpireAt = $sendOtpService->setExpirationOfOtp();
-            $user->setOtp($getOtp);
-            $user->setExpireAt($getExpireAt);
-            
-            $userManager->updateUser($user);
-            $sendOtpService->send($user, $getOtp);        
+            $processedOtp = $this->processOtp($user);
+            $this->userManager->updateUser($processedOtp['updatedUser']);
+            $this->sendOtpService->send($user,$processedOtp['otp']);   
             $this->addFlash('success', 'Your OTP is generated successfully..');
         }
         
@@ -107,11 +95,8 @@ class OtpVerificationController extends AbstractController
         $this->sendOtpService->checkIfAlreadyVerified($user);
         
         $formOtp->handleRequest($request);
+        $processedOtp = $this->processOtp($user);
         
-        $otp = $this->sendOtpService->generateOtp();
-        $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
-        $user->setOtp($otp);
-        $user->setExpireAt($getExpireAt);
         if ($formOtp->isSubmitted()) {
             if($formOtp->isValid()) {            
                 $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;
@@ -126,8 +111,8 @@ class OtpVerificationController extends AbstractController
             }
         }
         
-        $this->userManager->updateUser($user);
-        $this->sendOtpService->send($user,$otp);
+        $this->userManager->updateUser($processedOtp['updatedUser']);
+        $this->sendOtpService->send($user,$processedOtp['otp']);
         $this->addFlash('success', 'Your OTP is generated successfully..');
         return $this->redirectToRoute('app_otp_confirmed');
     }
@@ -183,5 +168,23 @@ class OtpVerificationController extends AbstractController
             'user' => $user,
             'form' => $form->createView(),
         ));
+    }
+
+
+    private function processOtp(User $user) 
+    {
+        $otp = self::DEFAULT_OTP;
+        if($this->env === 'dev'){
+            $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
+            $user->setOtp($otp);
+            $user->setExpireAt($getExpireAt);
+        } else {
+            $otp = $this->sendOtpService->generateOtp();
+            $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
+            $user->setOtp($otp);
+            $user->setExpireAt($getExpireAt);     
+        }
+
+        return ['updatedUser' => $user,'otp' => $otp];
     }
 }

@@ -235,7 +235,7 @@
     
     $("#get_otp_form_mobileNumber").val(oldValue);
     $("#get_otp_form_mobileNumber").prop("readonly", disabled);
-    $('#disableMobileNumber').hide();
+    $('#disableMobileDiv').hide();
   });
 
   setTimeout(function () {

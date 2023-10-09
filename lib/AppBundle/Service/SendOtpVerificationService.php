@@ -23,23 +23,34 @@ class SendOtpVerificationService
     public function send($user,$otp): void
     {
         $code = $_ENV['COUNTRY_CODE'];
-        $instanceId = $_ENV['INSTANCE_ID'];
-        $token = $_ENV['ACCESS_TOKEN'];
         $url = $_ENV['API_URL'];
 
         $message = urlencode("Hello ".$user->getUsername()."\n"."Your OTP (One time password) is:".$otp);
         $phoneNumber = $code . $user->getMobileNumber();
+
+        $headers = [
+            'Content-Type' =>  $_ENV['APP_CONTENT_TYPE'],
+            'Authorization' => $_ENV['APP_AUTHORIZATION'],
+        ];
+    
+        $options = [
+            'form_params' => [
+                'sender' => $_ENV['APP_SENDER'],
+                'message' => $message,
+                'recipients.0.msisdn' => $phoneNumber
+            ]
+        ];
         try {
             $client = new Client();
-            $request = new Request('GET',sprintf($url,$phoneNumber,$message,$instanceId,$token));
-            $res = $client->sendAsync($request)->wait();
+            $request = new Request('POST',$url, $headers);
+            $res = $client->sendAsync($request, $options)->wait();
             
         } catch (RequestException $e) {
             $this->logger->debug('Failed to send OTP:');
-            $this->logger->debug('Request URI : ' . sprintf($url,$phoneNumber,$message,$instanceId,$token));
+            $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
             $this->logger->debug('Exception : ' . json_encode($e->getTrace()));
-            throw new RequestException('Something went wrong..');
-        }
+            throw new RequestException('Something went wrong..' ,$e->getRequest());
+        }    
     }
 
     public function generateOtp(){
