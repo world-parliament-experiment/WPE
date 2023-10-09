@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use AppBundle\Service\Mailer;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class ResettingController extends AbstractController
 {
@@ -22,14 +23,16 @@ class ResettingController extends AbstractController
     private $tokenGenerator;
     private $mailer;
     private $managerRegistry;
+    private $passwordEncoder;
 
 
-    public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer,ManagerRegistry $managerRegistry)
+    public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer,ManagerRegistry $managerRegistry,UserPasswordEncoderInterface $passwordHasher)
     {
         $this->tokenGenerator = $tokenGenerator;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
         $this->managerRegistry = $managerRegistry;
+        $this->passwordEncoder = $passwordHasher;
     }
 
     /**
@@ -103,10 +106,13 @@ class ResettingController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           
-
             $tokenKey = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
 
+            $hashedPassword = $this->passwordEncoder->encodePassword(
+                $user,
+                $form->get('plainPassword')->getData()
+            );
+            $user->setPassword($hashedPassword);
             $user->setConfirmationToken(null);
             $user->setEnabled(true);
             // $userManager->updateUser($user);
