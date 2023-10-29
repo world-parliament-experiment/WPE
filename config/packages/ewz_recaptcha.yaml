@@ -6,4 +6,3 @@ ewz_recaptcha:
     # Not needed as "%kernel.default_locale%" is the default value for the locale key
     locale_key:  "%kernel.default_locale%"
     locale_from_request: true
-    api_host: recaptcha.net
