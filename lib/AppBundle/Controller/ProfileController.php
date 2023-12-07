@@ -73,6 +73,8 @@ class ProfileController extends AbstractController
     {
         $user = $this->getUser();
 
+        $this->get('session')->set('route', $request->get('_route'));
+        $this->get('session')->set('routeParams',[]);
         if (!is_object($user)) {
             throw new AccessDeniedException('This user does not have access to this section.');
         }

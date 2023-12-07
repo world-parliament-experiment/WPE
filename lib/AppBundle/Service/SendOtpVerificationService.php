@@ -30,7 +30,7 @@ class SendOtpVerificationService
 
         $headers = [
             'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],
-            'Authorization' => 'Basic ' . $_ENV['SMS_AUTHORIZATION'],
+            'Authorization' => 'Token ' . $_ENV['SMS_AUTHORIZATION'],
         ];
     
         $options = [
@@ -63,7 +63,7 @@ class SendOtpVerificationService
     public function setExpirationOfOtp(){
         $currentDateTime = new DateTime();
        
-        $currentDateTime->add(new DateInterval('PT5M'))->format('Y-m-d H:i:s');
+        $currentDateTime->add(new DateInterval('PT1M'))->format('Y-m-d H:i:s');
 
         return $currentDateTime;
     }

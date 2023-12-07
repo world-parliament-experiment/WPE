@@ -5,6 +5,8 @@
     <!-- ##### Hero Area Start ##### -->
 
     {{ include ('/Widget/hero.html.twig', {votes: top}, with_context = false) }}
+    {{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
+
 
     <!-- ##### Hero Area End ##### -->
 

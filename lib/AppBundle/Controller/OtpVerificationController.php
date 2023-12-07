@@ -44,14 +44,17 @@ class OtpVerificationController extends AbstractController
         $user = $this->getUser();
         $formOtp = $this->createForm(GetOtpForm::class, $user);
         $form = $this->createForm(VerifyForm::class, $user);
-        
-        $isVerified = $this->sendOtpService->checkIfAlreadyVerified($user);
-        $isExpired = $this->sendOtpService->checkIfExpired($user);
-        
+        list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
+
+        [$isVerified, $isExpired] = [
+            $this->sendOtpService->checkIfAlreadyVerified($user),
+            $this->sendOtpService->checkIfExpired($user),
+        ];
+
         if($isVerified)
         {
             $this->addFlash('success', 'This number is already verified.');
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute($route,$routeParams);
         }
         if($isExpired)
         {
@@ -64,15 +67,12 @@ class OtpVerificationController extends AbstractController
                 'targetUrl' => 'homepage',
             ));
         }
-        
         if($user->getOtp() == null){
             $processedOtp = $this->processOtp($user);
             $this->userManager->updateUser($processedOtp['updatedUser']);
-            $this->sendOtpService->send($user,$processedOtp['otp']);   
+            $this->sendOtpService->send($user,$processedOtp['otp']);
             $this->addFlash('success', 'Your OTP is generated successfully..');
         }
-        
-        
         return $this->render('registration/otp-verification.html.twig', array(
             'resend' => false,
             'user' => $user,
@@ -81,7 +81,7 @@ class OtpVerificationController extends AbstractController
             'targetUrl' => 'homepage',
         ));
     }
-    
+
     /**
      *@param Request $request
      * @return RedirectResponse|Response
@@ -91,34 +91,36 @@ class OtpVerificationController extends AbstractController
     {
         $user = $this->getUser();
         $formOtp = $this->createForm(GetOtpForm::class, $user);
-        
-        $this->sendOtpService->checkIfAlreadyVerified($user);
-        
+        $this->get('session')->getFlashBag()->clear();
+        list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
+
+        $isVerified = $this->sendOtpService->checkIfAlreadyVerified($user);
+
+        if ($isVerified) {
+            $this->addFlash('success', 'This number is already verified.');
+            return $this->redirectToRoute($route,$routeParams);
+        }
+
         $formOtp->handleRequest($request);
         $processedOtp = $this->processOtp($user);
-        
-        if ($formOtp->isSubmitted()) {
-            if($formOtp->isValid()) {            
-                $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;
-                
-                if($userEnteredNumber !== null){
-                    $user->setMobileNumber($userEnteredNumber);
-                }
-                
-                if ($userEnteredNumber != null && $userEnteredNumber != $user->getMobileNumber()) {
-                    $user->setVerifiedAt(null);
-                }
+
+        if ($formOtp->isSubmitted() && $formOtp->isValid()) {
+            $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;
+            if($userEnteredNumber !== null){
+                $user->setMobileNumber($userEnteredNumber);
+            }
+
+            if ($userEnteredNumber !== null && $userEnteredNumber !== $user->getMobileNumber()) {
+                $user->setVerifiedAt(null);
             }
         }
-        
+
         $this->userManager->updateUser($processedOtp['updatedUser']);
-        $this->sendOtpService->send($user,$processedOtp['otp']);
+        $this->sendOtpService->send($user, $processedOtp['otp']);
         $this->addFlash('success', 'Your OTP is generated successfully..');
         return $this->redirectToRoute('app_otp_confirmed');
     }
-    
     /**
-     * 
      * @Route("/otp/verify-otp", name="app_otp_verify_otp")
      */
     public function verifyOtp(Request $request)
@@ -127,16 +129,25 @@ class OtpVerificationController extends AbstractController
         $form = $this->createForm(VerifyForm::class, $user);
 
         $storedOtp = $user->getOtp();
+        list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted()) {
             $userEnteredOtp = $form->get('otp')->getData() ?? null;
 
             if($form->isValid()) {
-                $this->sendOtpService->checkIfAlreadyVerified($user);
-                $isExpired = $this->sendOtpService->checkIfExpired($user);
-                if($isExpired)
-                {
+                [$isVerified, $isExpired] = [
+                    $this->sendOtpService->checkIfAlreadyVerified($user),
+                    $this->sendOtpService->checkIfExpired($user),
+                ];
+
+                if($isExpired) {
+                    $this->addFlash('danger', 'Entered OTP is expired.');
+                    return $this->redirectToRoute('app_otp_confirmed');
+                }
+
+                if($isVerified) {
+                    $this->addFlash('danger', 'Entered OTP is expired.');
                     return $this->redirectToRoute('app_otp_confirmed');
                 }
                 if ($storedOtp !== $userEnteredOtp) {
@@ -147,7 +158,8 @@ class OtpVerificationController extends AbstractController
                     $user->setEnabled(true);
                     $user->setVerifiedAt(new DateTime());
                     $this->userManager->updateUser($user);
-                    return $this->redirectToRoute('homepage');
+                    $this->addFlash('success', 'This number is verified successfully.');
+                    return $this->redirectToRoute($route,$routeParams);
                 }
             }
         }
@@ -171,7 +183,7 @@ class OtpVerificationController extends AbstractController
     }
 
 
-    private function processOtp(User $user) 
+    private function processOtp(User $user)
     {
         $otp = self::DEFAULT_OTP;
         if($this->env === 'dev'){
@@ -182,9 +194,17 @@ class OtpVerificationController extends AbstractController
             $otp = $this->sendOtpService->generateOtp();
             $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
             $user->setOtp($otp);
-            $user->setExpireAt($getExpireAt);     
+            $user->setExpireAt($getExpireAt);
         }
 
         return ['updatedUser' => $user,'otp' => $otp];
+    }
+
+    public function getRouteInfoFromSession()
+    {
+        return [
+            'route' => $this->get('session')->get('route'),
+            'routeParams' => $this->get('session')->get('routeParams'),
+        ];
     }
 }

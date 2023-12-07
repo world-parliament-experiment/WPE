@@ -149,14 +149,19 @@ class VoteController extends BaseController
      * @param Initiative $initiative
      * @return Response
      */
-    public function showAction(int $id)
+    public function showAction(Request $request,int $id)
     {
         $user = $this->getUser();
         $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? true : false;
 
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
-
+        $routeParams =[
+            'id' => $id,
+            'slug' => $initiative->getSlug()
+        ];
+        $this->get('session')->set('routeParams', $routeParams);
+        $this->get('session')->set('route', $request->get('_route'));
         $this->denyAccessUnlessGranted("view", $initiative);
 
         $initiative->incrementViews();

@@ -112,7 +112,8 @@ class RegistrationController extends AbstractController
     public function confirmAction(Request $request, $token)
     {
         $userManager = $this->userManager;
-
+        $this->get('session')->set('route', 'homepage');
+        $this->get('session')->set('routeParams',[]);
         $user = $userManager->findUserByConfirmationToken($token);
 
         if (null === $user) {

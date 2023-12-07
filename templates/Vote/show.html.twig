@@ -8,9 +8,9 @@
 
     {{ apy_breadcrumb_trail_render() }}
 
-    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
-
     <section class="wpe-content-area">
+        {{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
+
         <div class="container">
             <div class="row justify-content-center">
                 <!-- Post Details Content Area -->
@@ -215,15 +215,21 @@
                         <div class="btn-group" role="group" aria-label="Voting options">
                             <button type="submit" id="app_bundle_current_vote_form_voteYes"
                                     name="app_bundle_current_vote_form[voteYes]"
+                                    data-verified="{{ mobileVerified }}"
+                                    data-redirect="{{ path('app_otp_getotp') }}"
                                     data-title="{{ 'vote.current.button.vote_yes'|trans }}"
                                     class="voteBtn btn btn-light">{{ 'vote.current.button.vote_yes'|trans }}</button>
                             <button type="submit" id="app_bundle_current_vote_form_voteAbstention"
                                     name="app_bundle_current_vote_form[voteAbstention]"
                                     data-title="{{ 'vote.current.button.vote_abstention'|trans }}"
+                                    data-verified="{{ mobileVerified }}"
+                                    data-redirect="{{ path('app_otp_getotp') }}"
                                     class="voteBtn btn btn-light">{{ 'vote.current.button.vote_abstention'|trans }}</button>
                             <button type="submit" id="app_bundle_current_vote_form_voteNo"
                                     name="app_bundle_current_vote_form[voteNo]"
                                     data-title="{{ 'vote.current.button.vote_no'|trans }}"
+                                    data-verified="{{ mobileVerified }}"
+                                    data-redirect="{{ path('app_otp_getotp') }}"
                                     class="voteBtn btn btn-light">{{ 'vote.current.button.vote_no'|trans }}</button>
                         </div>
                     </div>
