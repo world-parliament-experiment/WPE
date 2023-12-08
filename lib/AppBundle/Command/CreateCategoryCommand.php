@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use AppBundle\Entity\Category;
 use AppBundle\Enum\CategoryEnum;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 
 class CreateCategoryCommand extends Command
@@ -113,15 +114,18 @@ EOT
             }
         }
         else {
+            $slugger = new AsciiSlugger();
             $category = new Category();
             $category->setName($name);
             $category->setType($type);
             $category->setCountry($country);
             $category->setDescription($description);
+            $category->setSlug($slugger);
             $this->em->persist($category);
             $this->em->flush();
                             
             $output->writeln('Saved new category with name '.$category->getName());  
         }
+        return Command::SUCCESS;
     }
 }
