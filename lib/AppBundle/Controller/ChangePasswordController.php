@@ -7,16 +7,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 class ChangePasswordController extends AbstractController
 {
 
     private $passwordEncoder;
+    private $managerRegistry;
 
     // Inject the password encoder service into your controller
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,ManagerRegistry $managerRegistry)
     {
         $this->passwordEncoder = $passwordEncoder;
+        $this->managerRegistry = $managerRegistry;
     }
 
     /**
@@ -35,7 +38,6 @@ class ChangePasswordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Get the new password from the form
             $newPassword = $form->get('newPassword')->getData();
-
             // Encode the new password using the password encoder service
             $encodedPassword = $this->passwordEncoder->encodePassword($user, $newPassword);
 
