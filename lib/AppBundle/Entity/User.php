@@ -71,7 +71,7 @@ class User implements UserInterface
     protected $username;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      
      */
     protected $usernameCanonical;
@@ -196,7 +196,7 @@ class User implements UserInterface
     protected $email;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $emailCanonical;
 
@@ -211,7 +211,7 @@ class User implements UserInterface
     protected $salt;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $password;
 

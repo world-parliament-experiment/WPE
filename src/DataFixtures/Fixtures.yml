@@ -3,47 +3,61 @@
 
 AppBundle\Entity\Category:
   category_1:
-    name: Security Policy
+    name: Security and Conflict Resolution
     description: '<text(200)>'
+    type: 0
   category_2:
     name: Economy
     description: '<text(200)>'
+    type: 0
   category_3:
     name: Environment
     description: '<text(200)>'
+    type: 0
   category_4:
-    name: Economic Aid & Sustainable Development
+    name: Gender Equality
     description: '<text(200)>'
+    type: 0
   category_5:
     name: Human rights
     description: '<text(200)>'
+    type: 0
   category_6:
     name: Health
     description: '<text(200)>'
+    type: 0
   category_7:
     name: Science & Education
     description: '<text(200)>'
+    type: 0
   category_8:
-    name: Global Democracy Project
-    description: '<text(200)>'
+    name: Germany
+    description: DE
+    type: 2
   category_9:
-    name: Global Democracy Candidates
-    description: '<text(200)>'
+    name: United States
+    description: US
+    type: 2
   category_10:
-    name: Regional
-    description: '<text(200)>'
+    name: Israel
+    description: IL
+    type: 2
   category_11:
-    name: Miscellaneous
-    description: '<text(200)>'
+    name: Ireland
+    description: IE
+    type: 2
   category_12:
-    name: Recent events
-    description: '<text(200)>'
+    name: United Kingdom
+    description: GB
+    type: 2
   category_13:
-    name: Foreign & International Relations
-    description: '<text(200)>'
+    name: Sweden
+    description: SE
+    type: 2
   category_14:
-    name: Software & Ideas
-    description: '<text(200)>'
+    name: Norway
+    description: NO
+    type: 2
 
 AppBundle\Entity\User:
 
@@ -55,6 +69,7 @@ AppBundle\Entity\User:
     userRoles: ['ROLE_USER']
     city: '<city()>'
     birthday: "<dateTimeBetween('-70 years', '-18 years')>"
+    registeredAt: "<dateTime('today')>"
     consents: 1
 
   user_moderator (template, extends user_base):
@@ -65,45 +80,45 @@ AppBundle\Entity\User:
 
   user_1 (extends user_admin):
     username: borchert
+    usernameCanonical: borchert 
     firstname: Konstantin
     lastname: Borchert
     email: borchert@antsatwork.de
+    emailCanonical: borchert@antsatwork.de
     gender: 'MALE'
     country: 'DE'
     city: 'München'
 
   user_2 (extends user_admin):
-    username: leidel
-    firstname: Andrea
-    lastname: Leidel
-    email: a.leidel@cowic.de
-    gender: 'FEMALE'
-    country: 'DE'
-    city: 'München'
+    username: RoPhSe1978
+    usernameCanonical: RoPhSe1978
+    firstname: Robert
+    lastname: Sell
+    email: robert.sell@world-parliament.org
+    emailCanonical: robert.sell@world-parliament.org
+    gender: 'MALE'
+    country: 'DK'
+    city: 'Ikast'
 
   user_3 (extends user_moderator):
     username: florian
+    usernameCanonical: florian
     firstname: Florian
     lastname: Borchert
     email: borchert@cylusion.com
+    emailCanonical: borchert@cylusion.com
     gender: 'MALE'
     country: 'DE'
     city: 'München'
 
-  user_4 (extends user_admin):
-    username: roehrdanz
-    firstname: Dirk
-    lastname: Röhrdanz
-    email: roehrdanz@cylusion.com
-    gender: 'MALE'
-    country: 'DE'
-    city: 'Peine'
 
-  user_{5..50} (extends user_base):
+  user_{4..50} (extends user_base):
     username:  "<username()>"
+    usernameCanonical: "<username()>"
     firstname: "<firstname()>"
     lastname: "<lastname()>"
     email: "<email()>"
+    emailCanonical: "<email()>"
     gender: "<randomElement(['MALE', 'FEMALE', 'DIVERSE', 'NOT STATED'])>"
 
 AppBundle\Entity\UserImage:
@@ -124,6 +139,7 @@ AppBundle\Entity\Initiative:
     views: "<numberBetween(0,1000)>"
     createdAt: "<dateTimeBetween('-6 months', 'now')>"
     publishedAt: "<dateTimeBetween($createdAt, 'now')>"
+    slug: 
 
   initiative_future (template, extends initiative_base):
     type: 0
@@ -168,10 +184,10 @@ AppBundle\Entity\Initiative:
   initiative_{56..60}_program_deleted (extends initiative_program):
     state: 4
 
-  initiative_{61..80}_future_active (extends initiative_future):
+  initiative_future_active_{61..80} (extends initiative_future):
     state: 1
 
-  initiative_{81..100}_current_active (extends initiative_current):
+  initiative_current_active_{81..100} (extends initiative_current):
     state: 1
 
   initiative_{101..130}_past_finished (extends initiative_past):
@@ -179,7 +195,7 @@ AppBundle\Entity\Initiative:
 
   initiative_{131..160}_program_finished (extends initiative_program):
     state: 2
-
+ 
 AppBundle\Entity\Voting:
   voting_root (template):
     quorum: 0.1
@@ -190,12 +206,12 @@ AppBundle\Entity\Voting:
   voting_{61..80}_future (extends voting_root):
     type: 0
     state: 1
-    initiative: "@initiative_<current()>_future_active"
+    initiative: "@initiative_future_active_<current()>"
 
   voting_{81..100}_current (extends voting_root):
     type: 1
     state: 1
-    initiative: "@initiative_<current()>_current_active"
+    initiative: "@initiative_current_active_<current()>"
 
 AppBundle\Entity\Comment:
   comment_root (template):
@@ -204,15 +220,16 @@ AppBundle\Entity\Comment:
     # message: "<testObjectMethod($initiative)>"
     state: 0
     createdBy: "@user_*"
-    createdAt: "<calcDateTimeByInitiative($initiative)>"
+    createdAt: "@initiative_*->createdAt"
     liked: "<numberBetween(0,100)>"
     disliked: "<numberBetween(0,25)>"
     reported: "<numberBetween(0,5)>"
+    updatedAt: "@initiative_*->createdAt"
 
-  comment_{1..500}_root (extends comment_root):
+  comment_root_{1..500} (extends comment_root):
 
-  comment_{501..700}_children (extends comment_root):
-    parent: "@comment_*_root"
+  comment_children_{501..700} (extends comment_root):
+    parent: "@comment_root_*"
 
 AppBundle\Entity\Delegation:
 
