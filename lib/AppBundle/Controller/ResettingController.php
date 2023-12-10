@@ -47,6 +47,8 @@ class ResettingController extends AbstractController
     {
         $username = $request->request->get('username');
         $user = $this->userManager->findUserByEmail($username);
+        if (!$user) {$user = $this->userManager->getUserByUsername($username);} 
+        
 
         $user->setEnabled(false);
         if (null === $user->getConfirmationToken()) {
