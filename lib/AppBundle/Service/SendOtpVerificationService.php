@@ -20,13 +20,12 @@ class SendOtpVerificationService
         $this->logger = $logger;
         $this->userManager = $userManager;
     }
-    public function send($user,$otp): void
+    public function send($user,$otp,$telePhoneCode): void
     {
-        $code = $_ENV['COUNTRY_CODE'];
         $url = $_ENV['API_URL'];
         $textMessage = $_ENV['SMS_MESSAGE'];
         $message = sprintf($textMessage,$user->getUsername(),$otp);
-        $phoneNumber = $code . $user->getMobileNumber();
+        $phoneNumber = $telePhoneCode . $user->getMobileNumber();
 
         $headers = [
             'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],

@@ -2,10 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\CountriesCodes;
 use AppBundle\Entity\User;
 use AppBundle\Form\GetOtpForm;
 use AppBundle\Form\RegistrationForm;
 use AppBundle\Form\VerifyForm;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 // use FOS\UserBundle\Model\UserManagerInterface;
 use AppBundle\Service\UserManager;
@@ -29,11 +31,14 @@ class OtpVerificationController extends AbstractController
     private $sendOtpService;
     private $env;
 
-    public function __construct(UserManager $userManager, SendOtpVerificationService $sendOtpService,KernelInterface $kernel)
+    private $logger;
+
+    public function __construct(UserManager $userManager, SendOtpVerificationService $sendOtpService,KernelInterface $kernel,LoggerInterface $logger)
     {
         $this->userManager = $userManager;
         $this->sendOtpService = $sendOtpService;
         $this->env = $kernel->getEnvironment();
+        $this->logger = $logger;
     }
 
     /**
@@ -42,8 +47,18 @@ class OtpVerificationController extends AbstractController
     public function confirmedAction(Request $request)
     {
         $user = $this->getUser();
-        $formOtp = $this->createForm(GetOtpForm::class, $user);
+        $formData = [
+            'mobileNumber' => $user->getMobileNumber(),
+            'countryCode' => $user->getCountry()
+        ];
+
+        $data = $request->request->all();
+        $formOtp = $this->createForm(GetOtpForm::class, $formData);
         $form = $this->createForm(VerifyForm::class, $user);
+
+        $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['countryCode'];
+        $telephoneCode = $this->searchCountryCode($code);
+
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
         [$isVerified, $isExpired] = [
@@ -70,7 +85,7 @@ class OtpVerificationController extends AbstractController
         if($user->getOtp() == null){
             $processedOtp = $this->processOtp($user);
             $this->userManager->updateUser($processedOtp['updatedUser']);
-            $this->sendOtpService->send($user,$processedOtp['otp']);
+            $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode);
             $this->addFlash('success', 'Your OTP is generated successfully..');
         }
         return $this->render('registration/otp-verification.html.twig', array(
@@ -90,10 +105,21 @@ class OtpVerificationController extends AbstractController
     public function getOtp(Request $request)
     {
         $user = $this->getUser();
-        $formOtp = $this->createForm(GetOtpForm::class, $user);
+        $formData = [
+            'mobileNumber' => $user->getMobileNumber(),
+            'countryCode' => $user->getCountry()
+        ];
+
+        $data = $request->request->all();
+        $formOtp = $this->createForm(GetOtpForm::class, $formData);
+        $form = $this->createForm(VerifyForm::class, $user);
         $this->get('session')->getFlashBag()->clear();
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
+        $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['countryCode'];
+
+        $telephoneCode = $this->searchCountryCode($code);
+        $this->logger->info("Code and telefone :" ,[$code,$telephoneCode]);
         $isVerified = $this->sendOtpService->checkIfAlreadyVerified($user);
 
         if ($isVerified) {
@@ -105,6 +131,8 @@ class OtpVerificationController extends AbstractController
         $processedOtp = $this->processOtp($user);
 
         if ($formOtp->isSubmitted() && $formOtp->isValid()) {
+            $telephoneCode = $formOtp->get('countryCode')->getData();
+
             $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;
             if($userEnteredNumber !== null){
                 $user->setMobileNumber($userEnteredNumber);
@@ -116,9 +144,15 @@ class OtpVerificationController extends AbstractController
         }
 
         $this->userManager->updateUser($processedOtp['updatedUser']);
-        $this->sendOtpService->send($user, $processedOtp['otp']);
+        $this->sendOtpService->send($user, $processedOtp['otp'], $telephoneCode);
         $this->addFlash('success', 'Your OTP is generated successfully..');
-        return $this->redirectToRoute('app_otp_confirmed');
+        return $this->render('registration/otp-verification.html.twig', array(
+            'resend' => false,
+            'user' => $user,
+            'form' => $form->createView(),
+            'formOtp' => $formOtp->createView(),
+            'targetUrl' => 'homepage',
+        ));
     }
     /**
      * @Route("/otp/verify-otp", name="app_otp_verify_otp")
@@ -206,5 +240,22 @@ class OtpVerificationController extends AbstractController
             'route' => $this->get('session')->get('route'),
             'routeParams' => $this->get('session')->get('routeParams'),
         ];
+    }
+
+    public function searchCountryCode($code)
+    {
+        $keys = array_keys(CountriesCodes::COUNTRY_CODES);
+        $keySearch = array_search($code, $keys);
+
+        if ($keySearch !== false) {
+            return $keys[$keySearch];
+        }
+
+        $valueSearch = array_search($code, CountriesCodes::COUNTRY_CODES);
+        if ($valueSearch !== false) {
+            return $valueSearch;
+        }
+
+        return null;
     }
 }
