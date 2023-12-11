@@ -47,7 +47,7 @@ class SendOtpVerificationService
         } catch (RequestException $e) {
             $this->logger->debug('Failed to send OTP:');
             $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
-            $this->logger->debug('Exception : ' . json_encode($e->getTrace()));
+            $this->logger->debug('Exception : ' . json_encode($e->getMessage()));
             throw new RequestException('Something went wrong..' ,$e->getRequest());
         }    
     }
