@@ -9,9 +9,14 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use AppBundle\Entity\User;
+use Exception;
+use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Notifier\Channel\SmsChannel;
+use Throwable;
 
 class SendOtpVerificationService
 {
+    public const SMS_MESSAGE = "WPE";
     private $logger;
     private $userManager;
 
@@ -23,10 +28,10 @@ class SendOtpVerificationService
     public function send($user,$otp,$telePhoneCode): void
     {
         $url = $_ENV['API_URL'];
-        $textMessage = $_ENV['SMS_MESSAGE'];
+        $textMessage = (strlen($_ENV['SMS_MESSAGE']) > 11) ? self::SMS_MESSAGE : $_ENV['SMS_MESSAGE'];
         $message = sprintf($textMessage,$user->getUsername(),$otp);
         $phoneNumber = $telePhoneCode . $user->getMobileNumber();
-
+      
         $headers = [
             'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],
             'Authorization' => 'Token ' . $_ENV['SMS_AUTHORIZATION'],
@@ -50,6 +55,11 @@ class SendOtpVerificationService
             $this->logger->debug('Exception : ' . json_encode($e->getMessage()));
             throw new RequestException('Something went wrong..' ,$e->getRequest());
         }    
+        catch (Throwable $e) {
+            $this->logger->debug('Failed to send OTP:');
+            $this->logger->debug('An error has occured while sending otp: ',['messasge' => $e->getMessage()]);
+            throw new Exception('Something went wrong..');
+        }   
     }
 
     public function generateOtp(){
