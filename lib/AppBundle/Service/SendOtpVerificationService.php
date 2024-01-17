@@ -25,26 +25,26 @@ class SendOtpVerificationService
         $this->logger = $logger;
         $this->userManager = $userManager;
     }
-    public function send($user,$otp,$telePhoneCode): void
+    public function send($user,$otp,$telePhoneCode)
     {
-        $url = $_ENV['API_URL'];
-        $textMessage = (strlen($_ENV['SMS_MESSAGE']) > 11) ? self::SMS_MESSAGE : $_ENV['SMS_MESSAGE'];
-        $message = sprintf($textMessage,$user->getUsername(),$otp);
-        $phoneNumber = $telePhoneCode . $user->getMobileNumber();
-      
-        $headers = [
-            'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],
-            'Authorization' => 'Token ' . $_ENV['SMS_AUTHORIZATION'],
-        ];
-    
-        $options = [
-            'form_params' => [
-                'sender' => $_ENV['SMS_SENDER'],
-                'message' => $message,
-                'recipients.0.msisdn' => $phoneNumber
-            ]
-        ];
         try {
+            $url = $_ENV['API_URL'];
+            $textMessage = (strlen($_ENV['SMS_MESSAGE']) > 11) ? self::SMS_MESSAGE : $_ENV['SMS_MESSAGE'];
+            $message = sprintf($textMessage,$user->getUsername(),$otp);
+            $phoneNumber = $telePhoneCode . $user->getMobileNumber();
+        
+            $headers = [
+                'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],
+                'Authorization' => 'Token ' . $_ENV['SMS_AUTHORIZATION'],
+            ];
+        
+            $options = [
+                'form_params' => [
+                    'sender' => $_ENV['SMS_SENDER'],
+                    'message' => $message,
+                    'recipients.0.msisdn' => $phoneNumber
+                ]
+            ];
             $client = new Client();
             $request = new Request('POST',$url, $headers);
             $res = $client->sendAsync($request, $options)->wait();
@@ -53,13 +53,17 @@ class SendOtpVerificationService
             $this->logger->debug('Failed to send OTP:');
             $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
             $this->logger->debug('Exception : ' . json_encode($e->getMessage()));
-            throw new RequestException('Something went wrong..' ,$e->getRequest());
+            
+            return false;
         }    
         catch (Throwable $e) {
             $this->logger->debug('Failed to send OTP:');
             $this->logger->debug('An error has occured while sending otp: ',['messasge' => $e->getMessage()]);
-            throw new Exception('Something went wrong..');
+           
+            return false;
         }   
+
+        return true;
     }
 
     public function generateOtp(){

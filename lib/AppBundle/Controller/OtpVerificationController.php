@@ -85,9 +85,15 @@ class OtpVerificationController extends AbstractController
         if($user->getOtp() == null){
             $processedOtp = $this->processOtp($user);
             $this->userManager->updateUser($processedOtp['updatedUser']);
-            $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode);
-            $this->addFlash('success', 'Your OTP is generated successfully..');
+            
+            if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
+            {
+                $this->addFlash("danger", "An error has occured.While sending otp");
+            } else {
+                $this->addFlash('success', 'Your OTP is generated successfully..');
+            }
         }
+        
         return $this->render('registration/otp-verification.html.twig', array(
             'resend' => false,
             'user' => $user,
@@ -144,8 +150,13 @@ class OtpVerificationController extends AbstractController
         }
 
         $this->userManager->updateUser($processedOtp['updatedUser']);
-        $this->sendOtpService->send($user, $processedOtp['otp'], $telephoneCode);
-        $this->addFlash('success', 'Your OTP is generated successfully..');
+       
+        if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
+        {
+            $this->addFlash("danger", "An error has occured.While sending otp");
+        } else {
+            $this->addFlash('success', 'Your OTP is generated successfully..');
+        }
         return $this->render('registration/otp-verification.html.twig', array(
             'resend' => false,
             'user' => $user,
@@ -198,24 +209,6 @@ class OtpVerificationController extends AbstractController
             }
         }
     }
-
-    /**
-     * @param Request $request
-     * @return Response
-     * @Route("/otp/verification", name="app_otp_verification")
-     */
-    public function redirectToVerification(Request $request)
-    {
-        $user = $this->getUser();
-        $form = $this->createForm(VerifyForm::class, $user);
-
-        return $this->render('registration/otp-verification.html.twig', array(
-            'username' => $user->getUsername(),
-            'user' => $user,
-            'form' => $form->createView(),
-        ));
-    }
-
 
     private function processOtp(User $user)
     {
