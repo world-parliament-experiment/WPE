@@ -19,28 +19,52 @@ class SendOtpVerificationService
     public const SMS_MESSAGE = "WPE";
     private $logger;
     private $userManager;
+    private $smsMessage;
+    private $smsContentType;
+    private $smsAuth;
+    private $smsSender;
+    private $smsToken;
+    private $smsHost;
+    private $smsApiUrl;
 
-    public function __construct(LoggerInterface $logger,UserManager $userManager)
+    public function __construct(
+        LoggerInterface $logger,
+        UserManager $userManager,
+        $smsMessage,
+        $smsContentType,
+        $smsAuth,
+        $smsSender,
+        $smsToken,
+        $smsHost,
+        $smsApiUrl
+    )
     {
         $this->logger = $logger;
         $this->userManager = $userManager;
+        $this->smsMessage = $smsMessage;
+        $this->smsContentType = $smsContentType;
+        $this->smsAuth = $smsAuth;
+        $this->smsSender = $smsSender;
+        $this->smsToken = $smsToken;
+        $this->smsHost = $smsHost;
+        $this->smsApiUrl = $smsApiUrl;
     }
     public function send($user,$otp,$telePhoneCode)
     {
         try {
-            $url = $_ENV['API_URL'];
-            $textMessage = (strlen($_ENV['SMS_MESSAGE']) > 11) ? self::SMS_MESSAGE : $_ENV['SMS_MESSAGE'];
+            $url = $this->smsApiUrl;
+            $textMessage = (strlen($this->smsMessage) > 11) ? self::SMS_MESSAGE : $this->smsMessage;
             $message = sprintf($textMessage,$user->getUsername(),$otp);
             $phoneNumber = $telePhoneCode . $user->getMobileNumber();
-        
+
             $headers = [
-                'Content-Type' =>  $_ENV['SMS_CONTENT_TYPE'],
-                'Authorization' => 'Token ' . $_ENV['SMS_AUTHORIZATION'],
+                'Content-Type' => $this->smsContentType,
+                'Authorization' => 'Token ' . $this->smsAuth,
             ];
-        
+
             $options = [
                 'form_params' => [
-                    'sender' => $_ENV['SMS_SENDER'],
+                    'sender' => $this->smsSender,
                     'message' => $message,
                     'recipients.0.msisdn' => $phoneNumber
                 ]
@@ -48,20 +72,20 @@ class SendOtpVerificationService
             $client = new Client();
             $request = new Request('POST',$url, $headers);
             $res = $client->sendAsync($request, $options)->wait();
-            
+
         } catch (RequestException $e) {
             $this->logger->debug('Failed to send OTP:');
             $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
             $this->logger->debug('Exception : ' . json_encode($e->getMessage()));
-            
+
             return false;
-        }    
+        }
         catch (Throwable $e) {
             $this->logger->debug('Failed to send OTP:');
             $this->logger->debug('An error has occured while sending otp: ',['messasge' => $e->getMessage()]);
-           
+
             return false;
-        }   
+        }
 
         return true;
     }
@@ -75,7 +99,7 @@ class SendOtpVerificationService
 
     public function setExpirationOfOtp(){
         $currentDateTime = new DateTime();
-       
+
         $currentDateTime->add(new DateInterval('PT1M'))->format('Y-m-d H:i:s');
 
         return $currentDateTime;
