@@ -30,13 +30,13 @@ class SendOtpVerificationService
     public function __construct(
         LoggerInterface $logger,
         UserManager $userManager,
-        $smsMessage,
-        $smsContentType,
-        $smsAuth,
-        $smsSender,
-        $smsToken,
-        $smsHost,
-        $smsApiUrl
+        string $smsMessage,
+        string $smsContentType,
+        string $smsAuth,
+        string $smsSender,
+        string $smsToken,
+        string $smsHost,
+        string $smsApiUrl
     )
     {
         $this->logger = $logger;

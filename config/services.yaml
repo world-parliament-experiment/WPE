@@ -32,7 +32,7 @@ services:
     AppBundle\Service\:
         resource: '../lib/AppBundle/Service/'
         autowire: true
-        arguments:
+        bind:
             $smsMessage: '%env(SMS_MESSAGE)%'
             $smsContentType: '%env(SMS_CONTENT_TYPE)%'
             $smsAuth: '%env(SMS_AUTHORIZATION)%'
