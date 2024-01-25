@@ -53,8 +53,7 @@ class SendOtpVerificationService
     {
         try {
             $url = $this->smsApiUrl;
-            $textMessage = (strlen($this->smsMessage) > 11) ? self::SMS_MESSAGE : $this->smsMessage;
-            $message = sprintf($textMessage,$user->getUsername(),$otp);
+            $message = sprintf($this->smsMessage,$user->getUsername(),$otp);
             $phoneNumber = $telePhoneCode . $user->getMobileNumber();
 
             $headers = [
