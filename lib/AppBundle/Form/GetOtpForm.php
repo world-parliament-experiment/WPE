@@ -32,20 +32,11 @@ class GetOtpForm extends AbstractType
                 'help' => 'form.country_help', 'translation_domain' => 'FOSUserBundle', 'attr' => [
                     'title' => 'Please choose a country.'
                 ],
-                'choices' => array_flip($options['countries'])
+                'choices' => array_flip($options['countries']),
+                'data' => !empty($options['data']['countryCode']) ? (string)$options['data']['countryCode'] : 0
             ])
         ;
     }
-    // public function getParent()
-    // {
-    //     return 'FOS\UserBundle\Form\Type\RegistrationFormType';
-
-    // }
-
-    // public function getBlockPrefix()
-    // {
-    //     return 'app_user_registration';
-    // }
 
     public function configureOptions(OptionsResolver $resolver)
     {

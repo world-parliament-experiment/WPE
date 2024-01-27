@@ -110,3 +110,11 @@
 	</div>
 	<!-- ##### Login Area End ##### -->
 {% endblock body %}
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		$(document).ready(function (){
+			$('#get_otp_form_countryCode').val('{{ selectedCountry }}');
+		});
+	</script>
+{% endblock javascripts %}

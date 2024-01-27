@@ -26,7 +26,7 @@ class OtpVerificationController extends AbstractController
      * @var FormFactoryInterface
      * @Autowired
      */
-    private const DEFAULT_OTP = 1234; 
+    private const DEFAULT_OTP = 1234;
     private $userManager;
     private $sendOtpService;
     private $env;
@@ -49,7 +49,7 @@ class OtpVerificationController extends AbstractController
         $user = $this->getUser();
         $formData = [
             'mobileNumber' => $user->getMobileNumber(),
-            'countryCode' => $user->getCountry()
+            'countryCode' => $this->searchCountryCode($user->getCountry())
         ];
 
         $data = $request->request->all();
@@ -80,12 +80,13 @@ class OtpVerificationController extends AbstractController
                 'formOtp' => $formOtp->createView(),
                 'form' => $form->createView(),
                 'targetUrl' => 'homepage',
+                'selectedCountry' => $formData['countryCode']
             ));
         }
         if($user->getOtp() == null){
             $processedOtp = $this->processOtp($user);
             $this->userManager->updateUser($processedOtp['updatedUser']);
-            
+
             if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
             {
                 $this->addFlash("danger", "An error has occured.While sending otp");
@@ -93,13 +94,14 @@ class OtpVerificationController extends AbstractController
                 $this->addFlash('success', 'Your OTP is generated successfully..');
             }
         }
-        
+
         return $this->render('registration/otp-verification.html.twig', array(
             'resend' => false,
             'user' => $user,
             'form' => $form->createView(),
             'formOtp' => $formOtp->createView(),
             'targetUrl' => 'homepage',
+            'selectedCountry' => $formData['countryCode']
         ));
     }
 
@@ -113,7 +115,7 @@ class OtpVerificationController extends AbstractController
         $user = $this->getUser();
         $formData = [
             'mobileNumber' => $user->getMobileNumber(),
-            'countryCode' => $user->getCountry()
+            'countryCode' => $this->searchCountryCode($user->getCountry())
         ];
 
         $data = $request->request->all();
@@ -125,6 +127,7 @@ class OtpVerificationController extends AbstractController
         $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['countryCode'];
 
         $telephoneCode = $this->searchCountryCode($code);
+
         $this->logger->info("Code and telefone :" ,[$code,$telephoneCode]);
         $isVerified = $this->sendOtpService->checkIfAlreadyVerified($user);
 
@@ -150,7 +153,7 @@ class OtpVerificationController extends AbstractController
         }
 
         $this->userManager->updateUser($processedOtp['updatedUser']);
-       
+
         if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
         {
             $this->addFlash("danger", "An error has occured.While sending otp");
@@ -163,6 +166,7 @@ class OtpVerificationController extends AbstractController
             'form' => $form->createView(),
             'formOtp' => $formOtp->createView(),
             'targetUrl' => 'homepage',
+            'selectedCountry' => $formData['countryCode']
         ));
     }
     /**
@@ -212,17 +216,10 @@ class OtpVerificationController extends AbstractController
 
     private function processOtp(User $user)
     {
-        $otp = self::DEFAULT_OTP;
-        if($this->env === 'dev'){
-            $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
-            $user->setOtp($otp);
-            $user->setExpireAt($getExpireAt);
-        } else {
-            $otp = $this->sendOtpService->generateOtp();
-            $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
-            $user->setOtp($otp);
-            $user->setExpireAt($getExpireAt);
-        }
+        $otp = $this->sendOtpService->generateOtp();
+        $getExpireAt = $this->sendOtpService->setExpirationOfOtp();
+        $user->setOtp($otp);
+        $user->setExpireAt($getExpireAt);
 
         return ['updatedUser' => $user,'otp' => $otp];
     }

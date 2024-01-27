@@ -54,7 +54,11 @@ class SendOtpVerificationService
         try {
             $url = $this->smsApiUrl;
             $message = sprintf($this->smsMessage,$user->getUsername(),$otp);
-            $phoneNumber = $telePhoneCode . $user->getMobileNumber();
+            $phoneNumber = $user->getMobileNumber();
+            if ( $user->getMobileNumber() !== null && !preg_match('/^\+/',  $user->getMobileNumber())) {
+
+                $phoneNumber = $telePhoneCode . $user->getMobileNumber();
+            }
 
             $headers = [
                 'Content-Type' => $this->smsContentType,
