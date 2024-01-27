@@ -22,7 +22,7 @@ class GetOtpForm extends AbstractType
             ->add('mobileNumber', NumberType::class, [
                 'label' => 'form.mobileNumber',
                 'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
-                    'pattern' => '[0-9]*',
+                    'pattern' => '[0-9+\s]*',
                     'title' => 'Please enter phone number in digits.',
                     'readonly' => 'true'
                 ]
