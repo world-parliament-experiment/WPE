@@ -72,9 +72,6 @@ class ProfileController extends AbstractController
     public function editAction(Request $request)
     {
         $user = $this->getUser();
-
-        $this->get('session')->set('route', $request->get('_route'));
-        $this->get('session')->set('routeParams',[]);
         if (!is_object($user)) {
             throw new AccessDeniedException('This user does not have access to this section.');
         }
@@ -89,6 +86,8 @@ class ProfileController extends AbstractController
             
             $this->addFlash('success', 'The profile has been updated.');
             if($oldPhoneNumber != null || $oldPhoneNumber != $form->get('mobileNumber')->getData()){
+                $this->get('session')->set('route', $request->get('_route'));
+                $this->get('session')->set('routeParams',[]);
                 return $this->redirectToRoute('app_otp_getotp');
             }
         }

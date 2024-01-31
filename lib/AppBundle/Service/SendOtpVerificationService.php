@@ -54,12 +54,13 @@ class SendOtpVerificationService
         try {
             $url = $this->smsApiUrl;
             $message = sprintf($this->smsMessage,$user->getUsername(),$otp);
-            $phoneNumber = $user->getMobileNumber();
-            if ( $user->getMobileNumber() !== null && !preg_match('/^\+/',  $user->getMobileNumber())) {
+            $phoneNumber = preg_replace('/^\+/','',  $user->getMobileNumber());
+
+            if ( $user->getMobileNumber() !== null && !preg_match('/^\+/', $user->getMobileNumber())) {
 
                 $phoneNumber = $telePhoneCode . $user->getMobileNumber();
             }
-
+ 
             $headers = [
                 'Content-Type' => $this->smsContentType,
                 'Authorization' => 'Token ' . $this->smsAuth,
@@ -116,7 +117,7 @@ class SendOtpVerificationService
         return false;
     }
 
-    public function checkIfAlreadyVerified(User $user)
+    public function checkIfAlreadyVerifiedOrNot(User $user)
     {
         if (null != $user->getVerifiedAt()) {
             $user->setConfirmationToken(null);

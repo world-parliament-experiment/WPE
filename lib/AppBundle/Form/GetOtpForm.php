@@ -19,7 +19,7 @@ class GetOtpForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('mobileNumber', NumberType::class, [
+            ->add('mobileNumber', TextType::class, [
                 'label' => 'form.mobileNumber',
                 'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
                     'pattern' => '[0-9+\s]*',
@@ -33,7 +33,7 @@ class GetOtpForm extends AbstractType
                     'title' => 'Please choose a country.'
                 ],
                 'choices' => array_flip($options['countries']),
-                'data' => !empty($options['data']['countryCode']) ? (string)$options['data']['countryCode'] : 0
+                'data' => !empty($options['countryCode']) ? (string)$options['countryCode'] : 0
             ])
         ;
     }

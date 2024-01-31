@@ -11,6 +11,7 @@ use AppBundle\Enum\CommentEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -659,6 +660,7 @@ class VoteController extends BaseController
                         $vote->setValue(-1);
                     }
 
+                    $vote->setVotedAt(new DateTime());
                     $em->persist($vote);
                     $em->flush();
 

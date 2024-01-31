@@ -71,7 +71,7 @@ class RegistrationForm extends AbstractType
                         ]) ],
                     'label' => 'form.mobileNumber', 
                     'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
-                        'pattern' => '[0-9]*',
+                        'pattern' => '[0-9+\s]*',
                         'title' => 'Please enter phone number in digits.',
                     ],
                 ])

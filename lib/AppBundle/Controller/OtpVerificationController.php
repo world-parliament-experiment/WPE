@@ -62,7 +62,7 @@ class OtpVerificationController extends AbstractController
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
         [$isVerified, $isExpired] = [
-            $this->sendOtpService->checkIfAlreadyVerified($user),
+            $this->sendOtpService->checkIfAlreadyVerifiedOrNot($user),
             $this->sendOtpService->checkIfExpired($user),
         ];
 
@@ -117,7 +117,7 @@ class OtpVerificationController extends AbstractController
             'mobileNumber' => $user->getMobileNumber(),
             'countryCode' => $this->searchCountryCode($user->getCountry())
         ];
-
+        
         $data = $request->request->all();
         $formOtp = $this->createForm(GetOtpForm::class, $formData);
         $form = $this->createForm(VerifyForm::class, $user);
@@ -125,20 +125,11 @@ class OtpVerificationController extends AbstractController
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
         $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['countryCode'];
-
         $telephoneCode = $this->searchCountryCode($code);
-
         $this->logger->info("Code and telefone :" ,[$code,$telephoneCode]);
-        $isVerified = $this->sendOtpService->checkIfAlreadyVerified($user);
-
-        if ($isVerified) {
-            $this->addFlash('success', 'This number is already verified.');
-            return $this->redirectToRoute($route,$routeParams);
-        }
-
+        
         $formOtp->handleRequest($request);
-        $processedOtp = $this->processOtp($user);
-
+        
         if ($formOtp->isSubmitted() && $formOtp->isValid()) {
             $telephoneCode = $formOtp->get('countryCode')->getData();
 
@@ -150,8 +141,13 @@ class OtpVerificationController extends AbstractController
             if ($userEnteredNumber !== null && $userEnteredNumber !== $user->getMobileNumber()) {
                 $user->setVerifiedAt(null);
             }
+            $countryCode = $formOtp->get('countryCode')->getData();
+            $country = array_search($countryCode,array_flip(CountriesCodes::COUNTRY_CODES));
+           
+            $user->setCountry($country);
         }
-
+        $processedOtp = $this->processOtp($user);
+        $user->setVerifiedAt(null);
         $this->userManager->updateUser($processedOtp['updatedUser']);
 
         if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
@@ -186,7 +182,7 @@ class OtpVerificationController extends AbstractController
 
             if($form->isValid()) {
                 [$isVerified, $isExpired] = [
-                    $this->sendOtpService->checkIfAlreadyVerified($user),
+                    $this->sendOtpService->checkIfAlreadyVerifiedOrNot($user),
                     $this->sendOtpService->checkIfExpired($user),
                 ];
 

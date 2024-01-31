@@ -46,7 +46,7 @@ class CountriesCodes
         '237' => 'Cameroon',
         '1' => 'Canada',
         '238' => 'Cape Verde',
-        ' 345' => 'Cayman Islands',
+        '345' => 'Cayman Islands',
         '236' => 'Central African Republic',
         '235' => 'Chad',
         '56' => 'Chile',

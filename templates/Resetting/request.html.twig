@@ -19,7 +19,15 @@
 
                         <form action="{{ path('app_resetting_sendmail') }}" method="POST" class="fos_user_resetting_request margin-bottom-0">
                             <div class="form-group m-b-20">
-                                <input type="text" id="username" name="username" required="required" class="form-control input-lg" placeholder="{{ 'resetting.request.username'|trans }}" />
+                                <div class="input-group has-validation">
+                                    <input type="text" id="username" name="username" required="required" class="form-control input-lg {% if error is defined %} is-invalid  {% endif %}" placeholder="{{ 'resetting.request.username'|trans }}" aria-describedby="inputGroupPrepend3 validationServerUsernameFeedback" required />
+                                
+                                    {% if error is defined %}
+                                        <div class="invalid-feedback">
+                                            {{ error }}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="login-buttons">
                                 <button type="submit" id="_submit" name="_submit" class="btn btn-success btn-block btn-lg">{{ 'resetting.request.submit'|trans }}</button>

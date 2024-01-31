@@ -65,14 +65,14 @@ class ProfileForm extends AbstractType
             ],'label' => 'form.lastname', 
             'attr' => ['class' => 'form-control'],
             'help' => 'form.lastname_help', 'translation_domain' => 'FOSUserBundle'))
-            ->add('mobileNumber', NumberType::class, [
+            ->add('mobileNumber', TextType::class, [
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter your mobile number',
                     ]) ],
                 'label' => 'form.mobileNumber', 
                 'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
-                    'pattern' => '[0-9]*',
+                    'pattern' => '[0-9+\s]*',
                     'title' => 'Please enter phone number in digits.',
                 ],
             ])
