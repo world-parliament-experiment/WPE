@@ -64,7 +64,7 @@ class RegistrationForm extends AbstractType
                     ]) ],
                 'label' => 'form.lastname', 
                 'help' => 'form.lastname_help', 'translation_domain' => 'FOSUserBundle'])
-            ->add('mobileNumber', NumberType::class, [
+            ->add('mobileNumber',TextType::class, [
                     'constraints' => [
                         new NotBlank([
                             'message' => 'Please enter your mobile number',

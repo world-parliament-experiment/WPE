@@ -153,7 +153,8 @@ class VoteController extends BaseController
     public function showAction(Request $request,int $id)
     {
         $user = $this->getUser();
-        $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? true : false;
+        $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? 1 : 0;
+        $isPhoneNumberExist = ($user->getMobileNumber() !== null) ? 1 : 0;
 
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
@@ -191,6 +192,7 @@ class VoteController extends BaseController
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'proposal',
                 'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         } elseif ($initiative->getType() === 1) {
@@ -200,6 +202,7 @@ class VoteController extends BaseController
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'vote',
                 'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         } elseif ($initiative->getType() === 2) {
@@ -209,6 +212,7 @@ class VoteController extends BaseController
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'unsuccessful initiative',
                 'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         } else {
@@ -218,6 +222,7 @@ class VoteController extends BaseController
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'adopted vote',
                 'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         }

@@ -33,7 +33,7 @@ class GetOtpForm extends AbstractType
                     'title' => 'Please choose a country.'
                 ],
                 'choices' => array_flip($options['countries']),
-                'data' => !empty($options['countryCode']) ? (string)$options['countryCode'] : 0
+                'data' => !empty($options['data']['countryCode']) ? (string)$options['data']['countryCode'] : 0
             ])
         ;
     }

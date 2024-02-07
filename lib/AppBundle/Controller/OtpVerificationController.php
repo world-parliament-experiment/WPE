@@ -61,28 +61,6 @@ class OtpVerificationController extends AbstractController
 
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
-        [$isVerified, $isExpired] = [
-            $this->sendOtpService->checkIfAlreadyVerifiedOrNot($user),
-            $this->sendOtpService->checkIfExpired($user),
-        ];
-
-        if($isVerified)
-        {
-            $this->addFlash('success', 'This number is already verified.');
-            return $this->redirectToRoute($route,$routeParams);
-        }
-        if($isExpired)
-        {
-            $this->addFlash('danger', 'Your OTP is expired.Kindly generate a new otp');
-            return $this->render('registration/otp-verification.html.twig', array(
-                'resend' => true,
-                'user' => $user,
-                'formOtp' => $formOtp->createView(),
-                'form' => $form->createView(),
-                'targetUrl' => 'homepage',
-                'selectedCountry' => $formData['countryCode']
-            ));
-        }
         if($user->getOtp() == null){
             $processedOtp = $this->processOtp($user);
             $this->userManager->updateUser($processedOtp['updatedUser']);
@@ -119,7 +97,9 @@ class OtpVerificationController extends AbstractController
         ];
         
         $data = $request->request->all();
-        $formOtp = $this->createForm(GetOtpForm::class, $formData);
+        $formOtp = $this->createForm(GetOtpForm::class, null, [
+            'data' => $formData
+        ]);
         $form = $this->createForm(VerifyForm::class, $user);
         $this->get('session')->getFlashBag()->clear();
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
@@ -171,7 +151,7 @@ class OtpVerificationController extends AbstractController
     public function verifyOtp(Request $request)
     {
         $user = $this->getUser();
-        $form = $this->createForm(VerifyForm::class, $user);
+        $form = $this->createForm(VerifyForm::class);
 
         $storedOtp = $user->getOtp();
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
@@ -179,7 +159,7 @@ class OtpVerificationController extends AbstractController
 
         if ($form->isSubmitted()) {
             $userEnteredOtp = $form->get('otp')->getData() ?? null;
-
+            
             if($form->isValid()) {
                 [$isVerified, $isExpired] = [
                     $this->sendOtpService->checkIfAlreadyVerifiedOrNot($user),
@@ -192,7 +172,7 @@ class OtpVerificationController extends AbstractController
                 }
 
                 if($isVerified) {
-                    $this->addFlash('danger', 'Entered OTP is expired.');
+                    $this->addFlash('danger', 'Entered phone number is alreday verified.');
                     return $this->redirectToRoute('app_otp_confirmed');
                 }
                 if ($storedOtp !== $userEnteredOtp) {
@@ -208,6 +188,21 @@ class OtpVerificationController extends AbstractController
                 }
             }
         }
+        $this->addFlash('danger', 'Please enter valide otp.');
+        return $this->redirectToRoute('app_otp_confirmed');
+    }
+
+    /**
+     * @Route("/otp/render-verfication", name="app_render_otp_form")
+     */
+    public function renderOtpForm(Request $request)
+    {
+        $formOtp = $this->createForm(GetOtpForm::class);
+        
+        return $this->render('registration/otp-verification-popup.html.twig', array(    
+            'formOtp' => $formOtp->createView(),
+            'resend' => false
+        ));
     }
 
     private function processOtp(User $user)

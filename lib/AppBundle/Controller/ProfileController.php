@@ -85,7 +85,11 @@ class ProfileController extends AbstractController
             $this->userManager->updateUser($user);
             
             $this->addFlash('success', 'The profile has been updated.');
-            if($oldPhoneNumber != null || $oldPhoneNumber != $form->get('mobileNumber')->getData()){
+            if(($oldPhoneNumber == null && 
+                $form->get('mobileNumber')->getData() !== null) ||
+                ($oldPhoneNumber != null && 
+                $oldPhoneNumber != $form->get('mobileNumber')->getData())
+            ){
                 $this->get('session')->set('route', $request->get('_route'));
                 $this->get('session')->set('routeParams',[]);
                 return $this->redirectToRoute('app_otp_getotp');

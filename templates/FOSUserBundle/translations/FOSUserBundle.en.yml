@@ -88,6 +88,7 @@ verification:
     verify: 'Verify'
     send: 'Send OTP'
     verified: 'Verified'
+    update: 'Update'
 
 # Global strings
 layout:
