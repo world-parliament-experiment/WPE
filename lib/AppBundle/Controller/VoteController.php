@@ -18,7 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-
+use Exception;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * Vote controller.
@@ -151,7 +153,11 @@ class VoteController extends BaseController
      * @return Response
      */
     public function showAction(Request $request,int $id)
-    {
+    {   
+        if(! $user = $this->getUser()){
+            $this->addFlash("success", "Please do login first in order to cast your valuable vote.");
+            return $this->redirectToRoute('app_login');
+        }
         $user = $this->getUser();
         $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? 1 : 0;
         $isPhoneNumberExist = ($user->getMobileNumber() !== null) ? 1 : 0;

@@ -23,7 +23,6 @@ class SendOtpVerificationService
     private $smsContentType;
     private $smsAuth;
     private $smsSender;
-    private $smsHost;
     private $smsApiUrl;
 
     public function __construct(
@@ -33,7 +32,6 @@ class SendOtpVerificationService
         string $smsContentType,
         string $smsAuth,
         string $smsSender,
-        string $smsHost,
         string $smsApiUrl
     )
     {
@@ -43,7 +41,6 @@ class SendOtpVerificationService
         $this->smsContentType = $smsContentType;
         $this->smsAuth = $smsAuth;
         $this->smsSender = $smsSender;
-        $this->smsHost = $smsHost;
         $this->smsApiUrl = $smsApiUrl;
     }
     public function send($user,$otp,$telePhoneCode)
@@ -73,6 +70,7 @@ class SendOtpVerificationService
             $client = new Client();
             $request = new Request('POST',$url, $headers);
             $res = $client->sendAsync($request, $options)->wait();
+            $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
 
         } catch (RequestException $e) {
             $this->logger->debug('Failed to send OTP:');
