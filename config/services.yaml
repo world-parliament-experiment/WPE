@@ -37,7 +37,6 @@ services:
             $smsContentType: '%env(SMS_CONTENT_TYPE)%'
             $smsAuth: '%env(SMS_AUTHORIZATION)%'
             $smsSender: '%env(SMS_SENDER)%'
-            $smsToken: '%env(SMS_GATEWAY_TOKEN)%'
             $smsHost: '%env(SMS_GATEWAY_HOST)%'
             $smsApiUrl: '%env(API_URL)%'
     AppBundle\Util\:

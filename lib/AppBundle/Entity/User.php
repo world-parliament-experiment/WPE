@@ -19,7 +19,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @ORM\Table(name="fos_user")
  * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
- */
+ * @UniqueEntity(fields={"mobileNumber"}, message="There is already an account with this mobile number")
+ **/
+
 class User implements UserInterface
 {
 

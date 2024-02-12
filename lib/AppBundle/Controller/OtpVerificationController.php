@@ -53,10 +53,15 @@ class OtpVerificationController extends AbstractController
         ];
 
         $data = $request->request->all();
-        $formOtp = $this->createForm(GetOtpForm::class, $formData);
+        $user->setCountry($this->searchCountryCode($user->getCountry()));
+        if(isset($data['get_otp_form'])){
+            $user->setMobileNumber($data['get_otp_form']['mobileNumber']);
+        }
+
+        $formOtp = $this->createForm(GetOtpForm::class, $user);
         $form = $this->createForm(VerifyForm::class, $user);
 
-        $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['countryCode'];
+        $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['country'];
         $telephoneCode = $this->searchCountryCode($code);
 
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
@@ -91,29 +96,34 @@ class OtpVerificationController extends AbstractController
     public function getOtp(Request $request)
     {
         $user = $this->getUser();
+        $country = $user->getCountry();
         $formData = [
             'mobileNumber' => $user->getMobileNumber(),
             'countryCode' => $this->searchCountryCode($user->getCountry())
         ];
         
         $data = $request->request->all();
-        $formOtp = $this->createForm(GetOtpForm::class, null, [
-            'data' => $formData
-        ]);
+       
+        $user->setCountry($this->searchCountryCode($user->getCountry()));
+        if(isset($data['get_otp_form'])){
+            $user->setMobileNumber($data['get_otp_form']['mobileNumber']);
+        }
+
+        $formOtp = $this->createForm(GetOtpForm::class, $user);
+
         $form = $this->createForm(VerifyForm::class, $user);
         $this->get('session')->getFlashBag()->clear();
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
-        $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['countryCode'];
+        $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['country'];
         $telephoneCode = $this->searchCountryCode($code);
         $this->logger->info("Code and telefone :" ,[$code,$telephoneCode]);
         
         $formOtp->handleRequest($request);
-        
         if ($formOtp->isSubmitted() && $formOtp->isValid()) {
-            $telephoneCode = $formOtp->get('countryCode')->getData();
+            $telephoneCode = $formOtp->get('country')->getData();
 
-            $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;
+            $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;  
             if($userEnteredNumber !== null){
                 $user->setMobileNumber($userEnteredNumber);
             }
@@ -121,21 +131,28 @@ class OtpVerificationController extends AbstractController
             if ($userEnteredNumber !== null && $userEnteredNumber !== $user->getMobileNumber()) {
                 $user->setVerifiedAt(null);
             }
-            $countryCode = $formOtp->get('countryCode')->getData();
+            $countryCode = $formOtp->get('country')->getData();
             $country = array_search($countryCode,array_flip(CountriesCodes::COUNTRY_CODES));
            
             $user->setCountry($country);
         }
         $processedOtp = $this->processOtp($user);
         $user->setVerifiedAt(null);
-        $this->userManager->updateUser($processedOtp['updatedUser']);
-
-        if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
-        {
-            $this->addFlash("danger", "An error has occured.While sending otp");
+        $errors = $formOtp->getErrors(true, false)    ;
+       
+        if(count($errors) === 0){
+            $user->setCountry( $country);
+            $this->userManager->updateUser($processedOtp['updatedUser']); 
+            if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
+            {
+                $this->addFlash("danger", "An error has occured.While sending otp");
+            } else {
+                $this->addFlash('success', 'Your OTP is generated successfully..');
+            }
         } else {
-            $this->addFlash('success', 'Your OTP is generated successfully..');
+            $this->addFlash("danger", "An error has occured.While sending otp");
         }
+
         return $this->render('registration/otp-verification.html.twig', array(
             'resend' => false,
             'user' => $user,

@@ -23,7 +23,6 @@ class SendOtpVerificationService
     private $smsContentType;
     private $smsAuth;
     private $smsSender;
-    private $smsToken;
     private $smsHost;
     private $smsApiUrl;
 
@@ -34,7 +33,6 @@ class SendOtpVerificationService
         string $smsContentType,
         string $smsAuth,
         string $smsSender,
-        string $smsToken,
         string $smsHost,
         string $smsApiUrl
     )
@@ -45,7 +43,6 @@ class SendOtpVerificationService
         $this->smsContentType = $smsContentType;
         $this->smsAuth = $smsAuth;
         $this->smsSender = $smsSender;
-        $this->smsToken = $smsToken;
         $this->smsHost = $smsHost;
         $this->smsApiUrl = $smsApiUrl;
     }

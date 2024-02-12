@@ -16,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class GetOtpForm extends AbstractType
 {
+  
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -27,13 +28,13 @@ class GetOtpForm extends AbstractType
                     'readonly' => 'true'
                 ]
             ])
-            ->add('countryCode', ChoiceType::class, [
+            ->add('country', ChoiceType::class, [
                 'label' => 'form.country',
                 'help' => 'form.country_help', 'translation_domain' => 'FOSUserBundle', 'attr' => [
                     'title' => 'Please choose a country.'
                 ],
                 'choices' => array_flip($options['countries']),
-                'data' => !empty($options['data']['countryCode']) ? (string)$options['data']['countryCode'] : 0
+                // 'data' => !empty($options['empty_data']) ? $options['empty_data'] : 0
             ])
         ;
     }
