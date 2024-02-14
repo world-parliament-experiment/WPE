@@ -3827,4 +3827,30 @@ textarea.form-control {
   color: #ffffff;
 }
 
+.changeNumbercls{
+  height: 48px !important;
+  margin-top: 4px;
+}
+
+#verify_form_mobileNumber:read-only{
+  cursor: not-allowed;
+  border: none !important;
+}
+
+#disableMobileDiv{
+  display: none;
+}
+
+#changeNumberSubmit{
+  display: none;
+}
+
+.center-align{
+  font-size: 20px;
+}
+
+.jconfirm-buttons{
+  text-align:center !important;
+  float: unset !important;
+}
 /* ====== The End ====== */

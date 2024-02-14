@@ -19,7 +19,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @ORM\Table(name="fos_user")
  * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
- */
+ * @UniqueEntity(fields={"mobileNumber"}, message="There is already an account with this mobile number")
+ **/
+
 class User implements UserInterface
 {
 
@@ -94,12 +96,39 @@ class User implements UserInterface
      */
     protected $lastname;
 
-
-    /**
+     /**
      * @ORM\Column(type="string", nullable=true)
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default", "simple"})
   
+     */
+    protected $mobileNumber;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @JMSSerializer\Type("string")  
+     */
+    protected $otp;
+
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
+     * @JMSSerializer\SerializedName("verifiedAt")*
+     * 
+     */
+    protected $verifiedAt;
+
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
+     * @JMSSerializer\SerializedName("expireAt")*
+     * 
+     */
+    protected $expireAt;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default", "simple"})
      */
     protected $gender;
 
@@ -114,6 +143,7 @@ class User implements UserInterface
      * @JMSSerializer\Groups({"default", "simple"})
    
      */
+    
     protected $country;
 
     /**
@@ -238,7 +268,6 @@ class User implements UserInterface
      */
     protected $lastLogin;
 
-
     public function __construct()
     {
         // parent::__construct();
@@ -321,6 +350,22 @@ class User implements UserInterface
     public function setCity($city)
     {
         $this->city = $city;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMobileNumber()
+    {
+        return $this->mobileNumber;
+    }
+
+    /**
+     * @param string $city
+     */
+    public function setMobileNumber($mobileNumber)
+    {
+        $this->mobileNumber = $mobileNumber;
     }
    
     /**
@@ -667,5 +712,65 @@ class User implements UserInterface
     
     public function isAccountNonLocked () {
         return true;
+    }
+
+    /**
+     * Get the value of verifiedAt
+     */ 
+    public function getVerifiedAt()
+    {
+        return $this->verifiedAt;
+    }
+
+    /**
+     * Set the value of verifiedAt
+     *
+     * @return  self
+     */ 
+    public function setVerifiedAt($verifiedAt)
+    {
+        $this->verifiedAt = $verifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of otp
+     */ 
+    public function getOtp()
+    {
+        return $this->otp;
+    }
+
+    /**
+     * Set the value of otp
+     *
+     * @return  self
+     */ 
+    public function setOtp($otp)
+    {
+        $this->otp = $otp;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of expireAt
+     */ 
+    public function getExpireAt()
+    {
+        return $this->expireAt;
+    }
+
+    /**
+     * Set the value of expireAt
+     *
+     * @return  self
+     */ 
+    public function setExpireAt($expireAt)
+    {
+        $this->expireAt = $expireAt;
+
+        return $this;
     }
 }

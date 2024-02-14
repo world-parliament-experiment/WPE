@@ -11,13 +11,16 @@ use AppBundle\Enum\CommentEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-
+use Exception;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * Vote controller.
@@ -149,12 +152,24 @@ class VoteController extends BaseController
      * @param Initiative $initiative
      * @return Response
      */
-    public function showAction(int $id)
-    {
+    public function showAction(Request $request,int $id)
+    {   
+        if(! $user = $this->getUser()){
+            $this->addFlash("success", "Please do login first in order to cast your valuable vote.");
+            return $this->redirectToRoute('app_login');
+        }
+        $user = $this->getUser();
+        $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? 1 : 0;
+        $isPhoneNumberExist = ($user->getMobileNumber() !== null) ? 1 : 0;
+
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
-        // dd($initiative);
-
+        $routeParams =[
+            'id' => $id,
+            'slug' => $initiative->getSlug()
+        ];
+        $this->get('session')->set('routeParams', $routeParams);
+        $this->get('session')->set('route', $request->get('_route'));
         $this->denyAccessUnlessGranted("view", $initiative);
 
         $initiative->incrementViews();
@@ -182,6 +197,8 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'proposal',
+                'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         } elseif ($initiative->getType() === 1) {
@@ -190,6 +207,8 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'vote',
+                'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         } elseif ($initiative->getType() === 2) {
@@ -198,6 +217,8 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'unsuccessful initiative',
+                'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         } else {
@@ -206,6 +227,8 @@ class VoteController extends BaseController
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'adopted vote',
+                'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
         }
@@ -648,6 +671,7 @@ class VoteController extends BaseController
                         $vote->setValue(-1);
                     }
 
+                    $vote->setVotedAt(new DateTime());
                     $em->persist($vote);
                     $em->flush();
 

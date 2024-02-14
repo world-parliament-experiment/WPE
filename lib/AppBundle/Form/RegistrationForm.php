@@ -23,6 +23,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\User;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
+use NumberFormatter;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+
 
 class RegistrationForm extends AbstractType
 {
@@ -61,6 +64,17 @@ class RegistrationForm extends AbstractType
                     ]) ],
                 'label' => 'form.lastname', 
                 'help' => 'form.lastname_help', 'translation_domain' => 'FOSUserBundle'])
+            ->add('mobileNumber',TextType::class, [
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Please enter your mobile number',
+                        ]) ],
+                    'label' => 'form.mobileNumber', 
+                    'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
+                        'pattern' => '[0-9+\s]*',
+                        'title' => 'Please enter phone number in digits.',
+                    ],
+                ])
             ->add('gender', HiddenType::class, ['label' => 'form.gender', 'empty_data' => 'not stated','translation_domain' => 'FOSUserBundle'])
             ->add(
                 'country',
