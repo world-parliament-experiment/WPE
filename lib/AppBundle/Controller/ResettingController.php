@@ -46,9 +46,6 @@ class ResettingController extends AbstractController
     public function sendEmail(Request $request)
     {
         $username = $request->request->get('username');
-        $user = $this->userManager->findUserByEmail($username);
-        if (!$user) {$user = $this->userManager->getUserByUsername($username);} 
-        
 
         $user->setEnabled(false);
         if (null === $user->getConfirmationToken()) {
