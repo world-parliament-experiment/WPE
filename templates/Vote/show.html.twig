@@ -8,9 +8,8 @@
 
     {{ apy_breadcrumb_trail_render() }}
 
-    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
-
     <section class="wpe-content-area">
+        {{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
         <div class="container">
             <div class="row justify-content-center">
                 <!-- Post Details Content Area -->
@@ -49,7 +48,6 @@
 
                                 <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
                                     data-slug="{{ initiative.slug }}"></div>
-
                                 {% if initiative.type == 1 and  initiative.state == 1 %}
                                     <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted in either direction, the vote will end and the results will be evaluated immediately.</p><p>You can see the support result history of this initiative <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
                                 {% endif %}
@@ -179,14 +177,13 @@
         <p><%= content %></p>
     </script>
     <script type="text/template" id="js-vote-info-template">
-        <p><%= content %></p>
+        <p><%= content %></p> 
         <div data-countdown="<%= enddate %>" class="countdown"></div>
     </script>
     <script type="text/template" id="js-vote-counter-template">
         <div data-countdown="<%= startdate %>" class="countdown"></div>
     </script>
     <script type="text/template" id="js-vote-future-form-template">
-
         <form name="app_bundle_future_vote_form" method="post" class="form-horizontal">
             <div id="app_bundle_future_vote_form">
                 <div class="form-group">
@@ -194,6 +191,9 @@
                         <button type="submit" id="app_bundle_future_vote_form_vote"
                                 name="app_bundle_future_vote_form[vote]"
                                 data-title="{{ 'vote.future.button.vote_yes'|trans }}"
+                                data-verified="{{ mobileVerified }}"
+                                data-number="{{ phoneNumberExist }}"
+                                data-redirect="{{ path('app_otp_getotp') }}"
                                 class="voteBtn btn btn-light">{{ 'vote.future.button.vote_yes'|trans }}</button>
                     </div>
                 </div>
@@ -215,15 +215,24 @@
                         <div class="btn-group" role="group" aria-label="Voting options">
                             <button type="submit" id="app_bundle_current_vote_form_voteYes"
                                     name="app_bundle_current_vote_form[voteYes]"
+                                    data-verified="{{ mobileVerified }}"
+                                    data-number="{{ phoneNumberExist }}"
+                                    data-redirect="{{ path('app_otp_getotp') }}"
                                     data-title="{{ 'vote.current.button.vote_yes'|trans }}"
                                     class="voteBtn btn btn-light">{{ 'vote.current.button.vote_yes'|trans }}</button>
                             <button type="submit" id="app_bundle_current_vote_form_voteAbstention"
                                     name="app_bundle_current_vote_form[voteAbstention]"
                                     data-title="{{ 'vote.current.button.vote_abstention'|trans }}"
+                                    data-verified="{{ mobileVerified }}"
+                                    data-number="{{ phoneNumberExist }}"
+                                    data-redirect="{{ path('app_otp_getotp') }}"
                                     class="voteBtn btn btn-light">{{ 'vote.current.button.vote_abstention'|trans }}</button>
                             <button type="submit" id="app_bundle_current_vote_form_voteNo"
                                     name="app_bundle_current_vote_form[voteNo]"
                                     data-title="{{ 'vote.current.button.vote_no'|trans }}"
+                                    data-verified="{{ mobileVerified }}"
+                                    data-number="{{ phoneNumberExist }}"
+                                    data-redirect="{{ path('app_otp_getotp') }}"
                                     class="voteBtn btn btn-light">{{ 'vote.current.button.vote_no'|trans }}</button>
                         </div>
                     </div>

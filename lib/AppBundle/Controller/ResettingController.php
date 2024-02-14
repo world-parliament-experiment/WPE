@@ -51,6 +51,7 @@ class ResettingController extends AbstractController
                 'error' => 'User not found with this email.'
             ]);
         }
+
         $user->setEnabled(false);
         if (null === $user->getConfirmationToken()) {
             $user->setConfirmationToken($user->generateToken());
