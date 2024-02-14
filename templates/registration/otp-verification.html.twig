@@ -1,0 +1,122 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+	{{ include ('Widget/_breadcrumb.html.twig', {title: 'Verification', background: asset('assets/img/header/register_large.jpg')}, with_context = false) }}
+
+	{{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+	<!-- ##### Breadcrumb Area End ##### -->
+
+	{#{% if isset error %}#}
+	{#<div class="mag-error-area pt-5">#}
+	{#<div class="container">#}
+	{#<div class="row justify-content-center">#}
+	{#<div class="col-12 col-lg-6">#}
+	{#<div class="error-content bg-danger p-30 box-shadow">#}
+	{#{{ error.messageKey|trans(error.messageData, 'security') }}#}
+	{#</div>#}
+	{#</div>#}
+	{#</div>#}
+	{#</div>#}
+	{#</div>#}
+	{#{% endif %}#}
+
+	<!-- ##### register Area Start ##### -->
+
+		<div class="wpe-content-area py-5"> <div class="container">
+			<div class="row justify-content-center">
+				<div class="col-12 col-lg-8">
+					<div
+						class="register-content form-submit-content bg-white p-30 box-shadow">
+						<!-- Section Title -->
+						<div class="section-heading">
+							<h5>Verify your number!</h5>
+						</div>
+
+						{% trans_default_domain 'FOSUserBundle' %}
+						{{ form_start(formOtp, { 'action': path('app_otp_getotp'), 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0'} }) }}
+							<div class="row">
+								<div class="col-md-8">
+									{{ form_row(formOtp.country, {'attr': {'class': 'form-control'}}) }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6">
+									{{ form_row(formOtp.mobileNumber) }}
+								</div>
+								<div class="col-6">
+									<div class="row mt-4">
+										<div class="col-3" id="changeNumberDiv">
+											<div class="login-buttons">
+												<button type="button" id="changeNumber" name="changeNumber" class="btn btn-success changeNumbercls">
+													<span id="changeNumberBtn">{{ 'verification.change' |trans }}</span>
+												</button>
+											</div>
+										</div>
+										<div class="col-3" id="changeNumberSubmit">
+											<div class="login-buttons">
+												<button type="submit" name="changeNumber" class="btn btn-success changeNumbercls">
+													<span>{{ 'verification.update' |trans }}</span>
+												</button>
+											</div>
+										</div>
+										<div class="col-4"  id="disableMobileDiv">
+											<div class="login-buttons">
+												<button type="button" id="disableMobileNumber" name="getOtp" class="btn btn-danger changeNumbercls">
+													<span>{{ 'verification.reset' |trans }}</span>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						{{ form_end(formOtp) }}
+						{% if form is defined %}
+							{{ form_start(form, { 'action': path('app_otp_verify_otp'), 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0'} }) }}
+							<div class="row">
+								<div class="col-6">
+									<div class="form-group">
+										{{ form_row(form.otp, { 'attr': { 'value': null } }) }}
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="login-buttons mt-4">
+										<button type="submit" id="submitOtpVerify" name="submit" class="btn btn-success changeNumbercls">{{ 'verification.verify' |trans }}</button>
+									</div>
+								</div>
+							</div>
+
+							{{ form_end(form) }}
+						{% endif %}
+
+						{% if resend == true %}
+							<div class="text-center">
+								<span>Resend otp after
+								</span>
+								<span></span>
+								<span><b><a href="{{ path('app_otp_getotp') }}">resend otp</a></b></span>
+							</div>
+						{% else %}
+							<div class="text-center" id="timerDiv">
+								<span>Resend otp after
+								</span>
+								<span id="timer"></span>
+								<span><b><a id="resendButton" href="{{ path('app_otp_getotp') }}" class="d-none">resend otp</a></b></span>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ##### Login Area End ##### -->
+{% endblock body %}
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		{# $(document).ready(function (){
+			$('#get_otp_form_countryCode').val('{{ selectedCountry }}');
+		}); #}
+	</script>
+{% endblock javascripts %}

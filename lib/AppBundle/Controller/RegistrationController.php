@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Form\RegistrationForm;
+use AppBundle\Form\VerifyForm;
 use Symfony\Component\Form\FormFactoryInterface;
 // use FOS\UserBundle\Model\UserManagerInterface;
 use AppBundle\Service\UserManager;
@@ -12,15 +13,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Validator\Validation;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use AppBundle\Service\Mailer;
+use AppBundle\Service\SendOtpVerificationService;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\String\Slugger\AsciiSlugger;
+use DateTime;
 
 class RegistrationController extends AbstractController
 {
@@ -32,13 +32,15 @@ class RegistrationController extends AbstractController
     private $managerRegistry;
     private $userManager;
     private $mailer;
+    private $sendOtpService;
 
-    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer,ManagerRegistry $managerRegistry)
+    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager, Mailer $mailer,ManagerRegistry $managerRegistry,SendOtpVerificationService $sendOtpService)
     {
         $this->formFactory = $formFactory;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
         $this->managerRegistry = $managerRegistry;
+        $this->sendOtpService = $sendOtpService;
     }
 
     /**
@@ -47,7 +49,6 @@ class RegistrationController extends AbstractController
     public function registerAction(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
-
         $form = $this->createForm(RegistrationForm::class, $user);
         $form->handleRequest($request);
         // $user->setEnabled(true);
@@ -55,10 +56,11 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted()) {
 
             if($form->isValid()) {
+                //How we will get the country code.
                 $user->setRegisteredAt(new \DateTime());
                 $user->setUsernameCanonical($form->get('username')->getData());
                 $user->setEmailCanonical($form->get('email')->getData());
-
+                $user->setMobileNumber($form->get('mobileNumber')->getData());
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
@@ -110,7 +112,8 @@ class RegistrationController extends AbstractController
     public function confirmAction(Request $request, $token)
     {
         $userManager = $this->userManager;
-
+        $this->get('session')->set('route', 'homepage');
+        $this->get('session')->set('routeParams',[]);
         $user = $userManager->findUserByConfirmationToken($token);
 
         if (null === $user) {
@@ -122,9 +125,6 @@ class RegistrationController extends AbstractController
         // Set the token in the security context
         $this->get('security.token_storage')->setToken($tokenKey);
 
-        $user->setConfirmationToken(null);
-        $user->setEnabled(true);
-
         $userManager->updateUser($user);
 
         return $this->redirectToRoute('app_register_confirmed');
@@ -133,15 +133,9 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/register/confirmed", name="app_register_confirmed")
      */
-    public function confirmedAction(Request $request)
+    public function confirmedAction()
     {
-        $user = $this->getUser();
-
-        return $this->render('registration/confirmed.html.twig', array(
-            'username' => $user->getUsername(),
-            'user' => $user,
-            'targetUrl' => 'homepage',
-        ));
+        return $this->redirectToRoute('app_otp_confirmed');
     }
 
      /**

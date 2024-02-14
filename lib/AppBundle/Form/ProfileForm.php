@@ -25,7 +25,7 @@ use Symfony\Component\Intl\Intl;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
-
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class ProfileForm extends AbstractType
 {
@@ -65,6 +65,17 @@ class ProfileForm extends AbstractType
             ],'label' => 'form.lastname', 
             'attr' => ['class' => 'form-control'],
             'help' => 'form.lastname_help', 'translation_domain' => 'FOSUserBundle'))
+            ->add('mobileNumber', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter your mobile number',
+                    ]) ],
+                'label' => 'form.mobileNumber', 
+                'help' => 'form.mobileNumber_help', 'translation_domain' => 'FOSUserBundle',    'attr' => [
+                    'pattern' => '[0-9+\s]*',
+                    'title' => 'Please enter phone number in digits.',
+                ],
+            ])
             ->add('gender', ChoiceType::class, array('label' => 'form.gender', 
             'attr' => ['class' => 'form-control'],
             'help' => 'form.gender_help', 'translation_domain' => 'FOSUserBundle',
