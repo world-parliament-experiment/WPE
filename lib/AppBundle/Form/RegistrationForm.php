@@ -129,7 +129,7 @@ class RegistrationForm extends AbstractType
                 'translation_domain' => 'FOSUserBundle',
             ]);
         ;
-        
+
         $builder->get('consents')
             ->addModelTransformer(new CallbackTransformer(
                 function ($type) {
