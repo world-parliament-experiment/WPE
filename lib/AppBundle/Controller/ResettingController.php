@@ -46,7 +46,11 @@ class ResettingController extends AbstractController
     public function sendEmail(Request $request)
     {
         $username = $request->request->get('username');
-
+        if(! $user = $this->userManager->findUserByEmail($username)){
+            return $this->render('Resetting/request.html.twig',[
+                'error' => 'User not found with this email.'
+            ]);
+        }
         $user->setEnabled(false);
         if (null === $user->getConfirmationToken()) {
             $user->setConfirmationToken($user->generateToken());
