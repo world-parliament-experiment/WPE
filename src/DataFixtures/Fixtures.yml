@@ -139,7 +139,6 @@ AppBundle\Entity\Initiative:
     views: "<numberBetween(0,1000)>"
     createdAt: "<dateTimeBetween('-6 months', 'now')>"
     publishedAt: "<dateTimeBetween($createdAt, 'now')>"
-    slug: 
 
   initiative_future (template, extends initiative_base):
     type: 0
