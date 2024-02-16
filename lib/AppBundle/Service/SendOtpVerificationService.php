@@ -70,18 +70,18 @@ class SendOtpVerificationService
             $client = new Client();
             $request = new Request('POST',$url, $headers);
             $res = $client->sendAsync($request, $options)->wait();
-            $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
+            $this->logger->error('Request URI : ' . $url . json_encode($options) . $message);
 
         } catch (RequestException $e) {
-            $this->logger->debug('Failed to send OTP:');
-            $this->logger->debug('Request URI : ' . $url . json_encode($options) . $message);
-            $this->logger->debug('Exception : ' . json_encode($e->getMessage()));
+            $this->logger->error('Failed to send OTP:');
+            $this->logger->error('Request URI : ' . $url . json_encode($options) . $message);
+            $this->logger->error('Exception : ' . json_encode($e->getMessage()));
 
             return false;
         }
         catch (Throwable $e) {
-            $this->logger->debug('Failed to send OTP:');
-            $this->logger->debug('An error has occured while sending otp: ',['messasge' => $e->getMessage()]);
+            $this->logger->error('Failed to send OTP:');
+            $this->logger->error('An error has occured while sending otp: ',['messasge' => $e->getMessage()]);
 
             return false;
         }
