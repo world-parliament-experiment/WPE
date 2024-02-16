@@ -20,7 +20,7 @@ final class Version20240212053835 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE fos_user ADD CONSTRAINT fos_user_unique UNIQUE KEY (mobile_number);');
+        $this->addSql('ALTER TABLE fos_user ADD CONSTRAINT fos_user_unique UNIQUE KEY (mobileNumber);');
     }
 
     public function down(Schema $schema): void
@@ -29,3 +29,4 @@ final class Version20240212053835 extends AbstractMigration
 
     }
 }
+N
