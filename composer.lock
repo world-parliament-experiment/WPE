@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f04f2e9c6031727f6a54847c529c921",
+    "content-hash": "a8a4e5c62e686d39cabcd1f5f9437819",
     "packages": [
         {
             "name": "apy/breadcrumbtrail-bundle",
@@ -295,7 +295,6 @@
             },
             "dist": {
                 "type": "zip",
-                "reference": "2b44dd4cbca8b5744327de78bafef5945c7e7b5e",
                 "url": "https://api.github.com/repos/doctrine/collections/zipball/72328a11443a0de79967104ad36ba7b30bded134",
                 "reference": "72328a11443a0de79967104ad36ba7b30bded134",
                 "shasum": ""
@@ -9375,61 +9374,6 @@
                 }
             ],
             "time": "2023-11-03T14:41:28+00:00"
-        },
-        {
-            "name": "thalidzhokov/country-codes",
-            "version": "1.0.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thalidzhokov/country-codes.git",
-                "reference": "22744e683abac167afa3a07a32020ecaf41bd1f0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thalidzhokov/country-codes/zipball/22744e683abac167afa3a07a32020ecaf41bd1f0",
-                "reference": "22744e683abac167afa3a07a32020ecaf41bd1f0",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.6 || ^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "CountryCodes.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Albert Thalidzhokov"
-                }
-            ],
-            "description": "CountryCodes PHP Class to get array of countries with ISO 3166-1 alpha-2, ISO 3166-1 alpha-3, ISO 3166-1 numeric and ISD codes it can provide following information related to country",
-            "keywords": [
-                "3166",
-                "alpha-2",
-                "alpha-3",
-                "country calling codes",
-                "country codes",
-                "country dial in codes",
-                "idd",
-                "internatiguonal subscriber dialing",
-                "international direct dialing",
-                "international organization for standardization",
-                "isd",
-                "iso",
-                "iso-3166-1",
-                "numeric"
-            ],
-            "support": {
-                "issues": "https://github.com/thalidzhokov/country-codes/issues",
-                "source": "https://github.com/thalidzhokov/country-codes/tree/master"
-            },
-            "time": "2018-08-08T13:10:47+00:00"
         },
         {
             "name": "twig/extra-bundle",
