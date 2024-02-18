@@ -143,12 +143,16 @@ class OtpVerificationController extends AbstractController
         if(count($errors) === 0){
             $user->setCountry( $country);
             $this->userManager->updateUser($processedOtp['updatedUser']); 
-            if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
-            {
-                $this->addFlash("danger", "An error has occured.While sending otp");
-            } else {
-                $this->addFlash('success', 'Your OTP is generated successfully..');
-            }
+            try {
+                if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
+                {
+                    $this->addFlash("danger", "An error has occured.While sending otp");
+                } else {
+                    $this->addFlash('success', 'Your OTP is generated successfully..');
+                }
+            } catch(\Throwable $th) {
+                $this->logger->error($th->getMessage(), $th->getTrace());
+            }   
         } else {
             $this->addFlash("danger", "An error has occured.While sending otp");
         }
