@@ -88,5 +88,7 @@ class EvaluateVotingsCommand extends Command
             $output->writeln($message);
         }
 
+        return Command::SUCCESS;
+
     }
 }
