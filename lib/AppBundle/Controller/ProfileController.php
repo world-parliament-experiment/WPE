@@ -72,11 +72,10 @@ class ProfileController extends AbstractController
     public function editAction(Request $request)
     {
         $user = $this->getUser();
-
         if (!is_object($user)) {
             throw new AccessDeniedException('This user does not have access to this section.');
         }
-
+        $oldPhoneNumber = $user->getMobileNumber(); 
         $form = $this->createForm(ProfileForm::class, $user);
         $form->handleRequest($request);
 
@@ -84,8 +83,17 @@ class ProfileController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
       
             $this->userManager->updateUser($user);
-
+            
             $this->addFlash('success', 'The profile has been updated.');
+            if(($oldPhoneNumber == null && 
+                $form->get('mobileNumber')->getData() !== null) ||
+                ($oldPhoneNumber != null && 
+                $oldPhoneNumber != $form->get('mobileNumber')->getData())
+            ){
+                $this->get('session')->set('route', $request->get('_route'));
+                $this->get('session')->set('routeParams',[]);
+                return $this->redirectToRoute('app_otp_getotp');
+            }
         }
 
         return $this->render('Profile/edit.html.twig', array(

@@ -3,7 +3,7 @@
 {% block body %}
 
     {{ include ('Widget/_breadcrumb.html.twig', {title: 'Login', background: 'assets/img/header/register_large.jpg'}, with_context = false) }}
-
+    {{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
     {% if error %}
         <div class="mag-error-area pt-5">
             <div class="container">

@@ -16,6 +16,7 @@
         "excelwebzone/recaptcha-bundle": "^1.5",
         "friendsofsymfony/ckeditor-bundle": "^2.4",
         "friendsofsymfony/jsrouting-bundle": "^2.8",
+        "guzzlehttp/guzzle": "^7.8",
         "incenteev/composer-parameter-handler": "^2.1",
         "jms/serializer-bundle": "^5.2",
         "joshtronic/php-loremipsum": "^2.1",
@@ -52,7 +53,6 @@
         "symfony/validator": "5.4.*",
         "symfony/web-link": "5.4.*",
         "symfony/yaml": "5.4.*",
-        "thalidzhokov/country-codes": "^1.0",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
     },

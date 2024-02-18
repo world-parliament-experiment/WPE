@@ -156,33 +156,89 @@
             var $form = $btn.closest('form');
 
             if($btn.attr('name')) {
-
                 console.log('clicked: ' + $btn.attr('name'));
                 var title = $btn.data("title");
-
-                $.confirm({
-                    title: false,
-                    columnClass: 'medium',
-                    content: '<p>You will vote with ' +
-                        '<strong style="font-size: 20px;"> ' + title + ' </strong>' +
-                        ' if you proceed.</p>',
-                    buttons: {
-                        vote: {
-                            text: '<i class="fas fa-vote-yea fa-fw"></i> vote',
-                            keys: ['y', 'enter'],
-                            btnClass: 'btn-success',
-                            action: function () {
-                                self._storage.submitButton = $btn.attr('name');
-                                $form.submit();
+                var verify = $btn.data('verified');
+                var phoneNumber = $btn.data("number");
+                console.log(phoneNumber,$btn)
+                if(verify == 1){
+                    $.confirm({
+                        title: false,
+                        columnClass: 'medium',
+                        content: '<p>You will vote with ' +
+                            '<strong style="font-size: 20px;"> ' + title + ' </strong>' +
+                            ' if you proceed.</p>',
+                        buttons: {
+                            vote: {
+                                text: '<i class="fas fa-vote-yea fa-fw"></i> vote',
+                                keys: ['y', 'enter'],
+                                btnClass: 'btn-success',
+                                action: function () {
+                                    self._storage.submitButton = $btn.attr('name');
+                                    $form.submit();
+                                }
+                            },
+                            cancel: {
+                                text: '<i class="fas fa-times fa-fw"></i> cancel',
+                                keys: ['N'],
+                                btnClass: 'btn-danger'
                             }
-                        },
-                        cancel: {
-                            text: '<i class="fas fa-times fa-fw"></i> cancel',
-                            keys: ['N'],
-                            btnClass: 'btn-danger'
                         }
-                    }
-                });
+                    });
+                }
+                else if(phoneNumber === 0){
+                    $.confirm({
+                        title: false,
+                        columnClass: 'medium',
+                        content: '<div id="formPlaceholder" class="mt-3"><div class="text-center" id="spinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span></div></div>',
+                        cancelButton: false,
+                        buttons: { ok: { isHidden: true } },
+                        onContentReady: function () {
+                            var self = this;
+                            var $formPlaceholder = self.$content.find('#formPlaceholder');
+                
+                            $.ajax({
+                                url: '/otp/render-verfication',
+                                method: 'GET',
+                                dataType: 'html',
+                                success: function(response) {
+                                    $('#spinner').remove();
+                                    // Append the form HTML to the placeholder element
+                                    $formPlaceholder.html(response);
+            
+                                    var $form = $formPlaceholder.find('form');
+                                    $(document).on('submit', $form, function(e) {
+                                        console.log("Form submitted");
+                                    });
+                                },
+                                error: function(xhr, status, error) {
+                                    $('#spinner').remove();
+                                    // Handle errors
+                                    console.error(xhr, status, error);
+                                    // Set a default error message
+                                    $formPlaceholder.html('Error loading form. Please try again.');
+                                }
+                            });
+                        }
+                    });
+                }
+                else{
+                    $.confirm({
+                        title: false,
+                        columnClass: 'medium',
+                        content: '<p class="text-center center-align">You need to verify your number before voting. Click here to verify.</p>',
+                        buttons: {
+                            vote: {
+                                text: 'Verify number',
+                                keys: ['y', 'enter'],
+                                btnClass: 'btn-success text-center',
+                                action: function () {
+                                    window.location.href = $btn.data('redirect');
+                                }
+                            }
+                        }
+                    });
+                }
             }
 
         },

@@ -32,7 +32,12 @@ services:
     AppBundle\Service\:
         resource: '../lib/AppBundle/Service/'
         autowire: true
-
+        bind:
+            $smsMessage: '%env(SMS_MESSAGE)%'
+            $smsContentType: '%env(SMS_CONTENT_TYPE)%'
+            $smsAuth: '%env(SMS_AUTHORIZATION)%'
+            $smsSender: '%env(SMS_SENDER)%'
+            $smsApiUrl: '%env(API_URL)%'
     AppBundle\Util\:
         resource: '../lib/AppBundle/Util/'
         autowire: true
@@ -74,7 +79,7 @@ services:
     AppBundle\Menu\MenuBuilder:
         arguments: ["@knp_menu.factory", '@security.authorization_checker']
         # arguments: ['@security.authorization_checker']
-        autowire: true        
+        autowire: true
         tags:
             - { name: knp_menu.menu_builder, method: createMainMenu, alias: main } # The alias is what is used to retrieve the menu
 
@@ -101,4 +106,4 @@ services:
         tags:
             - { name: security.voter }
 
-    # Symfony\Component\Mailer\MailerInterface: 
+    # Symfony\Component\Mailer\MailerInterface:
