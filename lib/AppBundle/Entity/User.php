@@ -20,6 +20,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Table(name="fos_user")
  * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
  * @UniqueEntity(fields={"mobileNumber"}, message="There is already an account with this mobile number")
+ * @UniqueEntity(fields={"email"}, message="This email address has already been taken.")
  **/
 
 class User implements UserInterface

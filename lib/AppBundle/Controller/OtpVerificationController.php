@@ -49,20 +49,20 @@ class OtpVerificationController extends AbstractController
         $user = $this->getUser();
         $formData = [
             'mobileNumber' => $user->getMobileNumber(),
-            'countryCode' => $this->searchCountryCode($user->getCountry())
+            'countryCode' => $this->sendOtpService->searchCountryCode($user->getCountry())
         ];
 
         $data = $request->request->all();
-        $user->setCountry($this->searchCountryCode($user->getCountry()));
-        if(isset($data['get_otp_form'])){
-            $user->setMobileNumber($data['get_otp_form']['mobileNumber']);
-        }
+        $user->setCountry($this->sendOtpService->searchCountryCode($user->getCountry()));
+        // if(isset($data['get_otp_form'])){
+        //     $user->setMobileNumber($data['get_otp_form']['mobileNumber']);
+        // }
 
         $formOtp = $this->createForm(GetOtpForm::class, $user);
         $form = $this->createForm(VerifyForm::class, $user);
 
         $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['country'];
-        $telephoneCode = $this->searchCountryCode($code);
+        $telephoneCode = $this->sendOtpService->searchCountryCode($code);
 
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
@@ -99,32 +99,33 @@ class OtpVerificationController extends AbstractController
         $country = $user->getCountry();
         $formData = [
             'mobileNumber' => $user->getMobileNumber(),
-            'countryCode' => $this->searchCountryCode($user->getCountry())
+            'countryCode' => $this->sendOtpService->searchCountryCode($user->getCountry())
         ];
-        
         $data = $request->request->all();
-       
-        $user->setCountry($this->searchCountryCode($user->getCountry()));
-        if(isset($data['get_otp_form'])){
-            $user->setMobileNumber($data['get_otp_form']['mobileNumber']);
-        }
-
+      
+        $user->setCountry($this->sendOtpService->searchCountryCode($user->getCountry()));
         $formOtp = $this->createForm(GetOtpForm::class, $user);
-
+        
         $form = $this->createForm(VerifyForm::class, $user);
         $this->get('session')->getFlashBag()->clear();
         list('route' => $route, 'routeParams' => $routeParams) = $this->getRouteInfoFromSession();
 
         $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['country'];
-        $telephoneCode = $this->searchCountryCode($code);
+        $telephoneCode = $this->sendOtpService->searchCountryCode($code);
         $this->logger->info("Code and telefone :" ,[$code,$telephoneCode]);
         
         $formOtp->handleRequest($request);
         if ($formOtp->isSubmitted() && $formOtp->isValid()) {
-            $telephoneCode = $formOtp->get('country')->getData();
+            $telephoneCode = $this->sendOtpService->searchCountryCode($formOtp->get('country')->getData());
 
             $userEnteredNumber = $formOtp->get('mobileNumber')->getData() ?? null;  
             if($userEnteredNumber !== null){
+                $userEnteredNumber = (preg_match('/^0/',$userEnteredNumber) === 1) ? preg_replace('/^0/','',  $userEnteredNumber) : $userEnteredNumber;
+
+                if ( $telephoneCode !== null && $user->getMobileNumber() !== null && !preg_match('/^\+/',$userEnteredNumber)) {
+                    $userEnteredNumber = '+' . $telephoneCode . $userEnteredNumber;
+                }
+
                 $user->setMobileNumber($userEnteredNumber);
             }
 
@@ -242,22 +243,5 @@ class OtpVerificationController extends AbstractController
             'route' => $this->get('session')->get('route'),
             'routeParams' => $this->get('session')->get('routeParams'),
         ];
-    }
-
-    public function searchCountryCode($code)
-    {
-        $keys = array_keys(CountriesCodes::COUNTRY_CODES);
-        $keySearch = array_search($code, $keys);
-
-        if ($keySearch !== false) {
-            return $keys[$keySearch];
-        }
-
-        $valueSearch = array_search($code, CountriesCodes::COUNTRY_CODES);
-        if ($valueSearch !== false) {
-            return $valueSearch;
-        }
-
-        return null;
     }
 }

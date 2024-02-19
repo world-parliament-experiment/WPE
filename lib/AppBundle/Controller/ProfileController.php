@@ -16,6 +16,7 @@ namespace AppBundle\Controller;
 // use FOS\UserBundle\Event\GetResponseUserEvent;
 // use FOS\UserBundle\FOSUserEvents;
 use AppBundle\Form\ProfileForm;
+use AppBundle\Service\SendOtpVerificationService;
 use Symfony\Component\Form\FormFactoryInterface;
 use AppBundle\Service\UserInterface;
 use AppBundle\Service\UserManager;
@@ -36,11 +37,13 @@ class ProfileController extends AbstractController
 {
     private $formFactory;
     private $userManager;
+    private $sendOtpService;
 
-    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager)
+    public function __construct(FormFactoryInterface $formFactory, UserManager $userManager,SendOtpVerificationService $sendOtpService)
     {
         $this->formFactory = $formFactory;
         $this->userManager = $userManager;
+        $this->sendOtpService = $sendOtpService;
     }
 
      /**
@@ -81,7 +84,13 @@ class ProfileController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-      
+            $userEnteredNumber = (preg_match('/^0/',$form->get('mobileNumber')->getData()) === 1) ? preg_replace('/^0/','',  $form->get('mobileNumber')->getData()) : $form->get('mobileNumber')->getData();
+
+            if ( $form->get('country')->getData() !== null && $user->getMobileNumber() !== null && !preg_match('/^\+/', $user->getMobileNumber())) {
+                $userEnteredNumber = '+' . $this->sendOtpService->searchCountryCode($form->get('country')->getData()) . $userEnteredNumber;
+            }
+            $user->setMobileNumber($userEnteredNumber);
+
             $this->userManager->updateUser($user);
             
             $this->addFlash('success', 'The profile has been updated.');
