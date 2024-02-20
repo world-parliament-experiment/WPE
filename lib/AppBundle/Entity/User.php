@@ -220,7 +220,7 @@ class User implements UserInterface
     protected $plainPassword;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default"})
      */
