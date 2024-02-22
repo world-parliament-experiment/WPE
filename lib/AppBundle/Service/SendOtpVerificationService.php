@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\CountriesCodes;
 use DateInterval;
 use DateTime;
 use GuzzleHttp\Client;
@@ -11,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use AppBundle\Entity\User;
 use Exception;
 use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Intl\Countries;
 use Symfony\Component\Notifier\Channel\SmsChannel;
 use Throwable;
 
@@ -47,14 +49,11 @@ class SendOtpVerificationService
     {
         try {
             $url = $this->smsApiUrl;
-            $message = sprintf($this->smsMessage,$user->getUsername(),$otp);
+            $message = sprintf($this->smsMessage,$user->getUsername(),$otp); 
             $phoneNumber = preg_replace('/^\+/','',  $user->getMobileNumber());
-
             if ( $user->getMobileNumber() !== null && !preg_match('/^\+/', $user->getMobileNumber())) {
-
                 $phoneNumber = $telePhoneCode . $user->getMobileNumber();
             }
- 
             $headers = [
                 'Content-Type' => $this->smsContentType,
                 'Authorization' => 'Token ' . $this->smsAuth,
@@ -121,5 +120,21 @@ class SendOtpVerificationService
             return true;
         }
         return false;
+    }
+
+    public function searchCountryCode($code)
+    {
+        $keys = array_keys(CountriesCodes::COUNTRY_CODES);
+        $keySearch = array_search($code, $keys,true);
+        if ($keySearch !== false) {
+            return $keys[$keySearch];
+        }
+        
+        $valueSearch = array_search($code, CountriesCodes::COUNTRY_CODES);
+        if ($valueSearch !== false) {
+            return $valueSearch;
+        }
+
+        return null;
     }
 }

@@ -56,11 +56,17 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted()) {
 
             if($form->isValid()) {
+                $userEnteredNumber = (preg_match('/^0/',$form->get('mobileNumber')->getData()) === 1) ? preg_replace('/^0/','',  $form->get('mobileNumber')->getData()) : $form->get('mobileNumber')->getData();
+                
+                if ( $form->get('country')->getData() !== null && $user->getMobileNumber() !== null && !preg_match('/^\+/', $user->getMobileNumber())) {
+                    $userEnteredNumber = '+' . $this->sendOtpService->searchCountryCode($form->get('country')->getData()) . $userEnteredNumber;
+                }
+                
                 //How we will get the country code.
                 $user->setRegisteredAt(new \DateTime());
                 $user->setUsernameCanonical($form->get('username')->getData());
                 $user->setEmailCanonical($form->get('email')->getData());
-                $user->setMobileNumber($form->get('mobileNumber')->getData());
+                $user->setMobileNumber($userEnteredNumber);
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
