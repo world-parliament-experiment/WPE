@@ -155,7 +155,7 @@ class VoteController extends BaseController
     public function showAction(Request $request,int $id)
     {   
         if(! $user = $this->getUser()){
-            $this->addFlash("success", "Please do login first in order to cast your valuable vote.");
+            $this->addFlash("success", "Please login first in order to cast your vote.");
             return $this->redirectToRoute('app_login');
         }
         $user = $this->getUser();
