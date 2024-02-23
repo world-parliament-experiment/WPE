@@ -154,14 +154,10 @@ class VoteController extends BaseController
      */
     public function showAction(Request $request,int $id)
     {   
-        if(! $user = $this->getUser()){
-            $this->addFlash("success", "Please login first in order to cast your vote.");
-            return $this->redirectToRoute('app_login');
-        }
         $user = $this->getUser();
-        $isMobileNumberVerified = ($user->getVerifiedAt() !== null) ? 1 : 0;
-        $isPhoneNumberExist = ($user->getMobileNumber() !== null) ? 1 : 0;
-
+        $isMobileNumberVerified = ($user instanceof User && $user->getVerifiedAt() !== null) ? 1 : 0;
+        $isPhoneNumberExist = ($user instanceof User &&  $user->getMobileNumber() !== null) ? 1 : 0;
+       
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
         $routeParams =[
@@ -170,8 +166,7 @@ class VoteController extends BaseController
         ];
         $this->get('session')->set('routeParams', $routeParams);
         $this->get('session')->set('route', $request->get('_route'));
-        $this->denyAccessUnlessGranted("view", $initiative);
-
+        // $this->denyAccessUnlessGranted("view", $initiative);
         $initiative->incrementViews();
 
         $em->persist($initiative);
@@ -190,7 +185,7 @@ class VoteController extends BaseController
         $comment->setDisliked('0');
         $comment->setReported('0');
         $comment->setParent(NULL);
-
+             
         if ($initiative->getType() === 0) {
             return $this->render('Vote/show.html.twig', array(
                 'initiative' => $initiative,
@@ -388,12 +383,11 @@ class VoteController extends BaseController
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
 
-        $this->denyAccessUnlessGranted("view", $initiative);
+        // $this->denyAccessUnlessGranted("view", $initiative);
 
         /*
          * Future Initiative
          */
-
         if ($initiative->getType() == InitiativeEnum::TYPE_FUTURE) {
 
             // Draft - show link to edit
@@ -464,7 +458,7 @@ class VoteController extends BaseController
                         } else {
                             return $this->createApiResponse([
                                 'success' => false,
-                                'message' => 'Only registered users can supoort a proposal to become an online vote! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
+                                'message' => 'Only registered users can supoort a proposal to become an online vote! Please <a href="' . $this->generateUrl('login') . '">login</a> or <a href="' . $this->generateUrl('app_register') . '">register</a> to continue.',
                             ], 302);
                         }
                     }
@@ -532,7 +526,7 @@ class VoteController extends BaseController
                         } else {
                             return $this->createApiResponse([
                                 'success' => false,
-                                'message' => 'Only registered users can vote! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
+                                'message' => 'Only registered users can vote! Please <a href="' . $this->generateUrl('login') . '">login</a> or <a href="' . $this->generateUrl('app_register') . '">register</a> to continue.',
                             ], 302);
                         }
                     }
@@ -645,7 +639,7 @@ class VoteController extends BaseController
     public function voteCurrentAction(Request $request, Initiative $initiative)
     {
 
-        $this->denyAccessUnlessGranted("vote", $initiative);
+        // $this->denyAccessUnlessGranted("vote", $initiative);
 
         // was it sent with Ajax?
         if (false !== $request->isXmlHttpRequest()) {
