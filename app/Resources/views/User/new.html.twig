@@ -1,0 +1,52 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'New Initiative', background: asset('assets/img/header/initiative_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+    {{ include ('Widget/_errors.html.twig', {form: form}, with_context = false) }}
+
+<!-- ##### Login Area Start ##### -->
+<div class="wpe-content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="login-content bg-white mb-30 p-30 box-shadow">
+                    <!-- Section Title -->
+                    <div class="section-heading">
+                        <h5>Create a new Proposal</h5>
+                    </div>
+
+                    {{ form_start(form) }}
+                    {{ form_row(form.category) }}
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.description) }}
+                    {# form_row(form.duration) #}
+
+                    <div class="form-group">
+                        <label></label>
+                        <div class="col-md-12 col-sm-12">
+                            <button type="submit" class="btn btn-block btn-lg btn-primary" formnovalidate><i class="fas fa-save"></i> {{ 'initiative.button.draft'|trans }} </button>
+                            {{ form_widget(form.publish) }}
+                        </div>
+                    </div>
+
+                {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Login Area End ##### -->
+</div>
+{% endblock body %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+

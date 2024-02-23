@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Rules', background: asset('assets/img/header/generalassembly_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+<div class="wpe-content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="default-content bg-white mb-30 p-30 box-shadow">
+                    <!-- Section Title -->
+
+                    <div class="section-heading">
+                        <h5>I. Prelimenary Rules (subject to change)</h5>
+                    </div>
+
+                    <p>All participants together build the General Assembly (GA), the most important decision-making body of the WPE. All participants have the right to submit petitions concerning any aspect of the WPE (contents, procedures, persons). There is a list of all petitions in the "future votes" section. Each participant is asked to nominate petitions during the week for next week's "current votes" section. The top 10 petitions will be subject to a GA vote the following week. Votes are accepted if a simple majority votes in favor of a petition. All petitions must be structured in a "yes" or "no" format.</p>
+                    <p>Participants can delegate their votes to representatives and take it back at any time. They have three options: No delegation, delegation to a single person for all categories and delegation to a single person for a single category. If participants delegate their vote and do not vote themselves, the delegate uses the vote.</p>
+                    <p>The Discussions serve to organize the opinion-building process before a vote takes place. Discussions may concern any subject, they are related to certain categories and to the petitions posted in the "future votes" section. New categories may be opened at any time on the main page. The discussion of regional topics is encouraged as a preparation for future "regional democracy experiments" (RDE) as a part of the WPE.</p>
+                    <p>The Program is the result of the WPE discussions and votes. Successful votes (except those related to electing officials) directly build the WPE Program structured by categories. The WPE Speaker and Government shall promote and implement this Program.</p>
+                    <p>The Administration helps and consults the  World Parliament Experiment e. V. in the conduct of the WPE. Involvement of the WPE participants in the Administration is encouraged.</p>
+
+                    <div class="section-heading">
+                        <h5>II. Basic Rules (cannot be changed)</h5>
+                    </div>
+
+                    <p>1. All participants of the WPE have the right to submit petitions relating to any subject as long as these petitions do not violate basic principles of democracy. There will be a vote on petitions if they gather the pre-established amount of support (see I., 1.).</p>
+                    <p>2. The World Parliament Experiment e. V. is free to decide what it considers to be necessary for the WPE until 100.000 active members participate at least a month in a WPE vote. After 100.000 members participate in the WPE, the  World Parliament Experiment e. V. is expected to change its statute accordingly.</p>
+                    <p>3. The participants have the right to change all rules of the WPE (except II, 1. and II, 2.), if there is a majority for a specific proposal.</p>
+
+                    <div class="section-heading">
+                        <h5>Voting Rhythm:</h5>
+                    </div>
+
+                    <p>Future Votes can collect support until each Sunday 7 p.m. CET, successful ones will be on the list of 10 current votes for one week. The collection phase for future votes can be longer than one week (to be determined by the proponent).</p>
+                    <p>As long as the beta test is running the voting rhythm has been accelerated (daily instead of weekly).</p>
+                    <p>(For more information about the decision-making procedure please see the <a href="{{ path("faq") }}">FAQ/Help</a> section of this website.)</p>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ##### Delegation Area End ##### -->
+</div>
+
+{% endblock body %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}

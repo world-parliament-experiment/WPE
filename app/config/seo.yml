@@ -1,0 +1,12 @@
+homepage:
+  title: ~
+  description: ~
+  og_title: 'you can share this'
+  og_url: '{{ url(_route) }}'
+  og_image: '{{ asset("assets/img/logo.png") }}'
+initiative_show:
+  title: ~
+  description: ~
+  og_title: '{{ initiative.title}}'
+  og_url: '{{ url(_route, {id: initiative.id, slug: initiative.slug}) }}'
+  og_image: '{{ asset("assets/img/logo.png") }}'

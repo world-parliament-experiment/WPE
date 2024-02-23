@@ -1,0 +1,25 @@
+{% for vote in votesc %}
+    {% if app.user %}
+        {% if app.user.country == vote.category.description or vote.category.country == "UN" %}
+            <!-- Single Trending Post -->
+            <div class="single-trending-post">
+                <img src="{{ asset(vote.category.imageSmall) }}" alt=""/>
+                <div class="post-content">
+                    <a href="#" class="post-cata">{{ vote.category.name }}</a>
+                    <a href="{{ path('initiative_show', { 'id': vote.id, 'slug': vote.slug }) }}" class="post-title">{{ vote.title }}</a> <br>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        {% if vote.category.country == "UN" %}
+             <!-- Single Trending Post -->
+            <div class="single-trending-post">
+                <img src="{{ asset(vote.category.imageSmall) }}" alt=""/>
+                <div class="post-content">
+                    <a href="#" class="post-cata">{{ vote.category.name }}</a>
+                    <a href="{{ path('initiative_show', { 'id': vote.id, 'slug': vote.slug }) }}" class="post-title">{{ vote.title }}</a> <br>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endfor %}

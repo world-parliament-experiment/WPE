@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'FAQ / Help', background: asset('assets/img/header/generalassembly_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <div class="wpe-content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="default-content bg-white mb-30 p-30 box-shadow">
+                    <!-- Section Title -->
+
+                    <div class="section-heading">
+                        <h5>FAQ / Help</h5>
+                    </div>
+
+                    <h5>What is the World Parliament Experiment (WPE)?</h5>
+                    <p>The World Parliament Experiment is a generic simulation of a working Global Democracy on the Internet. For this purpose it mirrors the main political institutions of an existing state. As a model of democratic opinion making and policy execution it can be generalized to all organizational and institutional settings, including corporations, governmental subsystems, non-governmental organizations, and large, multi-site peer groups.</p>
+
+                    <div class="row mb-15">
+                        <div class="col-12 col-lg-6">
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <iframe class="embed-responsive-item" src="https://www.youtube-nocookie.com/embed/8rm8JEdwJpY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5>What is the purpose of the World Parliament Experiment?</h5>
+                    <p>The WPE aims at providing a platform on which each human being can discuss and vote on issues of international relations. The results are supposed to be introduced into the real political process.</p>
+
+                    <h5>How does the decision making process work?</h5>
+                    <p>Our decision making process makes sure that everyone in the WPE can influence any aspect of the WPE at any time. This is guaranteed in the following way:</p>
+
+                    <p><b>Step 1</b>: Every participant has the right to submit "future votes" concerning contents, procedures or representatives of the system. For this visit Profile -> Create Initiative and start a Inititative which becomes a Future Vote next sunday:</p>
+                    <img src="{{ asset("assets/img/faq/screen1.jpg") }}" class="rounded py-2">
+                    <p><b>Step 2</b>: The future votes are evaluated by the other participants and selected for voting.</p>
+                    <img src="{{ asset("assets/img/faq/screen2.jpg") }}" class="rounded py-2">
+                    <p><b>Step 3</b>: The most selected future votes get on a regularly updated list of "current votes", the participants vote in favor or against.</p>
+                    <img src="{{ asset("assets/img/faq/screen3.jpg") }}" class="rounded py-2">
+                    <p><b>Step 4</b>: Past current votes are collected as "past votes" in an archive. Past votes with a minimum participation and a majority in favor are adopted.</p>
+                    <img src="{{ asset("assets/img/faq/screen4.jpg") }}" class="rounded py-2">
+                    <p><b>Step 5</b>: Through future votes, or by design, the participants elect a representative ("speaker"). It is the task of the speaker to implement the program in the reality of the organization addressed. The speaker (or the participants) can appoint or elect representatives to implement various tasks.</p>
+
+                    <h5>Voting Rhythm</h5>
+                    <p>Future Votes can collect support until each Sunday 7 p.m. CET, successful ones will be on the list of 10 current votes for one week. The collection phase for future votes can be longer than one week (to be determined by the proponent).</p>
+                    <p>As long as the beta test is running the voting rhythm has been accelerated (daily instead of weekly).</p>
+                    <p>(For more information about the decision-making procedure please see the <a href="{{ path("faq") }}">FAQ/Help</a> section of this website.)</p>
+
+                    <h5>Who founded the World Parliament Experiment?</h5>
+                    <p>Rasmus Tenbergen founded the WPE in 1999 with a first website running in 2000. The WPE is a private initiative of young professionals and scientists who have been political activists in several fields for many years.</p>
+
+                    <h5>How can I participate?</h5>
+                    <p>Each person may take part in the World Parliament Experiment. The only formal requirement for participation is to register. For registration, please follow the instructions on the main page.</p>
+                    <p>There are several possibilities to participate. You could:</p>
+                    <p>- vote on issues, persons, and procedures;</p>
+                    <p>- discuss petitions in the Discussions section;</p>
+                    <p>- bring petitions;</p>
+                    <p>- nominate participants for positions</p>
+                    <p>- run for Speaker or other positions to be created</p>
+
+                    <h5>Why does the system count many votes even if only a few people participate?</h5>
+                    <p>This is because of the delegated voting system</p>
+
+                    <h5>What is “Delegated Voting”?</h5>
+                    <p>Participants can delegate their votes to representatives and take it back at any time. They have three options: No delegation, delegation to a single person for all categories and delegation to a single person for a single category. If participants delegate their vote and do not vote themselves, the delegate uses the vote.</p>
+                    <p>To delegate your vote you have to select other users (citizens) as your friends. For this you have to visit their profile page and click on their heart icon.</p>
+                    <p>Later you can visit <a href="{{ path("user_delegate") }}">Change Delegation</a> and delegate your vote to your friends for all categories or only a single category.</p>
+
+                    <h5>Why do you call it “World Parliament”? Isn't this more a “Direct World Democracy”?</h5>
+                    <p>Our project has elements of direct democracy and of representative democracy. The parliament name has two aspects: first, that everybody can have a function similar to a parliamentarian, which will of course be more difficult in the long run with many participants, and second, that through the delegated voting system you can give a mandate to other participants (your “parliamentarian”) to represent you. Therefore, we should call the participants, who get the most delegated votes (see list “homepage: citizens with most delegations) provisional “members of the (experimental) world parliament” with special rights for the top 10% (minimum 20, maximum 100, details to be determined).</p>
+
+                    <h5>Is this a “Free Software” Project?</h5>
+                    <p>Yes, this is a Free Software Project. We are always looking for help to develop it. So, if you are a coder and are willing to help us, please let us know, it is very much appreciated.</p>
+
+                    <h5>Where can I find old votes?</h5>
+                    <p>If they were successful: under adopted votes. If not, in the archive. You can use the search function to make it easier.</p>
+
+                    <h5>I lost my password, what can I do?</h5>
+                    <p>Go to <a href="{{ path("fos_user_change_password") }}">“password help”</a> on the login page and you will get a new one there. To make it easier, you can change your password in your profile.</p>
+
+                    <h5>How does the General Assembly work?</h5>
+                    <p>The General Assembly is the legislative body of the WPE. It consists of all registered participants. Its main purposes are to vote on petitions which were brought; to elect representatives; and to determine procedures. The GA may vote on all issues except on the Basic Rules.</p>
+
+                    <h5>How are the petitions processed?</h5>
+                    <p>Each participant has the right to submit petitions. All petitions must be structured in a "Yes" or "No" format. All submitted petitions which have not yet been decided on are listed on the "future votes"" sections of the WPE site, and are supposed to be debated on in the Discussions section of the WPE. Each participant is asked to nominate  petitions each week for the "current votes" section. The ten top-ranked petitions will be subject of a vote in the respective following week. Votes are accepted if a majority votes in favor of the petition.</p>
+
+                    <h5>What does the Program of the WPE include?</h5>
+                    <p>The totality of the adopted petitions forms the Program of the WPE. Furthermore, the Basic Rules are part of the program. The Basic Rules can be found on the Rules page.</p>
+
+                    <h5>How does the WPE intend to introduce its results into the real political process?</h5>
+                    <p>The more people participate in the WPE, the more likely they will be to be able to influence real-world decisions. The WPE government will approach decision-makers and tell them how many people support specific ideas.</p>
+
+                    <h5>Why is my country not represented yet?</h5>
+                    <p>We provide realtime content from many of the worlds real-world parliaments. If you have a suggestion to include the legislation from your national assembly, just send us an e-mail to: <a href="mailto:team@world-parliament.org">team@world-parliament.org</a>.</p>
+
+                    <h5>How can I ask the WPE team a question?</h5>
+                    <p>Just send us an e-mail to: <a href="mailto:team@world-parliament.org">team@world-parliament.org</a>.</p>
+
+                    <h5>How can I support the WPE?</h5>
+                    <p>You can repost current proposals or votes on your social media. You can tell your friends.</p>
+                    <p>You can help spreading the idea of the World Parliament Experiment by using our branded <a href="https://shop.spreadshirt.de/World-Parliament-Experiment/">merchandise</a>.</p>
+                    <p>You can support us on <a href="https://gofund.me/abb115b4">GoFundMe</a>.</p>
+
+
+                    <h5>
+                    Where can i find further information?
+                    </h5>
+                                        <p>
+                        -> <a href="https://www.democracywithoutborders.org/files/DWBDPRT2018.pdf">United Humans: Internet voting for a world parliament and a new world organization</a>
+                    </p>
+                    <p>
+                        -> <a href="https://www.democracywithoutborders.org/5837/a-renewed-world-organization-for-the-21st-century/">A renewed world organization for the 21st century</a>
+                    </p>
+                    <p>
+                        -><a href="https://www.amazon.com/World-Parliament-Governance-Democracy-Century/dp/3942282135">A World Parliament: Governance and Democracy in the 21st Century</a>
+                    </p>
+
+
+
+                <!--
+                <p>If you want to collaborate or discuss about the future of WPE go to our <a href="http://worldparliament.a.wiki-site.com/index.php/Main_Page" target="_blank">Wiki page</a>.</p>
+                -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ##### Delegation Area End ##### -->
+</div>
+
+{% endblock body %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}

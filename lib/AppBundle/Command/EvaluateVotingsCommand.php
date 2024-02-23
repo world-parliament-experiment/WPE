@@ -87,6 +87,7 @@ class EvaluateVotingsCommand extends Command
             $message = 'Evaluated ' . $votings . ' current votings ... ';
             $output->writeln($message);
         }
-        return 1;
+        return Command::SUCCESS;
+
     }
 }

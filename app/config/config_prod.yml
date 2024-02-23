@@ -1,0 +1,40 @@
+imports:
+    - { resource: config.yml }
+
+#doctrine:
+#    orm:
+#        metadata_cache_driver: apc
+#        result_cache_driver: apc
+#        query_cache_driver: apc
+
+monolog:
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: error
+            handler:      grouped
+        grouped:
+            type:    group
+            members: [streamed, deduplicated]
+        streamed:
+            type:  stream
+            path:  '%kernel.logs_dir%/%kernel.environment%.log'
+            level: debug
+        deduplicated:
+            type:    deduplication
+            handler: swift
+        swift:
+            type:         swift_mailer
+            from_email:   'support@tgde.org'
+            to_email:     'admin@world-parliament.org'
+            subject:      'An Error Occurred! %%message%%'
+            level:        error
+            formatter:    monolog.formatter.html
+            content_type: text/html
+
+ewz_recaptcha:
+    public_key:  6LdVH7oUAAAAAOZI-mtHmkE-To3YaZiOcVUyK-uC
+    private_key: 6LdVH7oUAAAAAAXVyHNMI9JeU0YGMVp2AQHsf1Jl
+    # Not needed as "%kernel.default_locale%" is the default value for the locale key
+    locale_key:  "%kernel.default_locale%"
+    locale_from_request: true

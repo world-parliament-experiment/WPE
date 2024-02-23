@@ -77,6 +77,7 @@ class InitiativeRepository extends EntityRepository
     public function future()
     {
         return $this->createQueryBuilder('initiative')
+            ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state = 1')
             ->setMaxResults(25)
@@ -89,6 +90,7 @@ class InitiativeRepository extends EntityRepository
     public function current()
     {
         return $this->createQueryBuilder('initiative')
+            ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type = 1')
             ->andWhere('initiative.state = 1')
             ->setMaxResults(25)
@@ -101,6 +103,7 @@ class InitiativeRepository extends EntityRepository
     public function past()
     {
         return $this->createQueryBuilder('initiative')
+            ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type = 2')
             ->setMaxResults(3)
             ->addOrderBy('initiative.createdAt', 'asc')
