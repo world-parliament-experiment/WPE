@@ -1,0 +1,34 @@
+{%- if breadcrumbs.count -%}
+    <div class="wpe-breadcrumb py-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path("homepage") }}"><i class="fas fa-home" aria-hidden="true"></i> Home</a></li>
+                            {%- for breadcrumb in breadcrumbs -%}
+                                {%- set class = (loop.last ? ' active' : '') -%}
+                                <li class="breadcrumb-item {{ class }}">
+                                    {%- set translate = (breadcrumb.attributes.translate is not defined ? false : true) -%}
+                                    {%- if breadcrumb.url is null or loop.last -%}
+                                        {%- if translate -%}
+                                            {{- breadcrumb.title|trans -}}
+                                        {%- else -%}
+                                            {{- breadcrumb.title -}}
+                                        {%- endif -%}
+                                    {%- else -%}
+                                        {%- if translate -%}
+                                            <a href="{{ breadcrumb.url }}">{{- breadcrumb.title|trans -}}</a>
+                                        {%- else -%}
+                                            <a href="{{ breadcrumb.url }}">{{- breadcrumb.title -}}</a>
+                                        {%- endif -%}
+                                    {%- endif -%}
+                                </li>
+                            {%- endfor -%}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endif -%}

@@ -14,10 +14,12 @@ web_profiler:
 monolog:
     handlers:
         main:
-            type: stream
-            path: '%kernel.logs_dir%/%kernel.environment%.log'
-            level: debug
-            channels: ['!event']
+            type:  rotating_file
+            path:  '%kernel.logs_dir%/%kernel.environment%.log'
+            level: notice
+            # max number of log files to keep
+            # defaults to zero, which means infinite files
+            max_files: 10
         console:
             type: console
             process_psr_3_messages: false
@@ -46,7 +48,7 @@ twig:
 ewz_recaptcha:
     # For reCAPTCHA v2, use the following test keys. You will always get No CAPTCHA and all verification requests will pass.
     # https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha-v2-what-should-i-do
-    public_key:  6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+    public_key: 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
     private_key: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
     # Not needed as "%kernel.default_locale%" is the default value for the locale key
     locale_key:  "%kernel.default_locale%"

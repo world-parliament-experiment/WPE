@@ -1,0 +1,4 @@
+# This file is auto-generated during the composer install
+parameters:
+    delegation_valid_days: 90
+    avatar_image_path: '%kernel.project_dir%/public/assets/img/avatar/'

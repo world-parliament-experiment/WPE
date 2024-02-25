@@ -1,7 +1,7 @@
 vote:
     future:
         button:
-            vote_yes: I want this to be a future vote
+            vote_yes: I want this proposal to become an online vote
     current:
         button:
             vote_yes: Yes
@@ -30,10 +30,10 @@ initiative:
         name: Delete Initiative
         description: Overview
     flash:
-        edit: Your initiative is successfully updated
-        publish: Your initiative is successfully saved as draft
-        draft: Your initiative is published now
-        delete: Your initiative is successfully deleted
+        edit: Your proposal successfully updated
+        publish: Your proposal is published now
+        draft: Your proposal is successfully saved as draft
+        delete: Your proposal is successfully deleted
 
 comment:
   edit:
@@ -100,13 +100,15 @@ menu:
     home:
         label: Home
     future:
-        label: Future
+        label: Proposals
     current:
-        label: Current
+        label: Votes
     past:
-        label: Past
+        label: Archive
     program:
-        label: Program
+        label: Decisions
+    faq:
+        label: FAQ
     user:
         label: User
         profile: Profile
@@ -115,8 +117,8 @@ menu:
         password: Change Password
         register: Register
         delegation: Change Delegation
-        initiatives: Own Initiatives
-        create: Create Initiative
+        initiatives: Own Proposals
+        create: Create Proposal
         avatar: Change Avatar
         friends: Friends
         favourites: Favourites
@@ -171,13 +173,19 @@ breadcrumb:
         create:
           label: Create Initiative
     current:
-        label: Current
+        label: Votes
     future:
-        label: Future
+        label: Proposals
     past:
-        label: Past
+        label: Archive
     program:
-        label: Program
+        label: Decisions
+    archive:
+        label: Archive
+    decisions:
+        label: Decisions
+    faq:
+        label: FAQ
     search:
         label: Search
 

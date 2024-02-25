@@ -1,0 +1,71 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% extends "base.html.twig" %}
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Login', background: 'assets/img/header/register_large.jpg'}, with_context = false) }}
+    {{ include ('Widget/_flashes-danger.html.twig', {flashes: app.flashes}, with_context = false) }}
+    {% if error %}
+        <div class="mag-error-area pt-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-6">
+                        <div class="error-content bg-danger p-30 box-shadow">
+                            <span class="form-error-icon badge badge-danger text-uppercase">{{ 'Error'|trans({}, 'validators') }}</span> <span class="form-error-message">{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- ##### Login Area Start ##### -->
+    <div class="wpe-content-area py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="login-content bg-white p-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h5>Great to have you back!</h5>
+                        </div>
+
+                           {% if error %}
+                                <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                            {% endif %}
+
+                        <form action="{{ path("login_check") }}" method="post" class="margin-bottom-0">
+
+                            {% if csrf_token %}
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+                            {% endif %}
+
+                            <div class="form-group m-b-20">
+                                <input type="text"  id="username" name="_username" value="{{ last_username }}" required="required" class="form-control input-lg" placeholder="Username" />
+                            </div>
+                            <div class="form-group m-b-20">
+                                <input type="password" id="password" name="_password" required="required" class="form-control input-lg" placeholder="Password" />
+                            </div>
+                            <div class="checkbox m-b-20">
+                                <label>
+                                    <input type="checkbox" id="remember_me" name="_remember_me" value="on"  /> {{ 'security.login.remember_me'|trans }}
+                                </label>
+                            </div>
+                            <div class="login-buttons">
+                                <button type="submit" id="_submit" name="_submit" class="btn btn-success btn-block btn-lg">{{ 'security.login.submit'|trans }}</button>
+                            </div>
+                            <div class="m-t-20">
+                                Password lost? Click <a href="{{ url("app_resetting_request") }}">here</a> to reset your account.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Login Area End ##### -->
+
+
+
+
+
+{% endblock body %}

@@ -19,7 +19,7 @@
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('AppBundle:Widget:MostPopular')) }}
             </div>
-{#            <div class="single-sidebar-widget p-30">#}
+{#              <div class="single-sidebar-widget p-30">#}
 {#                {{ render(controller('AppBundle:Widget:MostCommentedInitiatives')) }}#}
 {#            </div>#}
             <div class="single-sidebar-widget p-30">
@@ -43,6 +43,19 @@
         <<<<<<<<<<<<<<<<<<<<< -->
 
         <div class="mag-posts-content m-t-30 m-b-30 p-30 box-shadow">
+            <div class="feature-video-posts m-b-30">
+                <!-- Section Title -->
+                <div class="section-heading">
+                    <h5>Only Global Democracy can address humanity's global challenges</h5>
+                </div>
+                <div class="post-content">
+                    <p>One country alone cannot do it. We are all in this together.</p>
+
+                    <p>The World Parliament Experiment (WPE) is a <b>positive vision</b> of a <b>fully democratic world</b>, in which everybody can take part and have a say. <b>Global, digital, democratic.</b> </p>
+                    
+                    <p>War is not inevitable. Tyranny and Injustice are not inevitable. <b>Global Democracy is possible, if <u>YOU</u> take part in it!</b></p>
+                </div>
+            </div>
 
             <div class="trending-now-posts m-b-30">
                 <div class="section-heading">
@@ -55,7 +68,7 @@
             </div>
             <div class="trending-now-posts m-b-30">
                 <div class="section-heading">
-                    <h5>FUTURE VOTES</h5>
+                    <h5>CURRENT PROPOSALS</h5>
                 </div>
 
                 <div class="trending-post-slides owl-carousel">
@@ -64,64 +77,27 @@
             </div>
             <!-- Feature Video Posts Area -->
             <div class="feature-video-posts m-b-30">
-                <!-- Section Title -->
+
                 <div class="section-heading">
-                    <h5>A World Parliament is possible, if YOU join it!</h5>
+                    <h5>How does it work?</h5>
                 </div>
-
-                <p>Join the Beta Version <a href="{{ path("fos_user_registration_register") }}"> here </a></p>
-
-                <div class="row mb-15">
-                    <div class="col-12 col-lg-6">
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <iframe class="embed-responsive-item" src="https://www.youtube-nocookie.com/embed/8rm8JEdwJpY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                </div>
-
-                <p>We believe that another world is possible. But what does this new world look like? The World Parliament Experiment (WPE) is not just against the current world order, it is a positive vision of a fully democratic world, in which everybody will take part and have a say.</p>
-
-                <p><b>This is why the WPE is YOUR democracy. It is your forum to vote, to elect, to express your opinions, and be elected as a representative!</b></p>
-
-                <p>The WPE is the internet platform for political discussions. Besides elections, the forum allows you to debate, discuss and share your views in a truly international environment!</p>
-                <p>The WPE results will be introduced into the international political process as claims to decisions-makers. Therefore, the WPE wants to be a real political factor. The more people participate, the more powerful the WPE will become.</p>
-
+                    <p>The WPE allows you to vote on real-world political initiatives, both on the global and national level. You can create your own political proposals, and bring them to the global vote.</p>         
+                    <p>The WPE voting results will be visible to decision-making bodies both on the national and supra-national level. We want to be a real political factor. The more people participate, the more powerful the voice of the WPE will become.</p>
+                    <p>To start creating proposals, vote, discuss or be elected, <a href="{{ path("fos_user_security_login") }}"> login</a> or create a <a href="{{ path("fos_user_registration_register") }}"> global citizen user account </a>. For detailed instructions and further information, please visit the <a href="{{ path("faq") }}">FAQ section</a>.</p>
+                <br />
                 <blockquote>
                     <h6 class="quote-text">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
                     <h6 class="quote-name">ABRAHAM LINCOLN</h6>
                 </blockquote>
-
-                <p><b>Imagine the opportunities of such a global forum! Imagine the combined power of all its participants! Imagine a real World Parliament!</b></p>
-
-                <p>Your World Parliament Experiment Team</p>
-
-                <div class="section-heading">
-                    <h5>Further Information</h5>
-                </div>
-
-                <p>
-                    For more information on desirability and potential of this project please see the Essay
-                    <a href="https://www.democracywithoutborders.org/files/DWBDPRT2018.pdf">United Humans: Internet voting for a world parliament and a new world organization</a>
-                </p>
-
-                <p>if you want to collaborate or discuss about the future of WPE go to our <a href="http://worldparliament.a.wiki-site.com/index.php/Main_Page" target="_blank">Wiki page</a>.</p>
-
                 <br />
-
-                <div class="media my-10 w-75">
-                    <div class="media-body">
-                        <p>The World Parliament Experiment is supported by <a href="https://www.democracywithoutborders.org/" target="_blank">Democracy Without Borders</a> and one of its main initiatives as a
-                            <a href="https://www.democracywithoutborders.org/gdve-it/" target="_blank">Global Voting Platform</a>.</p>
-                    </div>
-                    <img src="{{ asset('assets/img/dwb_logo.png') }}" alt="Logo Democracy Without Borders" class="w-25 m-l-10" />
+                <div class="section-heading">
+                    <h5>How can I support the WPE?</h5>
                 </div>
-
-                <div class="media my-10 w-75">
-                    <div class="media-body">
-                        <p>This project is organized by the <a href="http://www.world-parliament.org/" target="_blank">World Parliament Experiment e.V.</a></p>
-                    </div>
-                    <img src="{{ asset('assets/img/logo.png') }}" alt="Logo World Parliament Experiment e.V." class="w-25 m-l-10" />
-                </div>
+                    <p>Become a global citizen and starting voting on the platform!</p>
+                    <p>You can repost current proposals or votes that you feel are important on your social media. You can tell your friends.</p>
+                    <p>You can help spreading the idea of the World Parliament Experiment by using our branded <a href="https://shop.spreadshirt.de/World-Parpament-Experiment/">merchandise</a>.</p>
+                    <p>You can support us on <a href="https://gofund.me/abb115b4">GoFundMe</a>.</p>
+                <br />
 
             </div>
 
@@ -133,7 +109,7 @@
 
         <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle:Widget:programCategories')) }}
+                {{ render(controller('AppBundle:Widget:CategoriesOverview', { 'type': 'future' })) }}
             </div>
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('AppBundle:Widget:mostCitizensByCountry')) }}
@@ -144,7 +120,6 @@
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('AppBundle:Widget:lastRegistrations')) }}
             </div>
-
         </div>
 
     </section>
