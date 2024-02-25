@@ -64,7 +64,7 @@
                         self._endCountdown();
                     }
                 }
-                throw "Something went wrong. Please try it later again!";
+                throw "Something went wrong. Please try again later!";
                 // self.$wrapper.html(data);
             }).catch(function(jqXHR) {
                 var data = JSON.parse(jqXHR.responseText);

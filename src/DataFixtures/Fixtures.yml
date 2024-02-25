@@ -1,0 +1,252 @@
+# https://github.com/fzaninotto/Faker#fakerprovideren_ustext
+# https://github.com/nelmio/alice/tree/2.x#installation
+
+AppBundle\Entity\Category:
+  category_1:
+    name: Security and Conflict Resolution
+    description: '<text(200)>'
+    type: 0
+  category_2:
+    name: Economy
+    description: '<text(200)>'
+    type: 0
+  category_3:
+    name: Environment
+    description: '<text(200)>'
+    type: 0
+  category_4:
+    name: Gender Equality
+    description: '<text(200)>'
+    type: 0
+  category_5:
+    name: Human rights
+    description: '<text(200)>'
+    type: 0
+  category_6:
+    name: Health
+    description: '<text(200)>'
+    type: 0
+  category_7:
+    name: Science & Education
+    description: '<text(200)>'
+    type: 0
+  category_8:
+    name: Germany
+    description: DE
+    type: 2
+  category_9:
+    name: United States
+    description: US
+    type: 2
+  category_10:
+    name: Israel
+    description: IL
+    type: 2
+  category_11:
+    name: Ireland
+    description: IE
+    type: 2
+  category_12:
+    name: United Kingdom
+    description: GB
+    type: 2
+  category_13:
+    name: Sweden
+    description: SE
+    type: 2
+  category_14:
+    name: Norway
+    description: NO
+    type: 2
+
+AppBundle\Entity\User:
+
+  user_base (template):
+    description: "<paragraphs(2, true)>"
+    plainPassword: test
+    enabled: true
+    country: '<countryCode()>'
+    userRoles: ['ROLE_USER']
+    city: '<city()>'
+    birthday: "<dateTimeBetween('-70 years', '-18 years')>"
+    registeredAt: "<dateTime('today')>"
+    consents: 1
+
+  user_moderator (template, extends user_base):
+    userRoles: ['ROLE_USER', 'ROLE_MODERATOR']
+
+  user_admin (template, extends user_base):
+    userRoles: ['ROLE_USER', 'ROLE_MODERATOR', 'ROLE_SUPERADMIN']
+
+  user_1 (extends user_admin):
+    username: borchert
+    usernameCanonical: borchert 
+    firstname: Konstantin
+    lastname: Borchert
+    email: borchert@antsatwork.de
+    emailCanonical: borchert@antsatwork.de
+    gender: 'MALE'
+    country: 'DE'
+    city: 'München'
+
+  user_2 (extends user_admin):
+    username: RoPhSe1978
+    usernameCanonical: RoPhSe1978
+    firstname: Robert
+    lastname: Sell
+    email: robert.sell@world-parliament.org
+    emailCanonical: robert.sell@world-parliament.org
+    gender: 'MALE'
+    country: 'DK'
+    city: 'Ikast'
+
+  user_3 (extends user_moderator):
+    username: florian
+    usernameCanonical: florian
+    firstname: Florian
+    lastname: Borchert
+    email: borchert@cylusion.com
+    emailCanonical: borchert@cylusion.com
+    gender: 'MALE'
+    country: 'DE'
+    city: 'München'
+
+
+  user_{4..50} (extends user_base):
+    username:  "<username()>"
+    usernameCanonical: "<username()>"
+    firstname: "<firstname()>"
+    lastname: "<lastname()>"
+    email: "<email()>"
+    emailCanonical: "<email()>"
+    gender: "<randomElement(['MALE', 'FEMALE', 'DIVERSE', 'NOT STATED'])>"
+
+AppBundle\Entity\UserImage:
+  image_{1..50}:
+    user: "@user_<current()>"
+    imageType: 1
+    contentType: 'image/png'
+    path: "default.png"
+
+AppBundle\Entity\Initiative:
+
+  initiative_base (template):
+    title: "<sentence()>"
+    description: "<paragraph(6)>"
+    category: "@category_*"
+    createdBy: "@user_*"
+    duration: "<numberBetween(1,2)>"
+    views: "<numberBetween(0,1000)>"
+    createdAt: "<dateTimeBetween('-6 months', 'now')>"
+    publishedAt: "<dateTimeBetween($createdAt, 'now')>"
+
+  initiative_future (template, extends initiative_base):
+    type: 0
+    state: "<numberBetween(0,4)>"
+
+  initiative_current (template, extends initiative_base):
+    type: 1
+    state: "<numberBetween(1,4)>"
+
+  initiative_past (template, extends initiative_base):
+    type: 2
+    state: "<numberBetween(2,4)>"
+
+  initiative_program (template, extends initiative_base):
+    type: 3
+    state: "<numberBetween(2,4)>"
+
+  initiative_{1..10}_future_draft (extends initiative_future):
+    state: 0
+
+  initiative_{11..20}_future_closed (extends initiative_future):
+    state: 3
+
+  initiative_{21..30}_future_deleted (extends initiative_future):
+    state: 4
+
+  initiative_{31..35}_current_closed (extends initiative_current):
+    state: 3
+
+  initiative_{36..40}_current_deleted (extends initiative_current):
+    state: 4
+
+  initiative_{41..45}_past_closed (extends initiative_past):
+    state: 3
+
+  initiative_{46..50}_past_deleted (extends initiative_past):
+    state: 4
+
+  initiative_{51..55}_program_closed (extends initiative_program):
+    state: 3
+
+  initiative_{56..60}_program_deleted (extends initiative_program):
+    state: 4
+
+  initiative_future_active_{61..80} (extends initiative_future):
+    state: 1
+
+  initiative_current_active_{81..100} (extends initiative_current):
+    state: 1
+
+  initiative_{101..130}_past_finished (extends initiative_past):
+    state: 2
+
+  initiative_{131..160}_program_finished (extends initiative_program):
+    state: 2
+ 
+AppBundle\Entity\Voting:
+  voting_root (template):
+    quorum: 0.1
+    consensus: 0.5
+    startdate: '<dateTimeBetween("-7 days", "now")>'
+    enddate: '<dateTimeBetween("now", "7 days")>'
+
+  voting_{61..80}_future (extends voting_root):
+    type: 0
+    state: 1
+    initiative: "@initiative_future_active_<current()>"
+
+  voting_{81..100}_current (extends voting_root):
+    type: 1
+    state: 1
+    initiative: "@initiative_current_active_<current()>"
+
+AppBundle\Entity\Comment:
+  comment_root (template):
+    initiative: "@initiative_*"
+    message: "<paragraph(4)>"
+    # message: "<testObjectMethod($initiative)>"
+    state: 0
+    createdBy: "@user_*"
+    createdAt: "@initiative_*->createdAt"
+    liked: "<numberBetween(0,100)>"
+    disliked: "<numberBetween(0,25)>"
+    reported: "<numberBetween(0,5)>"
+    updatedAt: "@initiative_*->createdAt"
+
+  comment_root_{1..500} (extends comment_root):
+
+  comment_children_{501..700} (extends comment_root):
+    parent: "@comment_root_*"
+
+AppBundle\Entity\Delegation:
+
+  delegation_{5..10}:
+      user: "@user_<current()>"
+      truster: "@user_<numberBetween(1,4)>"
+      scope: 0
+      validUntil: '<dateTimeBetween("now", "90 days")>'
+
+  delegation_{11..50}:
+      user: "@user_<current()>"
+      truster: "@user_*"
+      scope: 0
+      validUntil: '<dateTimeBetween("now", "90 days")>'
+
+  delegation_category_{1..10}:
+    user: "@user_*"
+    truster: "@user_*"
+    category: "@category_*"
+    scope: 1
+    validUntil: '<dateTimeBetween("now", "90 days")>'

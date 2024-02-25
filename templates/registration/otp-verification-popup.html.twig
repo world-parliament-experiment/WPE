@@ -1,0 +1,37 @@
+<div class="wpe-content-area" >
+	<div class="container">
+		<div
+			class="register-content form-submit-content px-2">
+			<!-- Section Title -->
+			<div class="section-heading">
+				<h5>Verify your number!</h5>
+			</div>
+
+			{% trans_default_domain 'FOSUserBundle' %}
+			{{ form_start(formOtp, { 'action': path('app_otp_getotp'), 'attr': { 'class': 'fos_user_resetting_reset margin-bottom-0'} }) }}
+			<div class="row">
+				<div class="col-md-12">
+					{{ form_row(formOtp.country, {'attr': {'class': 'form-control'}}) }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-9">
+					{{ form_row(formOtp.mobileNumber,{'attr': {'readonly': false}}) }}
+				</div>
+				<div class="col-3">
+					<div class="row mt-4">
+						<div class="col-3" id="changeNumberDiv">
+							<div class="login-buttons">
+								<button type="submit" id="changeNumber" name="changeNumber" class="btn btn-success changeNumbercls">
+									<span id="changeNumberBtn">{{ 'profile.edit.submit' |trans }}</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{{ form_end(formOtp) }}
+		</div>
+
+	</div>
+</div>

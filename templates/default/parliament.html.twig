@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'Virtual Parliament', background: '/assets/img/header/parliament_large.jpeg'}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
+    <!-- ##### Delegation Area Start ##### -->
+    <div class="wpe-content-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="default-content bg-white mb-30 p-30 box-shadow">
+                        <!-- Section Title -->
+                        <div class="section-heading">
+                            <h5>Virtual Parliament</h5>
+                        </div>
+
+                        <p>At the moment the "Virtual Parliament" is build up by the TOP 20 users with the highest "Delegation Score".</p>
+
+                        <div class="parliament pb-5">
+                            <div class="circle-container"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ##### Delegation Area End ##### -->
+    </div>
+
+{% endblock body %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var app = App.getInstance();
+            app.drawParliament($(".circle-container"));
+
+        });
+
+    </script>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}

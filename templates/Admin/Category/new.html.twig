@@ -1,0 +1,54 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+<!-- ##### Breadcrumb Area Start ##### -->
+<section class="breadcrumb-area bg-img bg-overlay" style="background-image: url('https://via.placeholder.com/1920x850');">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12">
+                <div class="breadcrumb-content">
+                    <h2>{{ page_title() }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ##### Breadcrumb Area End ##### -->
+{{ apy_breadcrumb_trail_render() }}
+<!-- ##### Login Area Start ##### -->
+<div class="admin-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="login-content bg-white p-30 mb-30 box-shadow">
+                    <!-- Section Title -->
+                    <div class="section-heading">
+                        <h5>{{ page_title() }}</h5>
+                    </div>
+
+                    {{ form_start(form) }}
+
+                    {{ form_row(form.name) }}
+
+                    {{ form_row(form.description) }}
+                    {{ form_row(form.type) }}
+
+                    <button type="submit" class="btn btn-primary" formnovalidate><i class="fa fa-save"></i> {{ 'category.new.submit'|trans }} </button>
+
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+

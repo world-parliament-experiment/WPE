@@ -10,16 +10,27 @@ imports:
 monolog:
     handlers:
         main:
-            type: fingers_crossed
+            type:         fingers_crossed
             action_level: error
-            handler: nested
-        nested:
-            type: stream
-            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            handler:      grouped
+        grouped:
+            type:    group
+            members: [streamed, deduplicated]
+        streamed:
+            type:  stream
+            path:  '%kernel.logs_dir%/%kernel.environment%.log'
             level: debug
-        console:
-            type: console
-            process_psr_3_messages: false
+        deduplicated:
+            type:    deduplication
+            handler: swift
+        swift:
+            type:         swift_mailer
+            from_email:   'support@tgde.org'
+            to_email:     'admin@world-parliament.org'
+            subject:      'An Error Occurred! %%message%%'
+            level:        error
+            formatter:    monolog.formatter.html
+            content_type: text/html
 
 ewz_recaptcha:
     public_key:  6LdVH7oUAAAAAOZI-mtHmkE-To3YaZiOcVUyK-uC
