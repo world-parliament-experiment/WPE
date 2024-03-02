@@ -18,35 +18,26 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use DateTime;
-<<<<<<< HEAD
-=======
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
->>>>>>> 8a2a24ab5d8cbbf3275b1c117e3913f5fd673849
+
 
 class ScraperCommand extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'wpe:scrape';
     protected static $_explchar = "', '";
-<<<<<<< HEAD
-
-    public function __construct(EntityManagerInterface $em)
-    {
-        parent::__construct();
-        $this->em = $em;
-=======
     private $FacebookPoster;
     private $router;
-    
+
     public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $router)
     {
         parent::__construct();
         $this->em = $em;
         $this->FacebookPoster = $FacebookPoster;
         $this->router = $router;
->>>>>>> 8a2a24ab5d8cbbf3275b1c117e3913f5fd673849
+
     }
-    
+
     protected function configure()
     {
         $this
@@ -84,7 +75,6 @@ class ScraperCommand extends Command
                 $delid = $deletion->getId();
                 $dvoting = $deletion->getFutureVoting();
                 echo $deletion->getType();
-                
                 if ($dvoting) {
                     $votes_exist = $dvoting->getVotesTotal();
                     if (isset($votes_exist)) { // do not delete intiative if votes already exist
@@ -114,22 +104,22 @@ class ScraperCommand extends Command
                     }
                     echo ('Deleted initiave with id '.$delid);
                 }
-            }    
+            }
         }
 
         if ($input->getOption('update') === true) {
-            
+
             $command = '/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py';
             $process = Process::fromShellCommandline($command);
             //var_dump($process->getCommandLine());
             $process->setTimeout(600);
             $process->mustRun();
-            
+
             // executes after the command finishes
             if (!$process->isSuccessful()) {
                 throw new ProcessFailedException($process);
             }
-            
+
             $contents = $process->getOutput();
             $contentstring = explode("', '", $contents);
 
@@ -137,9 +127,9 @@ class ScraperCommand extends Command
             for ($i = 0; $i < count($contentstring); $i++) {
                 $NewEntry[$contentstring[$i]] = $contentstring[++$i];
             }
-            
+
             foreach ($NewEntry as $title => $desc) {
-                
+
                 //title
                 $title = str_replace("'", "", ($title));
                 $title = str_replace("[", "", ($title));
@@ -151,14 +141,14 @@ class ScraperCommand extends Command
                 $url_regex = '~(?:http|https|ftps)?://(?:www\.)?([a-z0-9.-]+\.[a-z0-9]{1,3}(?:/\S*)?)~i';
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow" target="_blank">$1</a>', $desc);
                 $desc = str_replace("'", "", ($desc));
-                
+
                 $checkdata = $this->em->getRepository('AppBundle\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
                 if(!is_null($checkdata)) {
                     $duplicate = $checkdata->getTitle();
                 } else {
                     $duplicate = "";
                 }
-                
+
                 if ($title == $duplicate ) {
                     // echo $checkdata->getDescription()."\n";
                     continue;
@@ -199,16 +189,13 @@ class ScraperCommand extends Command
                                     
                     echo $title."\n";
                     echo $desc."\n";
-<<<<<<< HEAD
-                    $output->writeln('Saved new initiave with id '.$initiative->getId());            
-=======
+
                     $output->writeln('Saved new initiave with id '.$initiative->getId());  
                     
 /*                  $message = $initiative->getTitle();
                     $wpe_url = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),], UrlGeneratorInterface::ABSOLUTE_URL);
                     $message = $message."\n".'Endorse or discuss this new legislation proposal here:'."\n".$wpe_url;
                     $this->FacebookPoster->postUpdate($message); */
->>>>>>> 8a2a24ab5d8cbbf3275b1c117e3913f5fd673849
                     
                 } //persist
 
