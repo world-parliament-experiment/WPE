@@ -140,7 +140,7 @@ class Voting
     {
         $this->votes = new ArrayCollection();
         $this->quorum = 0.1;
-        $this->consensus = 0.5;
+        $this->consensus = 0.25;
     }
 
     /**

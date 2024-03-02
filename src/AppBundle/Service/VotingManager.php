@@ -83,12 +83,12 @@ class VotingManager
         $this->manager->transactional(function(EntityManagerInterface $em) use ($initiatives, &$cntVotings) {
             foreach ($initiatives as $initiative) {
                 /** @var Initiative $initiative */
-                $duration = $initiative->getDuration();
+                // $duration = $initiative->getDuration();
 
                 $voting = $initiative->getFutureVoting();
 
                 $enddate = new DateTime();
-                $enddate->modify("+$duration days 19:00");
+                $enddate->modify("+6 months");
                 $voting->setEnddate($enddate);
 
                 $voting->setState(VotingEnum::STATE_OPEN);
@@ -123,12 +123,12 @@ class VotingManager
             foreach ($initiatives as $initiative) {
 
                 /** @var Initiative $initiative */
-                $duration = $initiative->getDuration();
+                //$duration = $initiative->getDuration();
 
                 $voting = $initiative->getCurrentVoting();
 
                 $enddate = new DateTime();
-                $enddate->modify("+$duration days 19:00");
+                $enddate->modify("Sunday 19:00");
                 $voting->setEnddate($enddate);
 
                 $voting->setState(VotingEnum::STATE_OPEN);
@@ -168,25 +168,26 @@ class VotingManager
                 /** @var Initiative $initiative */
                 $voting = $initiative->getFutureVoting();
 
-                $voting->setState(VotingEnum::STATE_FINISHED);
-                $em->persist($voting);
+
 
                 if ($randomize) $this->randomizeVoting($voting, true);
 
                 $accepted = $this->evaluateVoting($voting, $initiative);
 
-                if ($accepted === true) {
+                if ($accepted === 1) {
+
+                    $voting->setState(VotingEnum::STATE_FINISHED);
+                    $em->persist($voting);
 
                     $initiative->setType(InitiativeEnum::TYPE_CURRENT);
-
                     $em->persist($initiative);
 
                     $startdate = new DateTime();
-                    $startdate->modify("today 20:00");
+                    $startdate->modify("+2 minutes");
 
-                    if ($startdate < new DateTime()) {
-                        $startdate->modify("tomorrow 20:00");
-                    }
+                    // if ($startdate < new DateTime()) {
+                    //     $startdate->modify("tomorrow 20:00");
+                    // }
 
                     $cVoting = new Voting();
                     $cVoting->settype(VotingEnum::TYPE_CURRENT);
@@ -195,16 +196,19 @@ class VotingManager
                     $cVoting->setInitiative($initiative);
                     $em->persist($cVoting);
 
-                } else {
+                } elseif ($accepted === 2) {
+
+                    $voting->setState(VotingEnum::STATE_FINISHED);
+                    $em->persist($voting);
 
                     $initiative->setType(InitiativeEnum::TYPE_PAST);
                     $initiative->setState(InitiativeEnum::STATE_FINISHED);
 
                     $em->persist($initiative);
 
+                } elseif ($accepted === 0) {
+                    //do nothing
                 }
-
-
 
                 $cntVotings++;
             }
@@ -241,16 +245,29 @@ class VotingManager
                 /** @var Initiative $initiative */
                 $voting = $initiative->getCurrentVoting();
 
-                $voting->setState(VotingEnum::STATE_FINISHED);
-                $em->persist($voting);
+                // $voting->setState(VotingEnum::STATE_FINISHED);
+                // $em->persist($voting);
 
                 if ($randomize) $this->randomizeVoting($voting, false);
 
-                $accepted = $this->evaluateVoting($voting, $initiative);
+                $outcome= $this->evaluateVoting($voting, $initiative);
 
-                $initiative->setType($accepted ? InitiativeEnum::TYPE_PROGRAM : InitiativeEnum::TYPE_PAST);
-                $initiative->setState(InitiativeEnum::STATE_FINISHED);
-
+                switch($outcome){
+                    case 1:
+                        $voting->setState(VotingEnum::STATE_FINISHED);
+                        $initiative->setType(InitiativeEnum::TYPE_PROGRAM);
+                        $initiative->setState(InitiativeEnum::STATE_FINISHED);
+                        break;
+                    case 2:
+                        $voting->setState(VotingEnum::STATE_FINISHED);
+                        $initiative->setType(InitiativeEnum::TYPE_PAST);
+                        $initiative->setState(InitiativeEnum::STATE_FINISHED);
+                        break;
+                    case 0:
+                        //do nothing, leave initiative open
+                        break;
+                }
+                $em->persist($voting);
                 $em->persist($initiative);
 
                 $cntVotings++;
@@ -422,7 +439,7 @@ class VotingManager
      *
      * @param Voting $voting
      * @param Initiative $initiative
-     * @return bool
+     * @return int
      */
     private function evaluateVoting(Voting $voting, Initiative $initiative)
     {
@@ -547,6 +564,7 @@ class VotingManager
 
         $quorum = $voting->getQuorum();
         $consensus = $voting->getConsensus();
+        $now = new Datetime("now");
 
         $results = [
             "eligibleVoters" => count($this->currentUsers),
@@ -561,6 +579,8 @@ class VotingManager
             "accepted" => false,
             "rejected" => false,
             "nonVoterTotal" => 0,
+            "quorum" => $quorum,
+            "outcome" => 0,
         ];
 
         foreach ($directVoter as $dv) {
@@ -579,58 +599,54 @@ class VotingManager
         $results["votesTotal"] = $results["votesAcception"] + $results["votesAbstention"] + $results["votesRejection"];
         $results["votesTotalDelegated"] = $results["votesAcceptionDelegated"] + $results["votesAbstentionDelegated"] + $results["votesRejectionDelegated"];
         $results["nonVoterTotal"] = count($this->currentUsers) - $results["votesTotal"];
+        
+        switch($voting->getType()){
+            case VotingEnum::TYPE_FUTURE: 
+                if (($voting->getEnddate() > $now) &&
+                    ($results["votesTotal"] > 0) &&
+                    (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
+                    ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
+                ) {
+                    $results['accepted'] = true;
+                } elseif ($voting->getEnddate() < $now) {
+                    $results['rejected'] = true;
+                }
+                break;
+            case VotingEnum::TYPE_CURRENT:
+                if ($voting->getEnddate() > $now) {
+                    if (($results["votesTotal"] > 0) &&
+                    (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
+                    (($results["votesAcception"] / $results["eligibleVoters"]) > $consensus) &&
+                    ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
+                    ) {
+                        $results['accepted'] = true;
+                    } elseif (($results["votesTotal"] > 0) &&
+                    (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
+                    (($results["votesRejection"] / $results["eligibleVoters"]) > $consensus) &&
+                    ($results["votesRejection"] > ($results["votesAbstention"]  + $results["votesAcception"]))
+                    ) {
+                        $results['rejected'] = true;
+                    } 
+                } else {
+                    if (($results["votesTotal"] > 0) &&
+                        (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
+                        ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
+                    ) {
+                        $results['accepted'] = true;
+                    } else {
+                        $results['rejected'] = true;
+                    }
+                } 
+                break;
+        } //endswitch
 
-        if (
-            ($results["votesTotal"] > 0) &&
-            (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
-//            (($results["votesAcception"] / $results["votesTotal"]) > $consensus) &&
-            ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
-        ) {
-            $results['accepted'] = true;
+        if ( $results["rejected"] === true ) {
+            $results["outcome"] = 2;
+        } elseif ( $results["accepted"] === true ) {
+            $results["outcome"] = 1;
         } else {
-            $results['rejected'] = true;
+            $results["outcome"] = 0;
         }
-
-        $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $directVoter) {
-            foreach ($directVoter as $vote) {
-                /** @var User $u */
-                $u = $this->manager->getReference('AppBundle\Entity\User', $vote['user']);
-
-                $dv = new DirectVoter();
-                $dv->setVoting($voting);
-                $dv->setUser($u);
-                $dv->setWeight($vote['weight']);
-                $dv->setValue($vote['value']);
-                $this->manager->persist($dv);
-            }
-        });
-
-        $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $delegateVoter) {
-            foreach ($delegateVoter as $vote) {
-                /** @var User $u */
-                $u = $em->getReference('AppBundle\Entity\User', $vote['user']);
-                $dv = new DelegatingVoter();
-                $dv->setVoting($voting);
-                $dv->setUser($u);
-                $dv->setWeight($vote['weight']);
-                $dv->setValue($vote['value']);
-                $dv->setDelegateUserIds($vote['path']);
-                $em->persist($dv);
-            }
-        });
-
-        $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $nonVoter) {
-            foreach ($nonVoter as $vote) {
-                /** @var User $u */
-                $u = $em->getReference('AppBundle\Entity\User', $vote['user']);
-                $dv = new NonVoter();
-                $dv->setVoting($voting);
-                $dv->setUser($u);
-                $dv->setDelegateUserIds($vote['path']);
-                $dv->setReason($vote['reason']);
-                $em->persist($dv);
-            }
-        });
 
         $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $results) {
             $voting->setEligibleVoters($results['eligibleVoters']);
@@ -644,9 +660,51 @@ class VotingManager
             $voting->setVotesRejectionDelegated($results["votesRejectionDelegated"]);
             $voting->setAccepted($results["accepted"]);
             $voting->setRejected($results["rejected"]);
-            $voting->setState(VotingEnum::STATE_FINISHED);
             $em->persist($voting);
         });
+
+        if ( $results["outcome"] != 0 ) {
+            $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $directVoter) {
+                foreach ($directVoter as $vote) {
+                    /** @var User $u */
+                    $u = $this->manager->getReference('AppBundle\Entity\User', $vote['user']);
+
+                    $dv = new DirectVoter();
+                    $dv->setVoting($voting);
+                    $dv->setUser($u);
+                    $dv->setWeight($vote['weight']);
+                    $dv->setValue($vote['value']);
+                    $this->manager->persist($dv);
+                }
+            });
+
+            $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $delegateVoter) {
+                foreach ($delegateVoter as $vote) {
+                    /** @var User $u */
+                    $u = $em->getReference('AppBundle\Entity\User', $vote['user']);
+                    $dv = new DelegatingVoter();
+                    $dv->setVoting($voting);
+                    $dv->setUser($u);
+                    $dv->setWeight($vote['weight']);
+                    $dv->setValue($vote['value']);
+                    $dv->setDelegateUserIds($vote['path']);
+                    $em->persist($dv);
+                }
+            });
+
+            $this->manager->transactional(function(EntityManagerInterface $em) use ($voting, $nonVoter) {
+                foreach ($nonVoter as $vote) {
+                    /** @var User $u */
+                    $u = $em->getReference('AppBundle\Entity\User', $vote['user']);
+                    $dv = new NonVoter();
+                    $dv->setVoting($voting);
+                    $dv->setUser($u);
+                    $dv->setDelegateUserIds($vote['path']);
+                    $dv->setReason($vote['reason']);
+                    $em->persist($dv);
+                }
+            });
+        }
 
 //        print("DELEGATIONS\n");
 //        dump($delegations);
@@ -660,7 +718,7 @@ class VotingManager
         if ($this->getDebugMode()) dump($results);
         if ($this->getDebugMode()) print("==================================================================================================\n\n");
 
-        return $results["accepted"];
+        return $results["outcome"];
 
     }
 

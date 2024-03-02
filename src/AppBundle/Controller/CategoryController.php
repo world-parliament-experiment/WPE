@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
-
 use AppBundle\Entity\Initiative;
+use AppBundle\Enum\InitiativeEnum;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -36,6 +36,7 @@ class CategoryController extends BaseController
     public function listCategoryOverviewAction($type)
     {
         $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
 
         if ($type === 'future') {
 
@@ -43,7 +44,9 @@ class CategoryController extends BaseController
                 ->getFutureInitiatives();
 
             return $this->render('Category/future.html.twig', [
-                'initiatives' => $initiatives
+                'initiatives' => $initiatives,
+                'type' => $type,
+                'alias' => 'proposals',
             ]);
 
         } elseif ($type === 'current') {
@@ -51,16 +54,28 @@ class CategoryController extends BaseController
                 ->getCurrentInitiatives();
 
             return $this->render('Category/current.html.twig', [
-                'initiatives' => $initiatives
+                'initiatives' => $initiatives,
+                'type' => $type,
+                'alias' => 'votes',
             ]);
 
-        } else {
+        } elseif ($type === 'program') {
             $categories = $em->getRepository(Category::class)
                 ->getCategoryOverview($type);
 
             return $this->render('Category/index.html.twig', [
                 'categories' => $categories,
                 'type' => $type,
+                'alias' => 'decisions',
+            ]);
+        } else {
+            $categories = $em->getRepository(Category::class)
+                ->getCategoryOverview($type);
+    
+            return $this->render('Category/index.html.twig', [
+                'categories' => $categories,
+                'type' => $type,
+                'alias' => 'archive',
             ]);
         }
     }
@@ -75,11 +90,43 @@ class CategoryController extends BaseController
      */
     public function listCategoryAction(Category $category, $type)
     {
-        return $this->render('Category/category.html.twig', [
-            "category" => $category,
-            "type" => $type,
-        ]);
+        $em = $this->getDoctrine()->getManager();
 
+        if ($type === 'program') {
+            return $this->render('Category/category.html.twig', [
+                'category' => $category,
+                'type' => $type,
+                'alias' => 'adopted votes'
+            ]);
+        } elseif ($type === 'past') {
+            return $this->render('Category/category.html.twig', [
+                "category" => $category,
+                "type" => $type,
+                'alias' => 'unsuccessful votes'
+            ]);
+        } elseif ($type === 'current') {
+            
+            $initiatives = $em->getRepository(Category::class)
+            ->getInitiatives($category, InitiativeEnum::TYPE_CURRENT);
+            
+            return $this->render('Category/current.html.twig', [
+                'category' => $category,
+                'type' => $type,
+                'alias' => 'votes',
+                'initiatives' => $initiatives,
+            ]);
+        } elseif ($type === 'future') {
+
+            $initiatives = $em->getRepository(Category::class)
+            ->getInitiatives($category, InitiativeEnum::TYPE_FUTURE);
+
+            return $this->render('Category/future.html.twig', [
+                'category' => $category,
+                'type' => $type,
+                'alias' => 'proposals',
+                'initiatives' => $initiatives,
+            ]);
+        }
     }
 
     /**

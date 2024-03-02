@@ -43,7 +43,7 @@ class User extends BaseUser
             }
         }
     }
-
+    
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -52,7 +52,30 @@ class User extends BaseUser
      * @JMSSerializer\Groups({"default", "simple"})
      */
     protected $id;
-
+    
+     /**
+     * @ORM\Id
+     * @ORM\Column(type="guid")
+     * @ORM\GeneratedValue(strategy="UUID")
+     * @JMSSerializer\Type("uuid")
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $gid;
+    
+    
+     /**
+     * @ORM\Column(type="string", unique="true")
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default"})
+     */
+    protected $deviceID;
+    
+     /**
+     * @ORM\Column(type="teltype", unique="true")
+     * @JMSSerializer\Type("string")
+     * @JMSSerializer\Groups({"default"})
+     */
+    protected $Phone;
     
     /**
      * @Assert\NotBlank(message="Please enter your first name.", groups={"Registration", "Profile"})
@@ -158,17 +181,21 @@ class User extends BaseUser
      */
     protected $registeredAt;
 
-
     /**
-     * @RollerworksPassword\PasswordStrength(minLength=7, minStrength=3)
-     */
-    protected $plainPassword;
+     * #RollerworksPassword\PasswordStrength(minLength=7, minStrength=3)
+     * #protected $plainPassword;
+    */
 
     /**
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default"})
      */
     protected $email;
+    
+     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $electable;
 
     /**
      * @JMSSerializer\Type("string")

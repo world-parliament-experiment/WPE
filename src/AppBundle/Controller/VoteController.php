@@ -6,16 +6,21 @@ use AppBundle\Entity\Comment;
 use AppBundle\Entity\Initiative;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Vote;
+use AppBundle\Entity\Voter;
 use AppBundle\Entity\Voting;
+use AppBundle\Entity\Delegation;
 use AppBundle\Enum\CommentEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
+use AppBundle\Enum\DelegationEnum;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 use Doctrine\ORM\NonUniqueResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Service\VotingManager;
+
 
 
 /**
@@ -170,11 +175,40 @@ class VoteController extends BaseController
         $comment->setReported('0');
         $comment->setParent(NULL);
 
-        return $this->render('Vote/show.html.twig', array(
-            'initiative' => $initiative,
-            'form' => $form->createView(),
-            'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
-        ));
+        if ($initiative->getType() === 0) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'proposal',
+                'category' => $initiative->getCategory(),
+            ));
+        } elseif ($initiative->getType() === 1) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'vote',
+                'category' => $initiative->getCategory(),
+            ));
+        } elseif ($initiative->getType() === 2) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'unsuccessful initiative',
+                'category' => $initiative->getCategory(),
+            ));
+        } else {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'adopted vote',
+                'category' => $initiative->getCategory(),
+            ));
+        }
+        ;
 
     }
 
@@ -278,6 +312,8 @@ class VoteController extends BaseController
                         "breakdown" => [
                             "direct" => ($voting->getVotesAcception() - $voting->getVotesAcceptionDelegated()),
                             "delegated" => $voting->getVotesAcceptionDelegated(),
+                            "enddate" => $voting->getEnddate(),
+                            "accepted" => $voting->getVotesAcception() 
                         ],
                         "config" => [
                             "isActive" => $voting->getAccepted(),
@@ -392,10 +428,10 @@ class VoteController extends BaseController
                                 // already voted
                                 return $this->createApiResponse([
                                     'success' => true,
-                                    'message' => 'You already voted for this initiative',
+                                    'message' => 'You already voted for this proposal',
                                     'data' => [
                                         'type' => 'info',
-                                        'content' => 'You already voted for this initiative at ' . $vote->getVotedAt()->format('F j, Y H:i') . '!',
+                                        'content' => 'You already voted for this proposal on ' . $vote->getVotedAt()->format('F j, Y H:i') . '! The proposal will become an official online vote when it has reached the required quota of at least 5% of eligible voters for the proposal. Online voting starts immediately after a proposal has reached the threshold support to become a vote. If a proposal fails to reach the 5 percent quorum during the validity of the proposal, it will be archived.',
                                         'enddate' => $voting->getEnddate()->format("Y-m-d H:i:s"),
                                     ]
                                 ]);
@@ -403,7 +439,7 @@ class VoteController extends BaseController
                         } else {
                             return $this->createApiResponse([
                                 'success' => false,
-                                'message' => 'Only registered user can vote for this initiative! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
+                                'message' => 'Only registered users can supoort a proposal to become an online vote! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
                             ], 302);
                         }
                     }
@@ -460,10 +496,10 @@ class VoteController extends BaseController
                                 // already voted
                                 return $this->createApiResponse([
                                     'success' => true,
-                                    'message' => 'You already voted for this initiative',
+                                    'message' => 'You already voted on this proposal',
                                     'data' => [
                                         'type' => 'info',
-                                        'content' => 'You already voted for this initiative at ' . $vote->getVotedAt()->format('F j, Y H:i') . '!',
+                                        'content' => 'You already voted on this proposal on ' . $vote->getVotedAt()->format('F j, Y H:i') . '! The results of the online vote will be visible after voting has finished.',
                                         'enddate' => $voting->getEnddate()->format("Y-m-d H:i:s"),
                                     ]
                                 ]);
@@ -471,7 +507,7 @@ class VoteController extends BaseController
                         } else {
                             return $this->createApiResponse([
                                 'success' => false,
-                                'message' => 'Only registered user can vote for this initiative! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
+                                'message' => 'Only registered users can vote! Please <a href="' . $this->generateUrl('fos_user_security_login') . '">login</a> or <a href="' . $this->generateUrl('fos_user_registration_register') . '">register</a> to continue.',
                             ], 302);
                         }
                     }
@@ -556,7 +592,7 @@ class VoteController extends BaseController
 
                     return $this->createApiResponse([
                         'success' => true,
-                        'message' => 'Your vote was successfully registered!',
+                        'message' => 'Your vote was successfully registered! The proposal will become an official online vote when it has reached the required quota of at least 10% of eligible voters for the proposal. Online voting starts immediately after a proposal has reached the threshold support to become a vote. If a proposal fails to reach the 10 percent quorum during the validity of the proposal, it will be archived.',
                     ]);
 
                 }
@@ -580,7 +616,7 @@ class VoteController extends BaseController
      * @param Initiative $initiative
      * @return Response
      */
-    public function voteCurrentAction(Request $request, Initiative $initiative)
+    public function voteCurrentAction(Request $request, Initiative $initiative, VotingManager $VotingManager)
     {
 
         $this->denyAccessUnlessGranted("vote", $initiative);
@@ -589,6 +625,9 @@ class VoteController extends BaseController
         if (false !== $request->isXmlHttpRequest()) {
 
             $vote = new Vote();
+            $voter = new Voter();
+            $delegation = new Delegation();
+            $user = new User();
             $form = $this->createForm('AppBundle\Form\CurrentVoteForm', $vote);
             $form->handleRequest($request);
 
@@ -598,8 +637,83 @@ class VoteController extends BaseController
 
                     $em = $this->getDoctrine()->getManager();
                     $voting = $initiative->getCurrentVoting();
-                    $vote->setUser($this->getUser());
-                    $vote->setVoting($voting);
+
+                    $voter->setUser($this->getUser());
+
+                    // GET CURRENT DELEGATIONS
+                    $delegations = $em->getRepository(Initiative::Class)->getCurrentDelegations();
+
+                    // evaluate all delegations whether they apply to the current vote
+                    // if yes, register the values of the votes coming from the delegations in vote table
+                    // register the users on whose behalf the vote was cast, in the voter table
+                    // if a user has voted with delegations, then his username will be saved together with his vote
+                    // this achieves anonymity of voting for non-representatives
+                    foreach ($delegations as $key->$delegation) {
+
+                        $category_id = $initiative->getCategory()->getId();
+                        $initiative_id = $initiative->getId();
+                        
+                        switch($delegation->getScope()) {
+                            case(DelegationEnum::SCOPE_PLATFORM): 
+                                if ($form->get('voteYes')->isClicked()) {
+                                    $vote->setValue(1);
+                                } elseif ($form->get('voteAbstention')->isClicked()) {
+                                    $vote->setValue(0);
+                                } elseif ($form->get('voteNo')->isClicked()) {
+                                    $vote->setValue(-1);
+                                }
+                                $vote->setVoting($voting);
+                                //do not save user information in vote table
+                                $voter->setVoting($voting);
+                                $voter->setUser($delegation->getTruster());
+            
+                                $em->persist($voter);
+                                $em->persist($vote);
+                                $em->flush();
+                                break;
+                            case(DelegationEnum::SCOPE_CATEGORY):
+                                if ($delegation->getCategory()->getId() !== $category_id) {
+                                 unset($delegations[$key]);
+                                } else {
+                                    if ($form->get('voteYes')->isClicked()) {
+                                        $vote->setValue(1);
+                                    } elseif ($form->get('voteAbstention')->isClicked()) {
+                                        $vote->setValue(0);
+                                    } elseif ($form->get('voteNo')->isClicked()) {
+                                        $vote->setValue(-1);
+                                    }
+                                    $vote->setVoting($voting);
+                                    //do not save user information in vote table
+                                    $voter->setVoting($voting);
+                                    $voter->setUser($delegation->getTruster());
+                
+                                    $em->persist($voter);
+                                    $em->persist($vote);
+                                    $em->flush();
+                                } break;
+                            case(DelegationEnum::SCOPE_INITIATIVE): 
+                                if ($delegation->getInitiative() !== $initiative_id) {
+                                   unset($delegations[$key]);  
+                                } else {
+                                    if ($form->get('voteYes')->isClicked()) {
+                                        $vote->setValue(1);
+                                    } elseif ($form->get('voteAbstention')->isClicked()) {
+                                        $vote->setValue(0);
+                                    } elseif ($form->get('voteNo')->isClicked()) {
+                                        $vote->setValue(-1);
+                                    }
+                                    $vote->setVoting($voting);
+                                    //do not save user information in vote table
+                                    $voter->setVoting($voting);
+                                    $voter->setUser($delegation->getTruster());
+                
+                                    $em->persist($voter);
+                                    $em->persist($vote);
+                                    $em->flush();
+                                } break;
+                            default: unset($delegations[$key]);
+                        }
+                    }
 
                     if ($form->get('voteYes')->isClicked()) {
                         $vote->setValue(1);
@@ -608,13 +722,16 @@ class VoteController extends BaseController
                     } elseif ($form->get('voteNo')->isClicked()) {
                         $vote->setValue(-1);
                     }
+                    $vote->setVoting($voting);
+                    if ($delegations) {
+                        $vote->setUser($voter); //only register voter together with vote, if he had delegations
+                    }
+                    $voter->setVoting($voting);
+                    $voter->setUser($voter);
 
+                    $em->persist($voter);
                     $em->persist($vote);
                     $em->flush();
-
-//                    dump($form);
-//                    dump($voting);
-//                    dump($vote);
 
                     return $this->createApiResponse([
                         'success' => true,

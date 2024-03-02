@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 
-    {{ include ('Widget/_breadcrumb.html.twig', {title: type|capitalize ~ " Initiatives", background: asset(category.image)}, with_context = false) }}
+    {{ include ('Widget/_breadcrumb.html.twig', {title: alias|capitalize, background: asset(category.image)}, with_context = false) }}
 
     {{ apy_breadcrumb_trail_render() }}
 
@@ -14,7 +14,7 @@
                     <div class="default-content bg-white mb-30 p-30 box-shadow">
                         <!-- Section Title -->
                         <div class="section-heading">
-                            <h5>{{ type|capitalize }} Initiatives</h5>
+                            <h5>{{ alias|capitalize }}</h5>
                             <h5>{{ category.name }}</h5>
                         </div>
 

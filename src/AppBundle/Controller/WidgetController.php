@@ -4,8 +4,10 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Initiative;
 use AppBundle\Entity\User;
+use AppBundle\Enum\InitiativeEnum;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Intl\Intl;
 
 class WidgetController extends BaseController
 {
@@ -36,17 +38,17 @@ class WidgetController extends BaseController
      * @return Response
      * @throws InvalidArgumentException
      */
-    public function programCategoriesAction()
+    public function CategoriesOverviewAction(string $type)
     {
 
+        $em = $this->getDoctrine()->getManager();
         $cache = $this->get('cache.app')->getItem('widget_program_catgories');
+        $countries = Intl::getRegionBundle()->getCountryNames();
 
         if (!$cache->isHit()) {
 
-            $em = $this->getDoctrine()->getManager();
-
             $categories = $em->getRepository('AppBundle:Category')
-                ->getCategoryOverview('program');
+                ->getCategoryOverview($type);
 
             $cache->set($categories);
             $cache->expiresAfter(600);
@@ -55,8 +57,10 @@ class WidgetController extends BaseController
             $categories = $cache->get();
         }
 
-        return $this->render('Widget/programcategories.html.twig', [
-            'categories' => $categories
+        return $this->render('Widget/categoriesoverview.html.twig', [
+            'categories' => $categories,
+            'countries' => $countries,
+            'type' => $type,
         ]);
 
     }

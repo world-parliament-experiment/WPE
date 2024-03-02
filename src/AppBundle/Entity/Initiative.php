@@ -52,7 +52,7 @@ class Initiative
     protected $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="initiative")
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="initiative", cascade={"remove"})
      * @ORM\OrderBy({"createdAt" = "ASC"})
      */
     protected $comments;

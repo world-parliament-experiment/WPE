@@ -1,4 +1,4 @@
-/app/config/parameters.yml
+/app/config/*
 /build/
 /phpunit.xml
 /var/*
@@ -16,3 +16,4 @@
 /web/bundles/
 /.idea/
 *~
+.env

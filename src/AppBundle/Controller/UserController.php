@@ -313,6 +313,7 @@ class UserController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $initiative = $form->getData();
+            $initiative->setDuration("7");
 
             if ($form->get('publish')->isClicked()) {
 
@@ -321,15 +322,15 @@ class UserController extends BaseController
                 $voting = New Voting();
 
                 $startdate = new DateTime();
-
+ 
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
-                $startdate->modify("today 20:00");
+                $startdate->modify("+2 minutes");
 
-                if ($startdate < new DateTime()) {
-                    $startdate->modify("tomorrow 20:00");
-                }
+                // if ($startdate < new DateTime()) {
+                //     $startdate->modify("tomorrow 20:00");
+                // }
 
                 $voting->setStartdate($startdate);
 
@@ -398,6 +399,7 @@ class UserController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $initiative = $editForm->getData();
+            $initiative->setDuration("7");
 
             if ($editForm->get('publish')->isClicked()) {
                 $voting = New Voting();
@@ -409,11 +411,11 @@ class UserController extends BaseController
                 $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
 
-                $startdate->modify("today 20:00");
+                $startdate->modify("+2 minutes");
 
-                if ($startdate < new DateTime()) {
-                    $startdate->modify("tomorrow 20:00");
-                }
+                // if ($startdate < new DateTime()) {
+                //     $startdate->modify("tomorrow 20:00");
+                // }
 
                 $voting->setStartdate($startdate);
 

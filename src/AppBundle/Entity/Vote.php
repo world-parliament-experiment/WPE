@@ -27,26 +27,18 @@ class Vote
      * @ORM\JoinColumn(nullable=false)
      */
     protected $voting;
+    
+     /**
+     * @ORM\Column(type="integer")
+     */
+    protected $value;
 
     /**
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="votes")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $user;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $value;
-
-    /**
-     * @var DateTime $votedAt
-     *
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     */
-    protected $votedAt;
+    protected $user;   
 
     /**
      * @return Voting
@@ -94,22 +86,6 @@ class Vote
     public function setValue($value)
     {
         $this->value = $value;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getVotedAt()
-    {
-        return $this->votedAt;
-    }
-
-    /**
-     * @param DateTime $votedAt
-     */
-    public function setVotedAt($votedAt)
-    {
-        $this->votedAt = $votedAt;
     }
 
 }
