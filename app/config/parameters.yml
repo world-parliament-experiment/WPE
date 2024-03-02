@@ -2,9 +2,9 @@
 parameters:
     database_host: localhost
     database_port: 5432
-    database_name: wpe_main
-    database_user: democracy
-    database_password: 4JzxUcDt5Uu3
+    database_name: wpe
+    database_user: user
+    database_password: userpass
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: null
