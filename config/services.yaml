@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+    router.request_context.scheme: https
+    router.request_context.host: www.world-parliament.org
 
 services:
     # default configuration for services in *this* file
@@ -38,6 +40,10 @@ services:
             $smsAuth: '%env(SMS_AUTHORIZATION)%'
             $smsSender: '%env(SMS_SENDER)%'
             $smsApiUrl: '%env(API_URL)%'
+            $fb_token: '%env(FB_PAGE_TOKEN)%'
+            $fb_site: '%env(FB_PAGE_ID)%'
+            $fb_app: '%env(FB_APP)%'
+            $fb_secret: '%env(FB_SECRET)%'
     AppBundle\Util\:
         resource: '../lib/AppBundle/Util/'
         autowire: true

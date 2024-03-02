@@ -18,17 +18,22 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use DateTime;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ScraperCommand extends Command
 {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'wpe:scrape';
     protected static $_explchar = "', '";
-
-    public function __construct(EntityManagerInterface $em)
+    private $FacebookPoster;
+    private $router;
+    
+    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $router)
     {
         parent::__construct();
         $this->em = $em;
+        $this->FacebookPoster = $FacebookPoster;
+        $this->router = $router;
     }
     
     protected function configure()
@@ -183,7 +188,12 @@ class ScraperCommand extends Command
                                     
                     echo $title."\n";
                     echo $desc."\n";
-                    $output->writeln('Saved new initiave with id '.$initiative->getId());            
+                    $output->writeln('Saved new initiave with id '.$initiative->getId());  
+                    
+/*                  $message = $initiative->getTitle();
+                    $wpe_url = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),], UrlGeneratorInterface::ABSOLUTE_URL);
+                    $message = $message."\n".'Endorse or discuss this new legislation proposal here:'."\n".$wpe_url;
+                    $this->FacebookPoster->postUpdate($message); */
                     
                 } //persist
 
