@@ -1,3 +1,4 @@
+/app/config/*
 /build/
 /phpunit.xml
 /var/*
@@ -15,3 +16,4 @@
 /web/bundles/
 /.idea/
 *~
+.env
