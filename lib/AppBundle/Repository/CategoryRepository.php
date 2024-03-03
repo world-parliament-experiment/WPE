@@ -59,6 +59,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state > 0')
             ->andWhere('initiative.state < 3')
+            ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
@@ -72,6 +73,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.type = 1')
             ->andWhere('initiative.state > 0')
             ->andWhere('initiative.state < 3')
+            ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
@@ -86,6 +88,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.state = 2')
 //            ->andWhere('initiative.state > 1')
 //            ->andWhere('initiative.state < 4')
+            ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
@@ -104,7 +107,7 @@ class CategoryRepository extends EntityRepository
 //            ->andWhere('initiative.state > 1')
 //            ->andWhere('initiative.state < 4')
             ->andWhere('initiative.state = 2')
-
+            ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
