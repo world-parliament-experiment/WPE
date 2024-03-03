@@ -59,7 +59,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state > 0')
             ->andWhere('initiative.state < 3')
-            ->addOrderBy('category.name')
+            ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
     }
@@ -72,7 +72,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.type = 1')
             ->andWhere('initiative.state > 0')
             ->andWhere('initiative.state < 3')
-            ->addOrderBy('category.name')
+            ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
     }
@@ -86,7 +86,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.state = 2')
 //            ->andWhere('initiative.state > 1')
 //            ->andWhere('initiative.state < 4')
-            ->addOrderBy('category.name')
+            ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
     }
@@ -105,7 +105,7 @@ class CategoryRepository extends EntityRepository
 //            ->andWhere('initiative.state < 4')
             ->andWhere('initiative.state = 2')
 
-            ->addOrderBy('category.name')
+            ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
     }
@@ -122,6 +122,7 @@ class CategoryRepository extends EntityRepository
         ->leftJoin('category.initiatives', 'initiative')
         ->andWhere('initiative.category = :icategory')
         ->andWhere('initiative.type = :itype')
+        ->addOrderBy('initiative.createdAt', 'desc')
         ->setParameters([
             'icategory' => $category,
             'itype' => $type,
