@@ -410,7 +410,7 @@ class VoteController extends BaseController
                     if ($voting->getState() == VotingEnum::STATE_WAITING) {
                         return $this->createApiResponse([
                             'success' => true,
-                            'message' => 'Voting hss not started yet!',
+                            'message' => 'Voting has not started yet!',
                             'data' => [
                                 'type' => 'countdown',
                                 'startdate' => $voting->getStartdate()->format("Y-m-d H:i:s"),
