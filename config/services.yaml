@@ -44,6 +44,8 @@ services:
             $fb_site: '%env(FB_PAGE_ID)%'
             $fb_app: '%env(FB_APP)%'
             $fb_secret: '%env(FB_SECRET)%'
+            $lkin_access_token: '%env(LKIN_ACCESS_TOKEN)%'
+            $lkin_organization: '%env(LKIN_ORGANIZATION)%'
     AppBundle\Util\:
         resource: '../lib/AppBundle/Util/'
         autowire: true
