@@ -55,7 +55,10 @@ class ResettingController extends AbstractController
         }
 
         if (!$user) {
-            throw new NotFoundHttpException(sprintf('No such email or user exists'));
+                $error = "No such email or user exists";
+                return $this->render('Resetting/request.html.twig', [
+                    'error' => $error,
+                ]);
         }
 
         $user->setEnabled(false);
