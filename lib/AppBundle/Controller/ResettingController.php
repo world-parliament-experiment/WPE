@@ -54,6 +54,10 @@ class ResettingController extends AbstractController
             $user = $this->userManager->getUserByUsername($username);
         }
 
+        if (!$user) {
+            throw new NotFoundHttpException(sprintf('No such email or user exists'));
+        }
+
         $user->setEnabled(false);
         if (null === $user->getConfirmationToken()) {
             $user->setConfirmationToken($user->generateToken());
