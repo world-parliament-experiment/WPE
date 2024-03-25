@@ -19,6 +19,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use DateTime;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use AppBundle\Service\SocialmediaPoster;
 
 
 class ScraperCommand extends Command
@@ -26,14 +27,14 @@ class ScraperCommand extends Command
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'wpe:scrape';
     protected static $_explchar = "', '";
-    private $FacebookPoster;
+    private $SocialmediaPoster;
     private $router;
 
-    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $router)
+    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $router, SocialmediaPoster $SocialmediaPoster)
     {
         parent::__construct();
         $this->em = $em;
-        $this->FacebookPoster = $FacebookPoster;
+        $this->SocialmediaPoster = $SocialmediaPoster;
         $this->router = $router;
 
     }
@@ -191,11 +192,9 @@ class ScraperCommand extends Command
                     echo $desc."\n";
 
                     $output->writeln('Saved new initiave with id '.$initiative->getId());  
-                    
-/*                  $message = $initiative->getTitle();
-                    $wpe_url = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),], UrlGeneratorInterface::ABSOLUTE_URL);
-                    $message = $message."\n".'Endorse or discuss this new legislation proposal here:'."\n".$wpe_url;
-                    $this->FacebookPoster->postUpdate($message); */
+/*                     $message = "Endorse or discuss this new legislation proposal here:";
+                    $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),], UrlGeneratorInterface::ABSOLUTE_URL);
+                    $this->SocialmediaPoster->postUpdate($message,$source,$title); */
                     
                 } //persist
 

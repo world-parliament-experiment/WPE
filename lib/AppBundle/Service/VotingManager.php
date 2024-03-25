@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use AppBundle\Service\FacebookPoster;
+use AppBundle\Service\SocialmediaPoster;
 
 class VotingManager
 {
@@ -51,9 +51,9 @@ class VotingManager
     private $logger;
     
     /**
-     * @var FacebookPoster
+     * @var SocialmediaPoster
      */
-    private $FacebookPoster;
+    private $SocialmediaPoster;
 
     /**
      * @var UrlGeneratorInterface
@@ -66,14 +66,14 @@ class VotingManager
      * @param LoggerInterface $logger
      */
 
-    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger, FacebookPoster $FacebookPoster, UrlGeneratorInterface $router)
+    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger, SocialmediaPoster $SocialmediaPoster, UrlGeneratorInterface $router)
     {
 
         ini_set('xdebug.max_nesting_level', 1000);
 
         $this->manager = $manager;
         $this->logger = $logger;
-        $this->FacebookPoster = $FacebookPoster; 
+        $this->SocialmediaPoster = $SocialmediaPoster; 
         $this->router = $router;   
 
     }
@@ -110,10 +110,10 @@ class VotingManager
 
                 $cntVotings++;
 
-                $message = $initiative->getTitle();
-                $wpe_url = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
-                $message = $message."\n".'Endorse or discuss this new legislation proposal here:'."\n".$wpe_url;
-                $this->FacebookPoster->postUpdate($message);
+                $title = $initiative->getTitle();
+                $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
+                $message = 'Endorse or discuss this new legislation proposal here:';
+                $this->SocialmediaPoster->postUpdate($message,$source,$title);
 
             }
         });
@@ -153,10 +153,10 @@ class VotingManager
                 $voting->setState(VotingEnum::STATE_OPEN);
                 $em->persist($voting);
 
-                $message = $initiative->getTitle();
-                $wpe_url = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
-                $message = $message."\n".'Voting on this legislation is now active. Vote and discuss here:'."\n".$wpe_url;
-                $this->FacebookPoster->postUpdate($message);
+                $title = $initiative->getTitle();
+                $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
+                $message = 'Voting on this legislation is now active. Vote and discuss here:';
+                $this->SocialmediaPoster->postUpdate($message,$source,$title);
 
                 $cntVotings++;
             }
