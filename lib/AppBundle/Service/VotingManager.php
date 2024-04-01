@@ -10,15 +10,16 @@ use AppBundle\Entity\NonVoter;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Vote;
 use AppBundle\Entity\Voting;
+use AppBundle\Entity\Category;
 use AppBundle\Enum\DelegationEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
+use AppBundle\Enum\CategoryEnum;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use AppBundle\Service\SocialmediaPoster;
 
 class VotingManager
@@ -56,17 +57,12 @@ class VotingManager
     private $SocialmediaPoster;
 
     /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
-
-    /**
      * VotingManager constructor.
      * @param EntityManagerInterface $manager
      * @param LoggerInterface $logger
      */
 
-    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger, SocialmediaPoster $SocialmediaPoster, UrlGeneratorInterface $router)
+    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger, SocialmediaPoster $SocialmediaPoster)
     {
 
         ini_set('xdebug.max_nesting_level', 1000);
@@ -74,7 +70,6 @@ class VotingManager
         $this->manager = $manager;
         $this->logger = $logger;
         $this->SocialmediaPoster = $SocialmediaPoster; 
-        $this->router = $router;   
 
     }
 
@@ -109,12 +104,7 @@ class VotingManager
                 $em->persist($voting);
 
                 $cntVotings++;
-
-                $title = $initiative->getTitle();
-                $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
-                $message = 'Endorse or discuss this new legislation proposal here:';
-                $this->SocialmediaPoster->postUpdate($message,$source,$title);
-
+                $this->SocialmediaPoster->postUpdate($initiative);
             }
         });
 
@@ -153,10 +143,7 @@ class VotingManager
                 $voting->setState(VotingEnum::STATE_OPEN);
                 $em->persist($voting);
 
-                $title = $initiative->getTitle();
-                $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
-                $message = 'Voting on this legislation is now active. Vote and discuss here:';
-                $this->SocialmediaPoster->postUpdate($message,$source,$title);
+                $this->SocialmediaPoster->postUpdate($initiative);
 
                 $cntVotings++;
             }

@@ -1,10 +1,16 @@
 <?php
 
 namespace AppBundle\Service;
-
+use AppBundle\Entity\Initiative;
+use AppBundle\Entity\Category;
+use AppBundle\Enum\CategoryEnum;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+
 
 class SocialmediaPoster
 {
@@ -16,8 +22,10 @@ class SocialmediaPoster
     private $client;
     private $lkin_access_token;
     private $lkin_organization;
+    private $entityManager;
+    private $router;
 
-    public function __construct(string $lkin_access_token, string $lkin_organization, string $fb_app, string $fb_secret, string $fb_token, string $fb_site)
+    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $router, string $lkin_access_token, string $lkin_organization, string $fb_app, string $fb_secret, string $fb_token, string $fb_site)
     {
         $this->client = new Client();
         $this->lkin_access_token = $lkin_access_token;
@@ -26,12 +34,25 @@ class SocialmediaPoster
         $this->fb_app = $fb_app;
         $this->fb_token = $fb_token;
         $this->fb_site = $fb_site;
+        $this->em = $entityManager;
+        $this->router = $router; 
     }
 
-    public function postUpdate($message,$source,$title)
+    public function postUpdate(Initiative $initiative)
     {
-        $this->postLinkedInUpdate($message,$source,$title);
-        $this->postFacebookUpdate($message,$source,$title);
+
+        $category_id = $initiative->getCategory();
+        $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('id' => $category_id));
+        if ($category->getType() === 0) {
+
+            $title = $initiative->getTitle();
+            $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
+            $message = 'Endorse or discuss this new legislation proposal here:';
+
+            
+            $this->postLinkedInUpdate($message,$source,$title);
+            $this->postFacebookUpdate($message,$source,$title);
+        }
 
     }
     public function postLinkedInUpdate($message,$source,$title)
