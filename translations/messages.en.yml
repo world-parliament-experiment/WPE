@@ -7,6 +7,8 @@ vote:
             vote_yes: Yes
             vote_abstention: Abstention
             vote_no: No
+        show: View Ongoing Votes
+
 initiative:
     edit:
         title: Title
@@ -28,7 +30,7 @@ initiative:
         draft: Save as Draft
     show:
         name: Delete Initiative
-        description: Overview
+        description: View Proposals
     flash:
         edit: Your proposal successfully updated
         publish: Your proposal is published now
@@ -101,13 +103,13 @@ menu:
     home:
         label: Home
     future:
-        label: Proposals
+        label: Legislation Proposals
     current:
-        label: Votes
+        label: Ongoing Votes
     past:
-        label: Archive
+        label: Rejected
     program:
-        label: Decisions
+        label: Accepted
     faq:
         label: FAQ
     user:
@@ -129,6 +131,8 @@ menu:
         user: Users
         category: Categories
         comment: Comments
+    wpe:
+        label: World Parliament
 
 breadcrumb:
     admin:

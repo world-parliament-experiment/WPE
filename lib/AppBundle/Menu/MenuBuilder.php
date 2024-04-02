@@ -33,35 +33,59 @@ class MenuBuilder
 
         $menu = $this->factory->createItem('root');
 
-        $menu->addChild('Home', ['route' => 'homepage'])
+/*         $menu->addChild('Home', ['route' => 'homepage'])
             ->setLabel($this->translator->trans('menu.home.label', [], 'messages'))
-            ->setExtra("icon", "fas fa-home fa-fw");
+            ->setExtra("icon", "fas fa-home fa-fw"); */
 
         $menu->addChild('Future', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'future'] ])
+            ->setChildrenAttribute("class", "dropdown")
             ->setLabel($this->translator->trans('menu.future.label', [], 'messages'))
-            ->setExtra("icon", "fas fa-vote-yea fa-fw");
+            ->setExtra("icon", "fas fa-file fa-fw")      
+            ->addchild('View', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'future'] ])
+            ->setLabel($this->translator->trans('initiative.show.description', [], 'messages'))
+            ->setExtra("icon", "fas fa-list-alt fa-fw")
+            ->getParent()
+            ->addChild('Create Initiative', ["route" => "user_initiative_new"])
+            ->setLabel($this->translator->trans('menu.user.create', [], 'messages'))
+            ->setExtra("icon", "fas fa-file fa-fw");
 
         $menu->addChild('Ongoing Votes', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'current'] ])
+            ->setChildrenAttribute("class", "dropdown")
             ->setLabel($this->translator->trans('menu.current.label', [], 'messages'))
-            ->setExtra("icon", "fas fa-vote-yea fa-fw");
+            ->setExtra("icon", "fas fa-vote-yea fa-fw")
+            ->addchild('View', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'current'] ])
+            ->setLabel($this->translator->trans('vote.current.show', [], 'messages'))
+            ->setExtra("icon", "fas fa-vote-yea fa-fw")
+            ->getParent()
+            ->addchild('Program', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'program'] ])
+            ->setLabel($this->translator->trans('menu.program.label', [], 'messages'))
+            ->setExtra("icon", "fas fa-check fa-fw")
+            ->getParent()
+            ->addChild('Past', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'past'] ])
+            ->setLabel($this->translator->trans('menu.past.label', [], 'messages'))
+            ->setExtra("icon", "fas fa-times fa-fw");
 
-        $menu->addChild('Program', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'program'] ])
+/*         $menu->addChild('Program', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'program'] ])
             ->setLabel($this->translator->trans('menu.program.label', [], 'messages'))
             ->setExtra("icon", "fas fa-book-open fa-fw");
 
         $menu->addChild('Past', ['route' => 'category_index', 'routeParameters' => [ 'type' => 'past'] ])
             ->setLabel($this->translator->trans('menu.past.label', [], 'messages'))
-            ->setExtra("icon", "fas fa-book-open fa-fw");
-   
-        $menu->addChild('General Assembly', ['route' => 'general_assembly' ])
+            ->setExtra("icon", "fas fa-book-open fa-fw"); */
+        
+        $menu->addChild('World Parliament', ['route' => 'homepage'])
+            ->setChildrenAttribute("class", "dropdown")
+            ->setLabel($this->translator->trans('menu.wpe.label', [], 'messages'))
+            ->setExtra("icon", "fas fa-globe fa-fw")
+            ->addChild('General Assembly', ['route' => 'general_assembly' ])
             ->setLabel($this->translator->trans('menu.assembly.label', [], 'messages'))
-            ->setExtra("icon", "fas fa-users fa-fw");
-
-        $menu->addChild('Parliament', ['route' => 'parliament' ])
+            ->setExtra("icon", "fas fa-university fa-fw")
+            ->getParent()
+            ->addChild('Parliament', ['route' => 'parliament' ])
             ->setLabel($this->translator->trans('menu.parliament.label', [], 'messages'))
-            ->setExtra("icon", "fas fa-users fa-fw");
-
-        $menu->addChild('FAQ', ['route' => 'faq' ])
+            ->setExtra("icon", "fas fa-users fa-fw")
+            ->getParent()
+            ->addChild('FAQ', ['route' => 'faq' ])
             ->setLabel($this->translator->trans('menu.faq.label', [], 'messages'))
             ->setExtra("icon", "fas fa-question fa-fw");
         
