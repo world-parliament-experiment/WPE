@@ -103,7 +103,7 @@ menu:
     home:
         label: Home
     future:
-        label: Legislation Proposals
+        label: Proposals
     current:
         label: Ongoing Votes
     past:
