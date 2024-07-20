@@ -72,9 +72,9 @@ class OtpVerificationController extends AbstractController
 
             if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
             {
-                $this->addFlash("danger", "An error has occured.While sending otp");
+                $this->addFlash('danger', 'An error has occured while sending OTP');
             } else {
-                $this->addFlash('success', 'Your OTP is generated successfully..');
+                $this->addFlash('success', 'Your OTP is generated successfully');
             }
         }
 
@@ -112,7 +112,7 @@ class OtpVerificationController extends AbstractController
 
         $code = (count($data) == 0) ? $user->getCountry() : $data['get_otp_form']['country'];
         $telephoneCode = $this->sendOtpService->searchCountryCode($code);
-        $this->logger->info("Code and telefone :" ,[$code,$telephoneCode]);
+        $this->logger->info("Code and telephone :" ,[$code,$telephoneCode]);
         
         $formOtp->handleRequest($request);
         if ($formOtp->isSubmitted() && $formOtp->isValid()) {
@@ -147,15 +147,15 @@ class OtpVerificationController extends AbstractController
             try {
                 if(! $this->sendOtpService->send($user,$processedOtp['otp'],$telephoneCode))
                 {
-                    $this->addFlash("danger", "An error has occured.While sending otp");
+                    $this->addFlash('danger', 'An error has occured while sending OTP');
                 } else {
-                    $this->addFlash('success', 'Your OTP is generated successfully..');
+                    $this->addFlash('success', 'Your OTP is generated successfully');
                 }
             } catch(\Throwable $th) {
                 $this->logger->error($th->getMessage(), $th->getTrace());
             }   
         } else {
-            $this->addFlash("danger", "An error has occured.While sending otp");
+            $this->addFlash('danger', 'An error has occured while sending OTP');
         }
 
         return $this->render('registration/otp-verification.html.twig', array(
@@ -210,7 +210,7 @@ class OtpVerificationController extends AbstractController
                 }
             }
         }
-        $this->addFlash('danger', 'Please enter valide otp.');
+        $this->addFlash('danger', 'Please enter valid One Time Password.');
         return $this->redirectToRoute('app_otp_confirmed');
     }
 

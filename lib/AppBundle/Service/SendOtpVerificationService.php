@@ -80,7 +80,7 @@ class SendOtpVerificationService
         }
         catch (Throwable $e) {
             $this->logger->error('Failed to send OTP:');
-            $this->logger->error('An error has occured while sending otp: ',['messasge' => $e->getMessage()]);
+            $this->logger->error('An error has occured while sending OTP: ',['messasge' => $e->getMessage()]);
 
             return false;
         }

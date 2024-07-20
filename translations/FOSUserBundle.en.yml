@@ -24,7 +24,7 @@ profile:
         firstname: Firstname
         lastname: Lastname
         mobileNumber: Mobile number
-        otp: 'Enter OTP'
+        otp: 'Enter One Time Password (OTP)'
         gender: Gender
         country: Country
         city: City
