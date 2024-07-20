@@ -170,11 +170,11 @@ breadcrumb:
       friend:
         label: Friends
       initiative:
-        label: Your Initiatives
+        label: Your Proposals
         edit:
-          label: Edit Initiative
+          label: Edit Proposal
         create:
-          label: Create Initiative
+          label: Create Proposal
     current:
         label: Votes
     future:

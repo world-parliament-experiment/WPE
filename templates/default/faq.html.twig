@@ -20,83 +20,104 @@
                     </div>
 
                     <h5>What is the World Parliament Experiment (WPE)?</h5>
-                    <p>The World Parliament Experiment is a generic simulation of a working Global Democracy on the Internet. For this purpose it mirrors the main political institutions of an existing state. As a model of democratic opinion making and policy execution it can be generalized to all organizational and institutional settings, including corporations, governmental subsystems, non-governmental organizations, and large, multi-site peer groups.</p>
+                    <p>The World Parliament Experiment is a generic simulation of a working Global Democracy on
+the Internet. For this purpose, it mirrors the main political institutions of an existing state. As a
+model of democratic opinion making and policy execution it can be generalized to all
+organizational and institutional settings, including corporations, governmental subsystems,
+non-governmental organizations, and large, multi-site peer groups. More detailed information
+can be found here: <a href="https://www.democracywithoutborders.org/files/DWBDPRT2018.pdf" target="_blank">Democracy Without Borders Discussion Paper - United Humans</a></p>
 
-                    <div class="row mb-15">
-                        <div class="col-12 col-lg-6">
-                            <div class="embed-responsive embed-responsive-16by9">
-                                <iframe class="embed-responsive-item" src="https://www.youtube-nocookie.com/embed/8rm8JEdwJpY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <!--
+                        <div class="row mb-15">
+                            <div class="col-12 col-lg-6">
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe class="embed-responsive-item" src="https://www.youtube-nocookie.com/embed/8rm8JEdwJpY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    -->
 
                     <h5>What is the purpose of the World Parliament Experiment?</h5>
                     <p>The WPE aims at providing a platform on which each human being can discuss and vote on issues of international relations. The results are supposed to be introduced into the real political process.</p>
 
+                    <h5>What is “Delegated Voting”?</h5>
+                    <p>The World Parliament Experiment works according to the concept of "Liquid Democracy". Participants can delegate their votes to representatives and take it back at any time.</p>
+                    <p>They have three options: No delegation, delegation to a single person for all categories and delegation to a single person for a single category. If participants delegate their vote and do not vote themselves, the delegate uses the vote.</p>
+                    <p>To delegate your vote you have to first add the global citizen you would like to delegate your vote to as a friend. For this you have to visit their profile page and click on their heart icon.</p>
+                    <p>Later you can <a href="{{ path("user_delegate") }}">delegate</a> your vote to your friends for all categories or only a single category.</p>
+
                     <h5>How does the decision making process work?</h5>
                     <p>Our decision making process makes sure that everyone in the WPE can influence any aspect of the WPE at any time. This is guaranteed in the following way:</p>
 
-                    <p><b>Step 1</b>: Every participant has the right to submit "future votes" concerning contents, procedures or representatives of the system. For this visit Profile -> Create Initiative and start a Inititative which becomes a Future Vote next sunday:</p>
-                    <img src="assets/img/faq/screen1.jpg" class="rounded py-2">
-                    <p><b>Step 2</b>: The future votes are evaluated by the other participants and selected for voting.</p>
-                    <img src="assets/img/faq/screen2.jpg" class="rounded py-2">
-                    <p><b>Step 3</b>: The most selected future votes get on a regularly updated list of "current votes", the participants vote in favor or against.</p>
-                    <img src="assets/img/faq/screen3.jpg" class="rounded py-2">
-                    <p><b>Step 4</b>: Past current votes are collected as "past votes" in an archive. Past votes with a minimum participation and a majority in favor are adopted.</p>
-                    <img src="assets/img/faq/screen4.jpg" class="rounded py-2">
-                    <p><b>Step 5</b>: Through future votes, or by design, the participants elect a representative ("speaker"). It is the task of the speaker to implement the program in the reality of the organization addressed. The speaker (or the participants) can appoint or elect representatives to implement various tasks.</p>
+                    <p><b>Step 1</b>: Every <a href="{{ path("app_register") }}">registered user</a> can create <a href="{{ path("user_initiative_new") }}">proposals</a> for public policies, but also on the digital democracy process. In addition to this, current topics from various United Nations Organizations as well as several national parliaments are provided automatically as proposals via synchronizing with the official websites.</p>
+                    <p><b>Step 2</b>: Proposals can gather support over a maximum period of 6 months. If a proposal has found no supporters within half a year, it will be archived.</p>
+                    <p><b>Step 3</b>: As soon as a proposal has received support, it will be promoted to an offical vote every Monday morning at midnight CET time.</p>
+                    <p><b>Step 4</b>: A vote is open for one week, from Monday to Sunday. The evaulation takes place Sunday evening at 23:00 CET.</p>
+                    <p><b>Step 5</b>: A vote becomes accepted if more voters have voted for than against a vote. Otherwise, it is rejected and archived. Both accepted and rejected votes are visible in the WPE archive.</p>
+                    
+                    <!--Through proposals, or by design, the participants elect a representative ("speaker"). It is the task of the speaker to implement the program in the reality of the organization addressed. The speaker (or the participants) can appoint or elect representatives to implement various tasks.<!--</p>
+                    -->    
+                    <h5>Specifics during the Beta Test</h5>
+                    <p>Proposal Stage</p>
+                    <p>As long as the beta test is running any proposal with minimum one supporter will be promoted to an official vote.</p>
 
-                    <h5>Voting Rhythm</h5>
-                    <p>Future Votes can collect support until each Sunday 7 p.m. CET, successful ones will be on the list of 10 current votes for one week. The collection phase for future votes can be longer than one week (to be determined by the proponent).</p>
-                    <p>As long as the beta test is running the voting rhythm has been accelerated (daily instead of weekly).</p>
-                    <p>(For more information about the decision-making procedure please see the <a href="{{ path("faq") }}">FAQ/Help</a> section of this website.)</p>
+                    <p>Vote Stage</p>
+                    <p>During the beta test, there is no minimum number of voters required for a valid ballot. </p>
 
-                    <h5>Who founded the World Parliament Experiment?</h5>
-                    <p>Rasmus Tenbergen founded the WPE in 1999 with a first website running in 2000. The WPE is a private initiative of young professionals and scientists who have been political activists in several fields for many years.</p>
+                    <h5>Why are there also National topics? I thought this was a World Parliament?</h5>
+                    <p>Only topics that are of global relevance should be discussed and decided by a global community. According to the principle of subidiarity, topics must be discussed and decided on the lowest possible level of a federal structure.</p>
+                    <p>The World Parliament Experiment currently has two federal levels: Global and National. Sub-National federal political entities, such as states, are not (yet) considered.</p>
+                    <p>Users can propose and vote only in the national parliament that their user profile is currently assigned to, that is their current country of residence.</p>#
+                    <p>The country of residence can be changed any time.</p>
 
                     <h5>How can I participate?</h5>
-                    <p>Each person may take part in the World Parliament Experiment. The only formal requirement for participation is to register. For registration, please follow the instructions on the main page.</p>
-                    <p>There are several possibilities to participate. You could:</p>
-                    <p>- vote on issues, persons, and procedures;</p>
-                    <p>- discuss petitions in the Discussions section;</p>
-                    <p>- bring petitions;</p>
+                    <p>Everybody can take part in the World Parliament Experiment. The only formal requirement for participation is to <a href="{{ path("app_register") }}">register</a>. To preclude voting fraud, a unique email and a phone number are required for each registration.</p>
+                    <p>Your personal data will not be shared with any other organizations. For details please refer to our <a href="{{ path("privacy") }}">privacy policy</a></p>
+                    <p>All voting is of course anonymous and no individual vote can be traced back to an individual user</p>
+                    <p>There are several possibilities to participate. You can:</p>
+                    <p>- vote on issues, persons, and procedures</p>
+                    <p>- discuss petitions in the Discussions section</p>
+                    <p>- bring petitions</p>
                     <p>- nominate participants for positions</p>
                     <p>- run for Speaker or other positions to be created</p>
 
                     <h5>Why does the system count many votes even if only a few people participate?</h5>
-                    <p>This is because of the delegated voting system</p>
-
-                    <h5>What is “Delegated Voting”?</h5>
-                    <p>Participants can delegate their votes to representatives and take it back at any time. They have three options: No delegation, delegation to a single person for all categories and delegation to a single person for a single category. If participants delegate their vote and do not vote themselves, the delegate uses the vote.</p>
-                    <p>To delegate your vote you have to select other users (citizens) as your friends. For this you have to visit their profile page and click on their heart icon.</p>
-                    <p>Later you can visit <a href="{{ path("user_delegate") }}">Change Delegation</a> and delegate your vote to your friends for all categories or only a single category.</p>
+                    <p>This is because of the delegated voting system. Voters that have been delegated votes by other "Global Citizens" vote with the total number of votes corresponding to the number of delegations they currently hold in the particular category of the vote.</p>
 
                     <h5>Why do you call it “World Parliament”? Isn't this more a “Direct World Democracy”?</h5>
-                    <p>Our project has elements of direct democracy and of representative democracy. The parliament name has two aspects: first, that everybody can have a function similar to a parliamentarian, which will of course be more difficult in the long run with many participants, and second, that through the delegated voting system you can give a mandate to other participants (your “parliamentarian”) to represent you. Therefore, we should call the participants, who get the most delegated votes (see list “homepage: citizens with most delegations) provisional “members of the (experimental) world parliament” with special rights for the top 10% (minimum 20, maximum 100, details to be determined).</p>
+                    <p>Our project has elements of direct democracy and of representative democracy. The parliament name has two aspects: first, that everybody can have a function similar to a parliamentarian and you can convince others to delegate their votes to you. Secondly, through the delegated voting system you can give a mandate to other participants (your “parliamentarian”) to represent you. </p>
+                    <p>Therefore, in the Beta Version, we call the 600 citizens with the most delegated votes the <a href="{{ path("parliament") }}">“World Parliament”</a> </p>
 
-                    <h5>Is this a “Free Software” Project?</h5>
-                    <p>Yes, this is a Free Software Project. We are always looking for help to develop it. So, if you are a coder and are willing to help us, please let us know, it is very much appreciated.</p>
+                    <h5>Why do you call it “World Parliament”? Isn't this more a “Direct World Democracy”?</h5>
+                    <p>Our project has elements of direct democracy and of representative democracy. The parliament name has two aspects: first, that everybody can have a function similar to a parliamentarian and you can convince others to delegate their votes to you. Secondly, through the delegated voting system you can give a mandate to other participants (your “parliamentarian”) to represent you. </p>
+                    <p>Therefore, in the Beta Version, we call the 600 citizens with the most delegated votes the <a href="{{ path("parliament") }}">“World Parliament”</a> </p>
 
-                    <h5>Where can I find old votes?</h5>
-                    <p>If they were successful: under adopted votes. If not, in the archive. You can use the search function to make it easier.</p>
+                    <h5>Is this a Open Source Software Project?</h5>
+                    <p>Yes, this is an Open Source Project. We are always looking for help to develop it. So, if you are a coder and are willing to help us, please check out our open <a href="https://github.com/world-parliament-experiment/WPE">GitHub Project Page</a>.</p>
 
                     <h5>I lost my password, what can I do?</h5>
-                    <p>Go to <a href="{{ path("app_change_password") }}">“password help”</a> on the login page and you will get a new one there. To make it easier, you can change your password in your profile.</p>
+                    <p>Go to <a href="{{ path("app_change_password") }}">password help</a> on the login page and you will get a new one there. To make it easier, you can change your password in your <a href="{{ path("user_profile_show") }}">profile</a>.</p>
 
                     <h5>How does the General Assembly work?</h5>
                     <p>The General Assembly is the legislative body of the WPE. It consists of all registered participants. Its main purposes are to vote on petitions which were brought; to elect representatives; and to determine procedures. The GA may vote on all issues except on the Basic Rules.</p>
 
+                    <!--
                     <h5>How are the petitions processed?</h5>
                     <p>Each participant has the right to submit petitions. All petitions must be structured in a "Yes" or "No" format. All submitted petitions which have not yet been decided on are listed on the "future votes"" sections of the WPE site, and are supposed to be debated on in the Discussions section of the WPE. Each participant is asked to nominate  petitions each week for the "current votes" section. The ten top-ranked petitions will be subject of a vote in the respective following week. Votes are accepted if a majority votes in favor of the petition.</p>
 
                     <h5>What does the Program of the WPE include?</h5>
                     <p>The totality of the adopted petitions forms the Program of the WPE. Furthermore, the Basic Rules are part of the program. The Basic Rules can be found on the Rules page.</p>
+                    -->
+              
+                    <h5>Who founded the World Parliament Experiment?</h5>
+                    <p>Rasmus Tenbergen founded the WPE in 1999 with a first website running in 2000. The WPE is a private initiative of young professionals and scientists who have been political activists in several fields for many years.</p>
+
 
                     <h5>How does the WPE intend to introduce its results into the real political process?</h5>
                     <p>The more people participate in the WPE, the more likely they will be to be able to influence real-world decisions. The WPE government will approach decision-makers and tell them how many people support specific ideas.</p>
 
                     <h5>Why is my country not represented yet?</h5>
-                    <p>We provide realtime content from many of the worlds real-world parliaments. If you have a suggestion to include the legislation from your national assembly, just send us an e-mail to: <a href="mailto:team@world-parliament.org">team@world-parliament.org</a>.</p>
+                    <p>We provide realtime content from many real-world parliaments. If you have a suggestion to include the legislation from your national assembly, just send us an e-mail to: <a href="mailto:team@world-parliament.org">team@world-parliament.org</a>.</p>
 
                     <h5>How can I ask the WPE team a question?</h5>
                     <p>Just send us an e-mail to: <a href="mailto:team@world-parliament.org">team@world-parliament.org</a>.</p>

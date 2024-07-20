@@ -178,7 +178,7 @@ class DefaultController extends BaseController
             $em = $this->managerRegistry->getManager();
 
             $delegations = $em->getRepository(User::class)
-                ->getMostDelegationsByUser(20);
+                ->getMostDelegationsByUser(600);
 
             $cache->set($delegations);
             $cache->expiresAfter(600);
