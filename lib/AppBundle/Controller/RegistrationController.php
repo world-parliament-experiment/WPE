@@ -74,7 +74,7 @@ class RegistrationController extends AbstractController
                 $user->setPassword($hashedPassword);
                 $user->setRoles($user->getRoles());
 
-                $user->setEnabled(true);
+                //$user->setEnabled(true); only after successful OTP confirmation
                 if (null === $user->getConfirmationToken()) {
                     $user->setConfirmationToken($user->generateToken());
                 }
