@@ -20,8 +20,8 @@ abstract class VotingEnum
     const ENDDATETWOOWEEKS = 2;
     const TYPE_FUTURE = 0;
     const TYPE_CURRENT = 1;
-    const CONSENSUS = 0.01;
-    const QUORUM = 0;
+    const CONSENSUS = 0.05;
+    const QUORUM = 0.01;
 
     /**
      * @var array

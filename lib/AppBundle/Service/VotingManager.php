@@ -622,28 +622,28 @@ class VotingManager
                 } 
                 break;
             case VotingEnum::TYPE_CURRENT:
-                if ($voting->getEnddate() > $now) {
+                if ($voting->getEnddate() < $now) {
                     if (($results["votesTotal"] > 0) &&
                     (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
-                    (($results["votesAcception"] / $results["eligibleVoters"]) > $consensus) &&
+                    //(($results["votesAcception"] / $results["eligibleVoters"]) > $consensus) &&
                     ($results["votesAcception"] > ($results["votesAbstention"]  + $results["votesRejection"]))
                     ) {
                         $results['accepted'] = true;
-                    } elseif (($results["votesTotal"] > 0) &&
+                    } 
+                    elseif (($results["votesTotal"] > 0) &&
                     (($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
-                    (($results["votesRejection"] / $results["eligibleVoters"]) > $consensus) &&
+                    //(($results["votesRejection"] / $results["eligibleVoters"]) > $consensus) &&
                     ($results["votesRejection"] > ($results["votesAbstention"]  + $results["votesAcception"]))
                     ) {
                         $results['rejected'] = true;
                     } 
                 } else {
-                    if (($results["votesTotal"] > 5) &&
-                        //(($results["votesTotal"] / $results["eligibleVoters"]) > $quorum) &&
-                        ($results["votesAcception"] > ($results["votesAbstention"] + $results["votesRejection"]))
-                    ) {
-                        $results['accepted'] = true;
-                    } else {
-                        $results['rejected'] = true;
+                    if (($results["votesTotal"] / $results["eligibleVoters"]) > $consensus) {
+                        if ($results["votesAcception"] > ($results["votesAbstention"] + $results["votesRejection"])) {
+                            $results['accepted'] = true;
+                        } else {
+                            $results['rejected'] = true;
+                        }
                     }
                 }
                 break;
