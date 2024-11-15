@@ -47,7 +47,7 @@ class SocialmediaPoster
 
             $title = $initiative->getTitle();
             $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
-            $message = 'Endorse or discuss this new legislation proposal here:';
+            $message = 'Discuss and vote online at the World Parliament Experiment:';
 
             
             $this->postLinkedInUpdate($message,$source,$title);
