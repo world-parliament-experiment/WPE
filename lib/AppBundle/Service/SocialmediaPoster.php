@@ -41,20 +41,26 @@ class SocialmediaPoster
     public function postUpdate(Initiative $initiative)
     {
 
+        $type = $initiative->getType();
         $category_id = $initiative->getCategory();
         $category = $this->em->getRepository('AppBundle\Entity\Category')->findOneBy(array('id' => $category_id));
+        //only post for global initiatives
         if ($category->getType() === 0) {
 
             $title = $initiative->getTitle();
             $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
-            $message = 'A new proposal has been published at the World Parliament Experiment:';
-
+            if ($type === 0 ) {
+                $message = 'A new proposal has been published at the World Parliament Experiment.\Join the discussion to make your voice as a Global Citizen heard!\n';
+            } elseif ($type === 1 )   {
+                $message = 'Voting has started at the World Parliament Experiment.\nMake sure to exercise your voting right as a Global Citizen!\n';
+            }
             
             $this->postLinkedInUpdate($message,$source,$title);
             $this->postFacebookUpdate($message,$source,$title);
         }
 
     }
+
     public function postLinkedInUpdate($message,$source,$title)
     {
         try {
@@ -93,11 +99,30 @@ class SocialmediaPoster
     public function postFacebookUpdate($message,$source,$title)
     {
         $message = $message."\n".$title."\n".$source;
+        $imagePath = 'assets/img/logo.png';
+        $imageUrl = $this->getAbsoluteImageUrl($imagePath);
 
         try {
-            $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/feed", [
+            $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/photos", [  
+                "form_params" => [
+                    "url" => $imageUrl,
+                    "published" => false,
+                    "access_token" => $this->fb_token
+                ]
+            ]);
+            $responseData = json_decode($response->getBody(), true);
+            $photoId = $responseData['id']; // Assign the photo ID to a variable
+        } catch(GuzzleException $e) {
+            echo $e;
+        } 
+
+        try {
+            $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/feed", [    
                 'form_params' => [
                     'message' => $message,
+                    "attached_media"=> [
+                            "media_fbid" => $img_id
+                    ],
                     'access_token' => $this->fb_token,
                 ]
             ]);
