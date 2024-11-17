@@ -50,9 +50,9 @@ class SocialmediaPoster
             $title = $initiative->getTitle();
             $source = $this->router->generate('initiative_show', ['id' => $initiative->getId(),'slug' => $initiative->getSlug(),],UrlGeneratorInterface::ABSOLUTE_URL);
             if ($type === 0 ) {
-                $message = 'A new proposal has been published at the World Parliament Experiment.\\nJoin the discussion to make your voice as a Global Citizen heard!\\n';
+                $message = "A new proposal has been published at the World Parliament Experiment.\nJoin the discussion to make your voice as a Global Citizen heard!\n";
             } elseif ($type === 1 )   {
-                $message = 'Voting has started at the World Parliament Experiment.\\nMake sure to exercise your voting right as a Global Citizen!\\n';
+                $message = "Voting has started at the World Parliament Experiment.\nMake sure to exercise your voting right as a Global Citizen!\n";
             }
             
             $this->postLinkedInUpdate($message,$source,$title);
@@ -120,7 +120,7 @@ class SocialmediaPoster
                 'form_params' => [
                     'message' => $message,
                     "attached_media"=> [
-                            "media_fbid" => $img_id
+                            "media_fbid" => $photoId
                     ],
                     'access_token' => $this->fb_token,
                 ]
