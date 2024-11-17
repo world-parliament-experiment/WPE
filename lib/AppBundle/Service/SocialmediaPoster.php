@@ -99,8 +99,7 @@ class SocialmediaPoster
     public function postFacebookUpdate($message,$source,$title)
     {
         $message = $message."\n".$title."\n".$source;
-        $imagePath = 'assets/img/logo.png';
-        $imageUrl = $this->getAbsoluteImageUrl($imagePath);
+        $imageUrl = 'https://world-parliament.org/assets/img/logo.png';
 
         try {
             $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/photos", [  
