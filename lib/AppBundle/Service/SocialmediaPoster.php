@@ -99,7 +99,7 @@ class SocialmediaPoster
     public function postFacebookUpdate($message,$source,$title)
     {
         $message = $message."\n".$title."\n".$source;
-        $imageUrl = 'https://world-parliament.org/assets/img/logo.png';
+/*         $imageUrl = 'https://world-parliament.org/assets/img/logo.png';
 
         try {
             $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/photos", [  
@@ -113,15 +113,12 @@ class SocialmediaPoster
             $photoId = $responseData['id']; // Assign the photo ID to a variable
         } catch(GuzzleException $e) {
             echo $e;
-        } 
+        }  */
 
         try {
             $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/feed", [    
                 'form_params' => [
                     'message' => $message,
-                    "attached_media"=> [
-                            "media_fbid" => $photoId
-                    ],
                     'access_token' => $this->fb_token,
                 ]
             ]);
