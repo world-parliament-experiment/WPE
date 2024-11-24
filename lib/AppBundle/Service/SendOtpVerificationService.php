@@ -18,7 +18,6 @@ use Throwable;
 
 class SendOtpVerificationService
 {
-    public const SMS_MESSAGE = "WPE";
     private $logger;
     private $userManager;
     private $smsMessage;
@@ -26,6 +25,7 @@ class SendOtpVerificationService
     private $smsAuth;
     private $smsSender;
     private $smsApiUrl;
+    private $smsAccID;
 
     public function __construct(
         LoggerInterface $logger,
@@ -34,7 +34,8 @@ class SendOtpVerificationService
         string $smsContentType,
         string $smsAuth,
         string $smsSender,
-        string $smsApiUrl
+        string $smsApiUrl,
+        string $smsAccID
     )
     {
         $this->logger = $logger;
@@ -44,32 +45,42 @@ class SendOtpVerificationService
         $this->smsAuth = $smsAuth;
         $this->smsSender = $smsSender;
         $this->smsApiUrl = $smsApiUrl;
+        $this->smsAccID = $smsAccID;
     }
     public function send($user,$otp,$telePhoneCode)
     {
         try {
             $url = $this->smsApiUrl;
             $message = sprintf($this->smsMessage,$user->getUsername(),$otp); 
-            $phoneNumber = preg_replace('/^\+/','',  $user->getMobileNumber());
-            if ( $user->getMobileNumber() !== null && !preg_match('/^\+/', $user->getMobileNumber())) {
-                $phoneNumber = $telePhoneCode . $user->getMobileNumber();
+            $phoneNumber = $user->getMobileNumber();
+                // Add country code if not already present
+            if (!preg_match('/^\+/', $phoneNumber)) {
+                // Ensure country code starts with "+"
+                if (!preg_match('/^\+/', $telePhoneCode)) {
+                    $telePhoneCode = '+' . $telePhoneCode;
+                }
+                $phoneNumber = $telePhoneCode . $phoneNumber;
             }
             $headers = [
-                'Content-Type' => $this->smsContentType,
-                'Authorization' => 'Token ' . $this->smsAuth,
+                'Authorization' => 'Basic ' . base64_encode("{$this->smsAccID}:{$this->smsAuth}"),
             ];
 
+            // Prepare the request body
             $options = [
                 'form_params' => [
-                    'sender' => $this->smsSender,
-                    'message' => $message,
-                    'recipients.0.msisdn' => $phoneNumber
-                ]
+                    'From' => $this->smsSender,  
+                    'Body' => $message,
+                    'To' => $phoneNumber,       // Formatted phone number
+                ],
             ];
             $client = new Client();
-            $request = new Request('POST',$url, $headers);
-            $res = $client->sendAsync($request, $options)->wait();
-            $this->logger->error('Request URI : ' . $url . json_encode($options) . $message);
+            $response = $client->post($url, [
+                'headers' => $headers,
+                'form_params' => $options['form_params'],
+            ]);
+
+            // Log success
+            $this->logger->info('SMS sent successfully. Response: ' . $response->getBody());
 
         } catch (RequestException $e) {
             $this->logger->error('Failed to send OTP:');

@@ -121,7 +121,7 @@ form:
     mobileNumber: 'Mobile number'
     mobileNumber_help: 'Enter your mobile number.'
     otp: 'Enter OTP'
-    otp_help: 'Enter your otp'
+    otp_help: 'Enter your One-Time Password'
     country: 'Country'
     country_help: 'Please choose a country'
     city: 'City'

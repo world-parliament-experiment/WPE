@@ -79,7 +79,7 @@ class OtpVerificationController extends AbstractController
         }
 
         return $this->render('registration/otp-verification.html.twig', array(
-            'resend' => false,
+            'resend' => true,
             'user' => $user,
             'form' => $form->createView(),
             'formOtp' => $formOtp->createView(),
@@ -189,23 +189,23 @@ class OtpVerificationController extends AbstractController
                 ];
 
                 if($isExpired) {
-                    $this->addFlash('danger', 'Entered OTP is expired.');
+                    $this->addFlash('danger', 'Entered One-Time Password is expired.');
                     return $this->redirectToRoute('app_otp_confirmed');
                 }
 
                 if($isVerified) {
-                    $this->addFlash('danger', 'Entered phone number is alreday verified.');
+                    $this->addFlash('danger', 'Entered phone number is already verified.');
                     return $this->redirectToRoute('app_otp_confirmed');
                 }
                 if ($storedOtp !== $userEnteredOtp) {
-                    $this->addFlash('danger', 'Entered OTP is incorrect.');
+                    $this->addFlash('danger', 'Entered One-Time Password is incorrect.');
                     return $this->redirectToRoute('app_otp_confirmed');
                 } else {
                     $user->setConfirmationToken(null);
                     $user->setEnabled(true);
                     $user->setVerifiedAt(new DateTime());
                     $this->userManager->updateUser($user);
-                    $this->addFlash('success', 'This number is verified successfully.');
+                    $this->addFlash('success', 'Your phone number has been verified successfully.');
                     return $this->redirectToRoute($route,$routeParams);
                 }
             }
