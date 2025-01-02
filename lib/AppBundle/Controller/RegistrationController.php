@@ -56,9 +56,9 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted()) {
 
             if($form->isValid()) {
-                $userEnteredNumber = (preg_match('/^0/',$form->get('mobileNumber')->getData()) === 1) ? preg_replace('/^0/','',  $form->get('mobileNumber')->getData()) : $form->get('mobileNumber')->getData();
-                
-                if ( $form->get('country')->getData() !== null && $user->getMobileNumber() !== null && !preg_match('/^\+/', $user->getMobileNumber())) {
+                $userEnteredNumber = (preg_match('/^00/',$form->get('mobileNumber')->getData()) === 1) ? preg_replace('/^00/','+',  $form->get('mobileNumber')->getData()) : $form->get('mobileNumber')->getData();
+                $userEnteredNumber = (preg_match('/^0/',$form->get('mobileNumber')->getData()) === 1) ? preg_replace('/^0/','',  $form->get('mobileNumber')->getData()) : $userEnteredNumber;
+                if ( $form->get('country')->getData() !== null && $user->getMobileNumber() !== null && !preg_match('/^\+/', $userEnteredNumber)) {
                     $userEnteredNumber = '+' . $this->sendOtpService->searchCountryCode($form->get('country')->getData()) . $userEnteredNumber;
                 }
                 
