@@ -75,7 +75,7 @@ class RegistrationForm extends AbstractType
                         'title' => 'Please enter phone number in digits.',
                     ],
                 ])
-            ->add('gender', HiddenType::class, ['label' => 'form.gender', 'empty_data' => 'not stated','translation_domain' => 'FOSUserBundle'])
+           // ->add('gender', HiddenType::class, ['label' => 'form.gender', 'empty_data' => 'not stated','translation_domain' => 'FOSUserBundle'])
             ->add(
                 'country',
                 CountryType::class,

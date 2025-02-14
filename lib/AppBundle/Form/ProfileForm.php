@@ -76,7 +76,7 @@ class ProfileForm extends AbstractType
                     'title' => 'Please enter phone number in digits.',
                 ],
             ])
-            ->add('gender', ChoiceType::class, array('label' => 'form.gender', 
+/*             ->add('gender', ChoiceType::class, array('label' => 'form.gender', 
             'attr' => ['class' => 'form-control'],
             'help' => 'form.gender_help', 'translation_domain' => 'FOSUserBundle',
                 'choices' => [
@@ -85,7 +85,7 @@ class ProfileForm extends AbstractType
                     'male' => 'male',
                     'divers' => 'divers',
                 ],
-            ))
+            )) */
             ->add(
                 'country',
                 CountryType::class,

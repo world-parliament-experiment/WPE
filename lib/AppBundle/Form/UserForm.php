@@ -42,14 +42,14 @@ class UserForm extends AbstractType
             array('label' => 'form.firstname', 'translation_domain' => 'FOSUserBundle',
             ))
             ->add('lastname', TextType::class, array('label' => 'form.lastname', 'translation_domain' => 'FOSUserBundle'))
-            ->add('gender', ChoiceType::class, array('label' => 'form.gender', 'translation_domain' => 'FOSUserBundle',
+/*             ->add('gender', ChoiceType::class, array('label' => 'form.gender', 'translation_domain' => 'FOSUserBundle',
                 'choices' => [
                     'not stated' => 'not stated',
                     'female' => 'female',
                     'male' => 'male',
                     'divers' => 'divers',
                 ],
-            ))
+            )) */
             ->add('birthday', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'form.birthday', 'translation_domain' => 'FOSUserBundle',
