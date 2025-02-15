@@ -142,17 +142,18 @@ class VoteController extends BaseController
         return $response;
     }
 
-    //  * @Breadcrumb("breadcrumb.{initiative.typeName}.label", route={"name"="category_index", "parameters"={"type"="{initiative.typeName}"}}, attributes={"translate": true})
-    //  * @Breadcrumb("{initiative.category.name}", route={"name"="category_type", "parameters"={"id"="{initiative.category.id}","slug"="{initiative.category.slug}","type"="{initiative.typeName}"}})
-
     /**
      * Finds and displays a initiative entity.
+     *
+     * @Breadcrumb("breadcrumb.{initiative.typeName}.label", route={"name"="category_index", "parameters"={"type"="{initiative.typeName}"}}, attributes={"translate": true})
+     * @Breadcrumb("{initiative.category.name}", route={"name"="category_type", "parameters"={"id"="{initiative.category.id}","slug"="{initiative.category.slug}","type"="{initiative.typeName}"}})
      * @Breadcrumb("{initiative.title}")
      * @Route("/{id}/{slug}", requirements={"id" = "\d+"}, methods={"GET"}, options={"expose"=true}, name="initiative_show")
+     * @param Request $request
      * @param Initiative $initiative
      * @return Response
      */
-    public function showAction(Request $request,int $id)
+    public function showAction(Request $request,int $id, Initiative $initiative)
     {   
         $user = $this->getUser();
         $isMobileNumberVerified = ($user instanceof User && $user->getVerifiedAt() !== null) ? 1 : 0;
@@ -162,7 +163,8 @@ class VoteController extends BaseController
         $initiative = $em->getRepository(Initiative::class)->find($id);
         $routeParams =[
             'id' => $id,
-            'slug' => $initiative->getSlug()
+            'slug' => $initiative->getSlug(),
+            'initiative' => $initiative
         ];
         $this->get('session')->set('routeParams', $routeParams);
         $this->get('session')->set('route', $request->get('_route'));

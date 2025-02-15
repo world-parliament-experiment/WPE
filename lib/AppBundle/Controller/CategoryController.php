@@ -62,20 +62,20 @@ class CategoryController extends BaseController
             ]);
 
         } elseif ($type === 'program') {
-            $categories = $em->getRepository(Category::class)
-                ->getCategoryOverview($type);
+            $initiatives = $em->getRepository(Category::class)
+                ->getProgramInitiatives();
 
-            return $this->render('Category/index.html.twig', [
-                'categories' => $categories,
+            return $this->render('Category/program.html.twig', [
+                'initiatives' => $initiatives,
                 'type' => $type,
                 'alias' => 'decisions',
             ]);
         } else {
-            $categories = $em->getRepository(Category::class)
-                ->getCategoryOverview($type);
+            $initiatives = $em->getRepository(Category::class)
+                ->getPastInitiatives();
     
-            return $this->render('Category/index.html.twig', [
-                'categories' => $categories,
+            return $this->render('Category/past.html.twig', [
+                'initiatives' => $initiatives,
                 'type' => $type,
                 'alias' => 'archive',
             ]);
@@ -90,7 +90,7 @@ class CategoryController extends BaseController
      * @param $type
      * @return Response
      */
-    public function listCategoryAction(int $id, $type)
+    public function listCategoryAction(int $id, $type, Category $category)
     {
         $em = $this->managerRegistry->getManager();
         $category = $em->getRepository(Category::class)->find($id);

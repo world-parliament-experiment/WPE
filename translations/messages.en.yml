@@ -105,7 +105,7 @@ menu:
     future:
         label: Proposals
     current:
-        label: Ongoing Votes
+        label: Votes
     past:
         label: Rejected
     program:
@@ -176,16 +176,12 @@ breadcrumb:
         create:
           label: Create Proposal
     current:
-        label: Votes
+        label: Ongoing Votes
     future:
         label: Proposals
     past:
         label: Archive
     program:
-        label: Decisions
-    archive:
-        label: Archive
-    decisions:
         label: Decisions
     faq:
         label: FAQ
