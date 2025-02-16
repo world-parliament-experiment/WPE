@@ -51,7 +51,15 @@ comment:
         submit: Save Comment
         overview: Overview
         delete: Delete Comment
+    notify:
+        subject: 'You have a new comment on your World Parliament Experiment initiative'
+        message: |
+            Hello %username%!
 
+            You have a new comment on your World Parliament Experiment initiative - please visit %commentUrl%
+
+            Regards,
+            the World Parliament Experiment
 delegation:
     button:
         submit: Save Delegation

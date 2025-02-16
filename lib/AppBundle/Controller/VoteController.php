@@ -10,6 +10,7 @@ use AppBundle\Entity\Voting;
 use AppBundle\Enum\CommentEnum;
 use AppBundle\Enum\InitiativeEnum;
 use AppBundle\Enum\VotingEnum;
+use AppBundle\Service\Mailer;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
@@ -21,6 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Vote controller.
@@ -29,11 +31,13 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class VoteController extends BaseController
 {
+    private $mailer;
 
-    public function __construct(SerializerInterface $serializer,ManagerRegistry $managerRegistry)
+    public function __construct(SerializerInterface $serializer,ManagerRegistry $managerRegistry, Mailer $mailer)
     {
         parent::__construct($serializer,$managerRegistry);
         $this->_serializeGroups = ["simple"];
+        $this->mailer = $mailer;
     }
 
     /**
@@ -91,6 +95,11 @@ class VoteController extends BaseController
             $output['profile'] = $this->generateUrl("user_profile_show", array('id' => $this->getUser()->getId()));
             $output['reply_path'] = $this->generateUrl("initiative_save_reply", array('type' => 'comment', 'id' => $comment->getId()));
             $output['edit_path'] = $this->generateUrl("admin_comment_edit", array('id' => $comment->getId()));
+
+            $notifyUser = $comment->getInitiative()->getCreatedBy();
+            $notifyURL = $this->generateUrl("initiative_show", array('id' => $initiative->getId(), 'slug' => $initiative->getSlug()), UrlGeneratorInterface::ABSOLUTE_URL);
+            $this->mailer->sendCommentNotification($notifyUser, $notifyURL, $user);
+
             $response = $this->createApiResponse($output, 200);
             return $response;
         }

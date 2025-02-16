@@ -1,0 +1,6 @@
+{% block body_text %}
+{% autoescape false %}
+{{ 'comment.notify.message'|trans({'%username%': user.username, '%commentUrl%': commentUrl}) }}
+{% endautoescape %}
+{% endblock %}
+{% block body_html %}{% endblock %}

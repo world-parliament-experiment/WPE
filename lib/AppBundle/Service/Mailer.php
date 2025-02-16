@@ -68,6 +68,20 @@ class Mailer
         $this->send((string) $user->getEmail(), $subject, $body, $this->senderEmail);
     }
 
+    public function sendCommentNotification($notifyUser, $commentUrl, $user)
+    {
+        $rendered = $this->twig->render('Vote/notify_comment.txt.twig', array(
+            'user' => $user,
+            'commentUrl' => $commentUrl,
+        ));
+
+        $emailLines = explode("\n", trim($rendered));
+        $subject = "You have a new comment on your World Parliament initiative";
+        $body = implode("\n", $emailLines);
+
+        $this->send((string) $notifyUser->getEmail(), $subject, $body, $this->senderEmail);
+    }
+
 
     
 }
