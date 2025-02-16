@@ -59,7 +59,14 @@ comment:
             %user% commented on your World Parliament Experiment initiative - please visit %commentUrl%
 
             Regards,
-            the World Parliament Experiment
+            The World Parliament Experiment
+        reply: |
+            Hello %username%!
+
+            %user% replied on a comment you made on the World Parliament Experiment - please visit %commentUrl%
+
+            Regards,
+            The World Parliament Experiment
 delegation:
     button:
         submit: Save Delegation
