@@ -72,6 +72,7 @@ class Mailer
     {
         $rendered = $this->twig->render('Vote/notify_comment.txt.twig', array(
             'user' => $user,
+            'notifyUser' => $notifyUser,
             'commentUrl' => $commentUrl,
         ));
 

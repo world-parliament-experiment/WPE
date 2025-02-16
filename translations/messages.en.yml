@@ -56,7 +56,7 @@ comment:
         message: |
             Hello %username%!
 
-            You have a new comment on your World Parliament Experiment initiative - please visit %commentUrl%
+            %user% commented on your World Parliament Experiment initiative - please visit %commentUrl%
 
             Regards,
             the World Parliament Experiment

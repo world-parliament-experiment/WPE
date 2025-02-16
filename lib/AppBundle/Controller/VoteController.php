@@ -82,11 +82,17 @@ class VoteController extends BaseController
             $comment = $form->getData();
             if ($type == 'comment') {
                 $comment->setParent($parentComment);
+                $notifyUser = $parentComment->getCreatedBy();
+            } else {
+                $notifyUser = $initiative->getCreatedBy();
             }
             $em = $this->managerRegistry->getManager();
             $em->persist($comment);
 
             $em->flush();
+
+            $notifyURL = $this->generateUrl("initiative_show", array('id' => $initiative->getId(), 'slug' => $initiative->getSlug()), UrlGeneratorInterface::ABSOLUTE_URL);
+            $this->mailer->sendCommentNotification($notifyUser, $notifyURL, $user);
 
             $output = array();
             $output['status'] = true;
@@ -95,11 +101,6 @@ class VoteController extends BaseController
             $output['profile'] = $this->generateUrl("user_profile_show", array('id' => $this->getUser()->getId()));
             $output['reply_path'] = $this->generateUrl("initiative_save_reply", array('type' => 'comment', 'id' => $comment->getId()));
             $output['edit_path'] = $this->generateUrl("admin_comment_edit", array('id' => $comment->getId()));
-
-            $notifyUser = $comment->getInitiative()->getCreatedBy();
-            $notifyURL = $this->generateUrl("initiative_show", array('id' => $initiative->getId(), 'slug' => $initiative->getSlug()), UrlGeneratorInterface::ABSOLUTE_URL);
-            $this->mailer->sendCommentNotification($notifyUser, $notifyURL, $user);
-
             $response = $this->createApiResponse($output, 200);
             return $response;
         }
