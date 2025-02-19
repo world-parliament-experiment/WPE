@@ -69,7 +69,7 @@ class SocialmediaPoster
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer '. $this->lkin_access_token,
                     'X-Restli-Protocol-Version' => '2.0.0',
-                    'Linkedin-Version' => '202502'
+                    'Linkedin-Version' => '202501'
                 ],
                 'json' => [
                     'author' => "urn:li:organization:". $this->lkin_organization,
