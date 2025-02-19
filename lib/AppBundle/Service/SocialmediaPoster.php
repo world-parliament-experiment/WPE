@@ -92,7 +92,8 @@ class SocialmediaPoster
             ]);
             return $response->getBody();
         } catch(GuzzleException $e) {
-            echo $e;
+            error_log("LinkedIn API error: " . $e->getMessage());
+            return false;
         } 
     }
     
@@ -124,7 +125,8 @@ class SocialmediaPoster
             ]);
             return $response->getBody();
         } catch(GuzzleException $e) {
-            echo $e;
+            error_log("Facebook API error: " . $e->getMessage());
+            return false;
         } 
     }
 }
