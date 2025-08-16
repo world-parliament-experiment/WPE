@@ -346,6 +346,30 @@ class WidgetController extends BaseController
      * @return Response
      * @throws InvalidArgumentException
      */
+    public function trendingCWidgetAction()
+    {
+        $cacheKey = 'widget_trendingc';
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        if (!$cacheItem->isHit()) {
+            $em = $this->managerRegistry->getManager();
+            $votesc = $em->getRepository(\AppBundle\Entity\Initiative::class)->current();
+            $rendered = $this->render('Widget/trendingc.html.twig', [
+                'votesc' => $votesc
+            ])->getContent();
+            $cacheItem->set($rendered);
+            $cacheItem->expiresAfter(600);
+        } else {
+            $rendered = $cacheItem->get();
+        }
+
+        return new Response($rendered);
+    }
+
+    /**
+     * @return Response
+     * @throws InvalidArgumentException
+     */
     public function MostCommentedInitiativesAction()
     {
 

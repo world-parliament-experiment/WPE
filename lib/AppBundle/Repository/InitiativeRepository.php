@@ -93,7 +93,7 @@ class InitiativeRepository extends EntityRepository
             ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.type = 1')
             ->andWhere('initiative.state = 1')
-            ->setMaxResults(25)
+            ->setMaxResults(10)
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
