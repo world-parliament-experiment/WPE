@@ -1,3 +1,8 @@
+<!-- Section Title -->
+<div class="section-heading">
+    {% set caption = 'menu.current.label' %}
+    <h5>Currently active {{ caption|trans }}</h5>
+</div>
 {% for vote in votesc %}
     {% if app.user %}
         {% if app.user.country == vote.category.description or vote.category.country == "UN" %}

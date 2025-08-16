@@ -366,6 +366,30 @@ class WidgetController extends BaseController
         return new Response($rendered);
     }
 
+        /**
+     * @return Response
+     * @throws InvalidArgumentException
+     */
+    public function trendingFWidgetAction()
+    {
+        $cacheKey = 'widget_trendingf';
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        if (!$cacheItem->isHit()) {
+            $em = $this->managerRegistry->getManager();
+            $votesf = $em->getRepository(\AppBundle\Entity\Initiative::class)->future();
+            $rendered = $this->render('Widget/trendingf.html.twig', [
+                'votesf' => $votesf
+            ])->getContent();
+            $cacheItem->set($rendered);
+            $cacheItem->expiresAfter(600);
+        } else {
+            $rendered = $cacheItem->get();
+        }
+
+        return new Response($rendered);
+    }
+
     /**
      * @return Response
      * @throws InvalidArgumentException

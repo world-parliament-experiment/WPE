@@ -19,6 +19,9 @@
         <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
             <!-- Sidebar Widget -->
             <div class="single-sidebar-widget p-30">
+                {{ render(controller('AppBundle\\Controller\\WidgetController::trendingCWidgetAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30">
                 {{ render(controller('AppBundle\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
             </div>
             <div class="single-sidebar-widget p-30">
@@ -95,7 +98,7 @@
 
         <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::trendingCWidgetAction')) }}
+                {{ render(controller('AppBundle\\Controller\\WidgetController::trendingFWidgetAction')) }}
             </div>
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('AppBundle\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
