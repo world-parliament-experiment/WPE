@@ -28,7 +28,7 @@ h6 {
 p {
   font-family: "Roboto", sans-serif;
   color: #777777;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 2;
   font-weight: 400;
 }
@@ -962,6 +962,55 @@ input:focus {
   }
 }
 
+.header-area .mag-main-menu .classy-navbar {
+  flex-wrap: wrap;
+}
+
+/* Mobile overrides */
+@media (max-width: 1599px) {
+
+  /* Let the container grow instead of being stuck at 60px */
+  .header-area .mag-main-menu {
+    height: auto !important;
+    min-height: 60px;
+    /* keeps the bar from getting too small */
+    overflow: visible;
+  }
+
+  .header-area .mag-main-menu .classy-navbar {
+    height: auto !important;
+    /* cancel the fixed 60px */
+    min-height: 60px;
+    padding-left: 15px;
+    /* keep your padding */
+    flex-wrap: wrap;
+    /* allow a second row */
+    align-items: center;
+    overflow: visible;
+  }
+
+  /* Title row takes full width below brand/toggler/search */
+  .header-area .mag-main-menu .classy-navbar .responsive-div {
+    order: 3;
+    flex: 1 1 100%;
+    min-width: 0;
+    text-align: center;
+    padding: 6px 12px 8px;
+  }
+
+  .header-area .mag-main-menu .classy-navbar .responsive-div h2 {
+    margin: 0;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+    text-wrap: balance;
+    hyphens: auto;
+
+    /* smaller, fluid title that fits nicely on phones */
+    font-size: clamp(0.9rem, 0.5rem + 2.2vw, 1.1rem);
+  }
+}
+
 .header-area .mag-main-menu .classy-navbar .classynav ul li a {
   font-weight: 500;
   text-transform: uppercase;
@@ -1056,7 +1105,7 @@ input:focus {
     padding: 0 15px;
     width: 110px;
     font-size: 11px;
-    height: 60px;
+    min-height: 60px;
   }
 }
 
