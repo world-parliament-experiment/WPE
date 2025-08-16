@@ -25,30 +25,6 @@ h6 {
   margin: 0.5em 0;
 }
 
-.responsive-div h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-
-.responsive-div h2 {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-}
-
-.responsive-div h3 {
-  font-size: clamp(1.5rem, 3.5vw, 2rem);
-}
-
-.responsive-div h4 {
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
-}
-
-.responsive-div h5 {
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-}
-
-.responsive-div h6 {
-  font-size: clamp(0.875rem, 2vw, 1.25rem);
-}
-
 p {
   font-family: "Roboto", sans-serif;
   color: #777777;
@@ -968,7 +944,8 @@ input:focus {
 
 @media only screen and (max-width: 767px) {
   .header-area .mag-main-menu {
-    height: 60px;
+    min-height: 60px;
+    flex-wrap: wrap;
   }
 }
 
@@ -980,7 +957,8 @@ input:focus {
 @media only screen and (max-width: 767px) {
   .header-area .mag-main-menu .classy-navbar {
     padding-left: 15px;
-    height: 60px;
+    min-height: 60px;
+    flex-wrap: wrap;
   }
 }
 
@@ -4006,6 +3984,12 @@ textarea.form-control {
 .jconfirm-buttons {
   text-align: center !important;
   float: unset !important;
+}
+
+.header-area .responsive-div .site-title {
+  font-size: clamp(1rem, 0.8rem + 2vw, 1.6rem);
+  margin: 0;
+  line-height: 1.2;
 }
 
 /* ====== The End ====== */
