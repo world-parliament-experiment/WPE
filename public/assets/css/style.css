@@ -4041,4 +4041,68 @@ textarea.form-control {
   line-height: 1.2;
 }
 
+/* WPE hero grid */
+.wpe-intro p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #1a1a1a;
+  margin-bottom: 18px;
+}
+
+.wpe-intro p a {
+  font-size: 18px;
+  /* inherit paragraph font size */
+  line-height: 1.8;
+  /* match spacing */
+  font-weight: bold;
+  /* make it bold */
+  color: #1a1a1a;
+  /* same color as text */
+  text-decoration: none;
+  /* remove underline */
+}
+
+.wpe-intro p a:hover {
+  color: #333333;
+  /* optional: subtle darker hover */
+  text-decoration: underline;
+  /* optional: show underline only on hover */
+}
+
+.wpe-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  /* phones: 1 per row */
+  gap: 16px;
+}
+
+.wpe-card {
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 0, 0, .12);
+  background: #000;
+}
+
+.wpe-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* keep original image aspect */
+}
+
+/* ≥ 640px: 2 columns (2x2) */
+@media (min-width: 640px) {
+  .wpe-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ≥ 1200px: 4 columns (all in one row) */
+@media (min-width: 1200px) {
+  .wpe-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* ====== The End ====== */
