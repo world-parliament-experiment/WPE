@@ -17,8 +17,9 @@
                     <div class="default-content bg-white mb-30 p-30 box-shadow">
                         <div class="blog-content">
                             <div class="post-meta">
-                                <a href="#">{{ initiative.createdAt|date('F j, Y') }}</a>
-                                <a href="">{{ initiative.category.name }}</a>
+                                <b>Initiative&nbsp;&#35;{{ initiative.id }}&nbsp;&ndash;&nbsp;</b>
+                                <b>{{ initiative.createdAt|date('F j, Y') }}</b>
+                                <b>{{ initiative.category.name }}</b>
                             </div>
                             <h4 class="post-title">{{ initiative.title }}</h4>
                             <!-- Post Meta -->
