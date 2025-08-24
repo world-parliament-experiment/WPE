@@ -4,12 +4,19 @@ namespace AppBundle\Controller\Admin;
 
 use AppBundle\Annotation\PageAnnotation as Page;
 use AppBundle\Entity\Category;
-use Symfony\Component\Routing\Annotation\Route;
+use JMS\Serializer\SerializerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 
 // @Security("is_granted('ROLE_SUPERADMIN')")
 /**
@@ -21,20 +28,26 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  */
 class CategoryAdminController extends AbstractController
 {
+    private $managerRegistry;
+
+    public function __construct(ManagerRegistry $managerRegistry)
+    {
+        $this->managerRegistry = $managerRegistry;
+    }
+
     /**
      * Lists all category entities.
      * @Page("page.admin.categories", attributes={"translate": true})
      * @Route("/", name="admin_category_index")
-     * #[HttpMethod("GET")]
+     * [HttpMethod("GET")]
      */
     public function indexAction(Request $request)
     {
-
         $em = $this->managerRegistry->getManager();
         $categories = $em->getRepository(Category::class)->findAll();
 
         return $this->render('Admin/Category/index.html.twig', array(
-            'categories' => $categories,
+            'categories' => $categories
         ));
     }
 

@@ -3,7 +3,6 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Initiative;
-use AppBundle\Controller\BaseController;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -15,6 +14,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use Doctrine\Persistence\ManagerRegistry;
 
 // @Security("is_granted('ROLE_SUPERADMIN')")
 /**
@@ -23,9 +24,14 @@ use Symfony\Component\Routing\Annotation\Route;
  * @Route("/admin/initiative")
  */
 
-class InitiativeAdminController extends BaseController
+class InitiativeAdminController extends AbstractController
 {
+    private $managerRegistry;
 
+    public function __construct(ManagerRegistry $managerRegistry)
+    {
+        $this->managerRegistry = $managerRegistry;
+    }
     
 
     /**
@@ -40,7 +46,7 @@ class InitiativeAdminController extends BaseController
         $initiatives = $em->getRepository(Initiative::class)->findAll();
 
         return $this->render('Admin/Initiative/index.html.twig', array(
-            'initiatives' => [], #$initiatives,
+            'initiatives' => $initiatives
         ));
     }
 

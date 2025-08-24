@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller\Admin;
 
-use AppBundle\Controller\BaseController;
 use JMS\Serializer\SerializerInterface;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Category;
@@ -14,14 +13,23 @@ use FOS\UserBundle\FOSUserEvents;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use AppBundle\Service\UserManager;
+use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use Doctrine\Persistence\ManagerRegistry;
 
+// @Security("is_granted('ROLE_SUPERADMIN')")
 /**
  * User controller.
  *
  * @Route("/admin/user")
  */
-class UserAdminController extends BaseController
+class UserAdminController extends AbstractController
 {
+    private $managerRegistry;
+
+    public function __construct(ManagerRegistry $managerRegistry)
+    {
+        $this->managerRegistry = $managerRegistry;
+    }    
     /**
      * @Route("/", name="admin_user_index")
      */

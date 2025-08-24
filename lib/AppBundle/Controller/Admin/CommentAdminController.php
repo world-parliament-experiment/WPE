@@ -3,17 +3,16 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Annotation\PageAnnotation as Page;
-use AppBundle\Controller\BaseController;
 use JMS\Serializer\SerializerInterface;
 use AppBundle\Entity\Category;
 use AppBundle\Form\CommentAdminForm;
-
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Initiative;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use Doctrine\Persistence\ManagerRegistry;
 
 // @Security("is_granted('ROLE_MODERATOR')")
 /**
@@ -23,9 +22,14 @@ use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
  * @Breadcrumb("breadcrumb.admin.comment.label", route={"name"="admin_comment_index"}, attributes={"translate": true})
  * @Route("/admin/comment")
  */
-class CommentAdminController extends BaseController
+class CommentAdminController extends AbstractController
 {
+    private $managerRegistry;
 
+    public function __construct(ManagerRegistry $managerRegistry)
+    {
+        $this->managerRegistry = $managerRegistry;
+    }
     
     /**
      * Lists all comment entities.
@@ -35,7 +39,6 @@ class CommentAdminController extends BaseController
      */
     public function indexAction(Request $request)
     {
-
         $em = $this->managerRegistry->getManager();
         return $this->render('Admin/Comment/index.html.twig', array(
         ));
