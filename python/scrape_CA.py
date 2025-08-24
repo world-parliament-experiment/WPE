@@ -32,15 +32,14 @@ xml = requests.get(url)
 soup = BeautifulSoup(xml.content, features='xml')
 bills = soup.find_all("Bill")
 for bill in bills:
-    title = bill.find("LongTitle").getText()
-    billtype = bill.find("BillDocumentTypeName").getText()
-    session = bill.find("SessionNumber").getText()
-    parliament = bill.find("ParliamentNumber").getText()
-    code = bill.find("NumberCode").getText()
+    title = bill.find("ShortTitleEn").getText()
+    desc = bill.find("LongTitleEn").getText()
+    session = bill.find("ParlSessionCode").getText()
+    code = bill.find("BillNumberFormatted").getText()
 
-    link = "https://www.parl.ca/legisinfo/en/bill/"+parliament+"-"+session+"/"+code
+    link = "https://www.parl.ca/legisinfo/en/bill/"+session+"/"+code
 
-    desc = billtype + "\n" + link 
+    desc = desc + "\n" + link 
     output.append(title)
     output.append(desc) 
 

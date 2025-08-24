@@ -26,7 +26,7 @@ output = []
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 760
+start = 950
 errorcount = 0
 while not stop:
     url= urllib.request.Request('https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id='+str(start))
