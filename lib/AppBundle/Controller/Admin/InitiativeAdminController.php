@@ -2,11 +2,11 @@
 
 namespace AppBundle\Controller\Admin;
 
+use AppBundle\Controller\Admin\BaseController;
 use AppBundle\Entity\Initiative;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,15 +24,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * @Route("/admin/initiative")
  */
 
-class InitiativeAdminController extends AbstractController
+class InitiativeAdminController extends BaseController
 {
-    private $managerRegistry;
-
-    public function __construct(ManagerRegistry $managerRegistry)
-    {
-        $this->managerRegistry = $managerRegistry;
-    }
-    
 
     /**
      * Lists all initiative entities.

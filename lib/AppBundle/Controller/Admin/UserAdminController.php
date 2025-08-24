@@ -2,11 +2,11 @@
 
 namespace AppBundle\Controller\Admin;
 
+use AppBundle\Controller\Admin\BaseController;
 use JMS\Serializer\SerializerInterface;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Category;
 use Doctrine\ORM\Mapping\Id;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\UserBundle\FOSUserEvents;
@@ -22,14 +22,9 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @Route("/admin/user")
  */
-class UserAdminController extends AbstractController
+class UserAdminController extends BaseController
 {
-    private $managerRegistry;
-
-    public function __construct(ManagerRegistry $managerRegistry)
-    {
-        $this->managerRegistry = $managerRegistry;
-    }    
+ 
     /**
      * @Route("/", name="admin_user_index")
      */

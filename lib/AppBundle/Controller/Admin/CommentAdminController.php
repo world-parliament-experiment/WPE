@@ -8,7 +8,7 @@ use AppBundle\Entity\Category;
 use AppBundle\Form\CommentAdminForm;
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Initiative;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use AppBundle\Controller\Admin\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
@@ -22,15 +22,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * @Breadcrumb("breadcrumb.admin.comment.label", route={"name"="admin_comment_index"}, attributes={"translate": true})
  * @Route("/admin/comment")
  */
-class CommentAdminController extends AbstractController
+class CommentAdminController extends BaseController
 {
-    private $managerRegistry;
-
-    public function __construct(ManagerRegistry $managerRegistry)
-    {
-        $this->managerRegistry = $managerRegistry;
-    }
-    
     /**
      * Lists all comment entities.
      * @Page("page.admin.comments", attributes={"translate": true})
