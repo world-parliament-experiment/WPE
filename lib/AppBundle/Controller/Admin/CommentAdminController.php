@@ -8,7 +8,7 @@ use AppBundle\Entity\Category;
 use AppBundle\Form\CommentAdminForm;
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Initiative;
-use AppBundle\Controller\Admin\BaseController;
+use AppBundle\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;

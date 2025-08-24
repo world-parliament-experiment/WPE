@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Admin;
 
-use AppBundle\Controller\Admin\BaseController;
+use AppBundle\Controller\BaseController;
 use JMS\Serializer\SerializerInterface;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Category;

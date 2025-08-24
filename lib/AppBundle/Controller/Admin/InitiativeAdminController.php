@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Admin;
 
-use AppBundle\Controller\Admin\BaseController;
+use AppBundle\Controller\BaseController;
 use AppBundle\Entity\Initiative;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\NonUniqueResultException;
