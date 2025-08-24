@@ -24,16 +24,16 @@ output = []
 # URl needs to be dynamic
 import datetime
 today = datetime.datetime.now()
-if  today.month <= 7:       #voting period is Sep - May 
+if  today.month <= 8:       #voting period is Sep - May 
     year = today.year - 1
 else:
     year = today.year
 stop = False
-start = 250
+start = 50
 errorcount = 0
 while not stop:
     #url = 'https://www.ft.dk/samling/20201/beslutningsforslag/b'+str(start)+'/index.htm'
-    url = 'https://www.ft.dk/samling/20201/beslutningsforslag/b'+str(start)+'/20201_b'+str(start)+'_som_fremsat.htm'
+    url = 'https://www.ft.dk/samling/'+str(year)+'1/lovforslag/l'+str(start)+'/index.htm'
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
     except urllib.error.HTTPError as e:
@@ -45,7 +45,7 @@ while not stop:
 
     soup = BeautifulSoup(html, 'html.parser')
 
-    section = soup.find("div", {'class': 'case-document'})
+    section = soup.find("div", {'class': 'tingdok'})
     if not section:
         errorcount += 1
         start += 1
@@ -56,16 +56,8 @@ while not stop:
     title = ""
     desc = ""
 
-    title1 = soup.find("p", {'class': 'TitelPrefiks1'}).getText().strip()
-    title2 = soup.find("p", {'class': 'Titel2'}).getText().strip()
-    title = title1 + " " + title2
-    desc = soup.find("p", {'class': 'Tekst1Sp'})
-    if not desc:
-        desc = soup.find("p", {'class': 'NormalInd'})
-        
-    desc = desc.getText().strip()
-    href = 'https://www.ft.dk/ripdf/samling/'+str(year)+'1/beslutningsforslag/b'+str(start)+'/20201_b'+str(start)+'_som_fremsat.pdf'
-    desc = desc + "\n" + href
+    title = soup.find("h1", {'class': 'tingdok-heading'}).getText().strip()
+    desc = 'https://www.ft.dk/samling/'+str(year)+'1/lovforslag/l'+str(start)+'/index.htm'
 
     output.append(title)
     output.append(desc) 
