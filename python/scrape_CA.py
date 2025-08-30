@@ -38,7 +38,9 @@ for bill in bills:
     code = bill.find("BillNumberFormatted").getText()
 
     link = "https://www.parl.ca/legisinfo/en/bill/"+session+"/"+code
-
+    
+    if title == '\n':
+        title = desc
     desc = desc + "\n" + link 
     output.append(title)
     output.append(desc) 

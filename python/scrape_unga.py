@@ -1,79 +1,78 @@
-#!/usr/bin/env python3
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
-
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
-
 import requests
-import urllib
-from bs4 import BeautifulSoup
-import ssl
-import datetime
+from lxml import etree
 
-
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-
-today = datetime.datetime.now()
+session = 79
 output = []
+# GitHub API URL to list files in the repository
+api_url = "https://api.github.com/repos/UNxml/GAresolutions/contents/"+str(session)+"session/English"
 
-stop = False
-session = 76
-while not stop:
+# Headers with your GitHub token (optional, if you're hitting rate limits)
+headers = {
+    "Accept": "application/vnd.github.v3+json",
+    # "Authorization": "token YOUR_GITHUB_TOKEN"  # Uncomment and add your token if needed
+}
 
-    requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += 'HIGH:!DH:!aNULL'
+def get_file_urls(api_url):
+    """Fetches URLs for XML files from the GitHub API."""
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()
+    
+    # List of XML file URLs
+    file_urls = [
+        item["download_url"]
+        for item in response.json()
+        if item["name"].endswith(".xml")
+    ]
+    
+    return file_urls
+
+def parse_xml_from_url(url):
+    """Fetches and parses XML data from a URL."""
+    response = requests.get(url)
+    response.raise_for_status()
+
     try:
-        requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += 'HIGH:!DH:!aNULL'
-    except AttributeError:
-        # no pyopenssl support used / needed / available
-        pass
+        # Parse the XML content with lxml
+        root = etree.fromstring(response.content)
+        
+        # Define namespaces if present (Akoma Ntoso namespace in this case)
+        namespaces = {'akn': 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'}
+        
+        # Use XPath to find <span> within <docTitle> with namespaces
+        title = root.xpath(".//akn:docTitle/akn:span[@class='bold']/text()", namespaces=namespaces)
 
-    url = 'https://www.un.org/en/ga/'+str(session)+'/resolutions.shtml'
-    header={'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'}
-    try:
-        html = requests.get(url, headers=header)
-    except requests.exceptions.RequestException as e: 
-        session = session + 1
-        stop = True
-        continue
+                # Use XPath to find <span> within <docTitle> with namespaces
+        pdf = root.xpath(".//akn:docNumber/text()", namespaces=namespaces)
+        
+        # Print each extracted text
+        for text in title:
+            title = text.strip()
+        
+        output.append(title)
+        
+        for text in pdf:
+            pdf = text.rstrip(".")
+            desc = 'https://docs.un.org/A/RES/'+pdf
+        
+        output.append(desc)
 
-    soup = BeautifulSoup(html.text, 'html.parser')
+        print(output)
 
-    section = soup.find("table", {'class': 'tablefont'})
-    if section:
-        trs = section.findAll('tr')
 
-        for tr in trs:
-            tds = tr.findAll('td')
-            if tds:
-                title = []
-                contents = []
-                for id, td in enumerate(tds):          
-                    if td.find('a') is not None and id == 0: 
-                        contents.append(td.getText().strip())
-                        contents.append(td.find('a').get('href'))
-                    elif td.find('a') is None and id == 0:
-                        break 
-                    else:
-                        contents.append(td.getText().strip())
-                contents.reverse()
+    except etree.XMLSyntaxError as e:
+        print(f"Error parsing XML: {e}")
+        return
 
-                if contents:
-                    title = contents[0].replace(u'\xa0', u' ')
-                    desc = contents[5] 
+def main():
+    # Get the list of XML file URLs
+    xml_file_urls = get_file_urls(api_url)
+    
+    # Process each XML file
+    for url in xml_file_urls:
+        print(f"Parsing XML from {url}")
 
-                    output.append(title)
-                    output.append(desc)
-    else:
-        session = session + 1
-        stop = True
-        continue  
+        parse_xml_from_url(url)
 
-    session = session + 1
-
-print(output)
+# Run the main function
+main()
 
