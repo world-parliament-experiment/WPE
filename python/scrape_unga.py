@@ -47,18 +47,16 @@ def parse_xml_from_url(url):
         # Print each extracted text
         for text in title:
             title = text.strip()
-        
         output.append(title)
         
         for text in pdf:
             pdf = text.rstrip(".")
-            desc = 'https://docs.un.org/A/RES/'+pdf
-        
-        output.append(desc)
-
-        print(output)
-
-
+        if any(ch.isdigit() for ch in pdf):
+            desc = 'United Nations General Assembly Resolution\nhttps://docs.un.org/A/RES/'+pdf
+            output.append(desc)
+        else:    
+            output.pop()
+            
     except etree.XMLSyntaxError as e:
         print(f"Error parsing XML: {e}")
         return
@@ -69,10 +67,9 @@ def main():
     
     # Process each XML file
     for url in xml_file_urls:
-        print(f"Parsing XML from {url}")
 
         parse_xml_from_url(url)
 
 # Run the main function
 main()
-
+print(output)
