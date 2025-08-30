@@ -1,19 +1,36 @@
 ###> symfony/framework-bundle ###
-.env
+# Symfony / PHP
+/vendor/
+/var/
+/public/bundles/
+/node_modules/
+/bin/
+
+
+# Symfony Flex recipes lock files
 .env.local
-.env.local.php
 .env.*.local
+.env.test
+.env.dev
+.env.prod.local
+
 config/secrets/
 /config/secrets/prod/prod.decrypt.private.php
-/config/packages/
+#/config/packages/
 /public/bundles/
 /var/
+
+# Logs & cache
+var/*
+!var/.gitkeep
 /vendor/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
+.symfony/*
 /phpunit.xml
 .phpunit.result.cache
+coverage/
 ###< phpunit/phpunit ###
 
 git
