@@ -2525,6 +2525,10 @@ input:focus {
   background-color: #4b6cd0;
 }
 
+.single-featured-post .post-share-area .share-info .all-share-btn a.tiktok {
+  background-color: #000000;
+}
+
 .single-featured-post .post-share-area .share-info .all-share-btn a.twitter {
   background-color: #49a7f3;
 }
@@ -2856,6 +2860,14 @@ blockquote .quote-name {
   background-color: rgba(75, 108, 208, 0.85);
 }
 
+.like-dislike-share a.tiktok {
+  background-color: #000000;
+}
+
+.like-dislike-share a.tiktok:hover {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
 .like-dislike-share a.twitter {
   background-color: #49a7f3;
 }
@@ -3048,6 +3060,10 @@ blockquote .quote-name {
 
 .footer-area .footer-widget .footer-social-info a.linkedin {
   background-color: #30bad7;
+}
+
+.footer-area .footer-widget .footer-social-info a.tiktok {
+  background-color: #000000;
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
