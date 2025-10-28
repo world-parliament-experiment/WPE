@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'macros/qr_code.html.twig' as qr %}
 
 {% block body %}
 
@@ -82,6 +83,10 @@
             </figure>
             </div>
         </div>
+            <!-- Section Title -->
+            <div class="section-heading">
+                <h5>Global Democracy is possible, if <u>YOU</u> take part in it!</h5>
+            </div>
             <div class="wpe-intro">
                     <p>Create your own political proposals or vote on real-world political initiatives. To start creating proposals, vote, discuss or be elected, <a href="{{ path("login") }}"> login</a> or create a <a href="{{ path("app_register") }}"> global citizen user account</a>. For detailed instructions and further information, please visit the <a href="{{ path("faq") }}">FAQ section</a>.</p>              
                 <br />
