@@ -28,6 +28,7 @@ services:
             $lkin_organization: '%env(LKIN_ORGANIZATION)%'
             $lkinClientId: '%env(LKIN_CLIENT_ID)%'
             $lkinClientSecret: '%env(LKIN_CLIENT_SECRET)%'
+            $lkinRefreshToken: '%env(LKIN_REFRESH_TOKEN)%'
             $senderEmail: '%env(SENDER_EMAIL)%'
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

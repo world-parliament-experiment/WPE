@@ -15,15 +15,17 @@ class TokenRefreshCommand extends Command
 {
     protected static $defaultName = 'wpe:tokenrefresh';
 
-    private $clientId;
-    private $clientSecret;
+    private $lkClientId;
+    private $lkClientSecret;
+    private $lkRefreshToken;
     private $httpClient;
 
-    public function __construct(string $lkinClientId, string $lkinClientSecret)
+    public function __construct(string $lkinClientId, string $lkinClientSecret, string $lkinRefreshToken)
     {
         parent::__construct();
-        $this->clientId = $lkinClientId;
-        $this->clientSecret = $lkinClientSecret;
+        $this->lkClientId = $lkinClientId;
+        $this->lkClientSecret = $lkinClientSecret;
+        $this->lkRefreshToken = $lkinRefreshToken;
         $this->httpClient = new Client();
     }
 
@@ -41,9 +43,7 @@ class TokenRefreshCommand extends Command
         if ($input->getOption('linkedin')) {
             $io->note('Refreshing LinkedIn token...');
 
-            // 1. GET THE CURRENT REFRESH TOKEN (from Env or Secret)
-            // Note: You should retrieve this from your current storage/vault
-            $currentRefreshToken = $_ENV['LKIN_REFRESH_TOKEN'] ?? null;
+           $currentRefreshToken = $this->lkRefreshToken;
 
             if (!$currentRefreshToken) {
                 $io->error('No LKIN_REFRESH_TOKEN found in environment.');
