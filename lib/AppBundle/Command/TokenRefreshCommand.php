@@ -55,8 +55,8 @@ class TokenRefreshCommand extends Command
                     'form_params' => [
                         'grant_type'    => 'refresh_token',
                         'refresh_token' => $currentRefreshToken,
-                        'client_id'     => $this->clientId,
-                        'client_secret' => $this->clientSecret,
+                        'client_id'     => $this->lkClientId,
+                        'client_secret' => $this->lkClientSecret,
                     ],
                 ]);
 
