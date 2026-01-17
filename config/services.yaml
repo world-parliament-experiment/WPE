@@ -47,6 +47,8 @@ services:
             $fb_secret: '%env(FB_SECRET)%'
             $lkin_access_token: '%env(LKIN_ACCESS_TOKEN)%'
             $lkin_organization: '%env(LKIN_ORGANIZATION)%'
+            $lkinClientId: '%env(LKIN_CLIENT_ID)%'
+            $lkinClientSecret: '%env(LKIN_CLIENT_SECRET)%'
     AppBundle\Util\:
         resource: '../lib/AppBundle/Util/'
         autowire: true
