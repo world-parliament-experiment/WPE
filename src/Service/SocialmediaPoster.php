@@ -63,6 +63,10 @@ class SocialmediaPoster
 
     public function postLinkedInUpdate($message,$source,$title)
     {
+        if (empty($this->lkin_access_token) || empty($this->lkin_organization)) {
+            error_log("LinkedIn tokens not configured, skipping post.");
+            return false;
+        }
         try {
             $response = $this->client->request('POST', "https://api.linkedin.com/rest/posts/", [
                 'headers' => [
@@ -99,6 +103,10 @@ class SocialmediaPoster
     
     public function postFacebookUpdate($message,$source,$title)
     {
+        if (empty($this->fb_token) || empty($this->fb_site)) {
+            error_log("Facebook tokens not configured, skipping post.");
+            return false;
+        }
         $message = $message."\n".$title."\n".$source;
 /*         $imageUrl = 'https://world-parliament.org/assets/img/logo.png';
 

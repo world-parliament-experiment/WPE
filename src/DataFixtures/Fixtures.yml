@@ -6,58 +6,72 @@ App\Entity\Category:
     name: Security and Conflict Resolution
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_2:
     name: Economy
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_3:
     name: Environment
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_4:
     name: Gender Equality
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_5:
     name: Human rights
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_6:
     name: Health
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_7:
     name: Science & Education
     description: '<text(200)>'
     type: 0
+    country: 'UN'
   category_8:
     name: Germany
-    description: DE
+    description: '<text(200)>'
     type: 2
+    country: 'DE'
   category_9:
     name: United States
-    description: US
+    description: '<text(200)>'
     type: 2
+    country: 'US'
   category_10:
     name: Israel
-    description: IL
+    description: '<text(200)>'
     type: 2
+    country: 'IL'
   category_11:
     name: Ireland
-    description: IE
+    description: '<text(200)>'
     type: 2
+    country: 'IE'
   category_12:
     name: United Kingdom
-    description: GB
+    description: '<text(200)>'
     type: 2
+    country: 'GB'
   category_13:
     name: Sweden
-    description: SE
+    description: '<text(200)>'
     type: 2
+    country: 'SE'
   category_14:
     name: Norway
-    description: NO
+    description: '<text(200)>'
     type: 2
+    country: 'NO'
 
 App\Entity\User:
 

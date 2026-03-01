@@ -48,7 +48,14 @@ class DefaultController extends BaseController
 
         $em = $this->managerRegistry->getManager();
 
-        $initiatives = $em->getRepository(Initiative::class)->slider(25);
+        $countries = ['UN'];
+        if ($user = $this->getUser()) {
+            if ($userCountry = $user->getCountry()) {
+                $countries[] = $userCountry;
+            }
+        }
+
+        $initiatives = $em->getRepository(Initiative::class)->slider(25, $countries);
 
         $votesf = $em->getRepository(Initiative::class)
             ->future();
