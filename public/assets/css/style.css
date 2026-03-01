@@ -1610,24 +1610,24 @@ input:focus {
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .post-sidebar-area.left-sidebar {
     -webkit-box-ordinal-group: 11;
-    -ms-flex-order: 10;
-    order: 10;
+    -ms-flex-order: -10;
+    order: -10;
   }
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px) {
   .post-sidebar-area.left-sidebar {
     -webkit-box-ordinal-group: 11;
-    -ms-flex-order: 10;
-    order: 10;
+    -ms-flex-order: -10;
+    order: -10;
   }
 }
 
 @media only screen and (max-width: 767px) {
   .post-sidebar-area.left-sidebar {
     -webkit-box-ordinal-group: 11;
-    -ms-flex-order: 10;
-    order: 10;
+    -ms-flex-order: -10;
+    order: -10;
   }
 }
 

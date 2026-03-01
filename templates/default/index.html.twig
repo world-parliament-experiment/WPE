@@ -18,36 +18,43 @@
         <<<<<<<<<<<<<<<<<<<<< -->
         <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
             <!-- Sidebar Widget -->
-            <div class="single-sidebar-widget p-30">
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
                 <div class="section-heading">
-                    <h5>Global Democracy</h5>
+                    <h5 class="text-dark">Global Democracy is possible, if YOU take part in it!</h5>
                 </div>
                 <div class="wpe-sidebar-text">
-                    <p style="font-weight: bold; margin-bottom: 10px;">Global Democracy is possible, if YOU take part in it!</p>
-                    <p style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
-                    <p style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}">login</a> or create a <a href="{{ path("app_register") }}">user account</a>.</p>
+                    <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
+                    <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
+                    <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">This project is completely open source. To contribute, please check out our <a href="https://github.com/world-parliament-experiment/WPE" class="text-white" style="text-decoration: underline;">GitHub project</a>. There you will also find a <a href="https://github.com/world-parliament-experiment/WPE/wiki" class="text-white" style="text-decoration: underline;">Wiki</a> where you can contribute ideas or draft your next proposals before posting them on the website.</p>
                 </div>
             </div>
             
-            <div class="single-sidebar-widget p-30">
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/header/parliament_small.jpeg') }}');">
                 {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
             </div>
-            <div class="single-sidebar-widget p-30">
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_28_small.jpg') }}');">
                {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
             </div>
-            <div class="single-sidebar-widget p-30">
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_29_small.jpg') }}');">
                 {{ render(controller('App\\Controller\\WidgetController::MostViewsAction')) }}
             </div>
-            <div class="single-sidebar-widget p-30">
-                {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
-            </div>
-            <div class="single-sidebar-widget p-30">
-                {{ render(controller('App\\Controller\\WidgetController::mostDelegationsAction')) }}
-            </div>
-            <div class="single-sidebar-widget p-30">
-                {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_30_small.jpg') }}');">
+                {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
             </div>
         </div>
+
+        <style>
+            .post-sidebar-area .single-sidebar-widget.bg-overlay p,
+            .post-sidebar-area .single-sidebar-widget.bg-overlay a,
+            .post-sidebar-area .single-sidebar-widget.bg-overlay span,
+            .post-sidebar-area .single-sidebar-widget.bg-overlay div,
+            .post-sidebar-area .single-sidebar-widget.bg-overlay i {
+                color: #ffffff !important;
+            }
+            .post-sidebar-area .single-sidebar-widget.bg-overlay .section-heading h5 {
+                color: #1a1a1a !important;
+            }
+        </style>
 
         <!-- >>>>>>>>>>>>>>>>>>>>
              Main Posts Area
@@ -104,9 +111,6 @@
                 </div>
             </div>
 
-            <div class="wpe-intro mt-5">
-                <p>This project is completely open source. To contribute, please check out our <a href="https://github.com/world-parliament-experiment/WPE">GitHub project</a>. There you will also find a <a href="https://github.com/world-parliament-experiment/WPE/wiki">Wiki</a> where you can contribute ideas or draft your next proposals before posting them on the website.</p>
-            </div>
         </div>
 
         <!-- >>>>>>>>>>>>>>>>>>>>
@@ -114,18 +118,25 @@
         <<<<<<<<<<<<<<<<<<<<< -->
 
         <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
-            <div class="single-sidebar-widget p-30">
-                <blockquote style="margin-bottom: 0;">
-                    <h6 class="quote-text" style="font-size: 14px; line-height: 1.6; font-style: italic;">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_33_small.jpg') }}');">
+                <blockquote style="margin-bottom: 0; background-color: transparent; border-left: 3px solid #ffffff;">
+                    <h6 class="quote-text text-white" style="font-size: 14px; line-height: 1.6; font-style: italic;">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
                     <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
                 </blockquote>
             </div>
             
-            <div class="single-sidebar-widget p-30">
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_26_small.jpg') }}');">
                 {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
             </div>
-            <div class="single-sidebar-widget p-30">
-                {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+            
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_31_small.jpg') }}');">
+                {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_32_small.jpg') }}');">
+                {{ render(controller('App\\Controller\\WidgetController::mostDelegationsAction')) }}
+            </div>
+            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_34_small.jpg') }}');">
+                {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
             </div>
         </div> 
 
