@@ -1,5 +1,21 @@
 # --- Gemini Context Exclusions ---
 
+# --- Symfony Essentials ---
+/vendor/
+/var/cache/
+/var/log/
+/public/bundles/
+/public/build/
+
+# --- PHP/Composer Noise ---
+composer.phar
+.php-cs-fixer.dist.php
+.phpunit.result.cache
+
+# --- Docker (Keep the config, ignore the data) ---
+/.docker/data/
+
+
 # 1. Dependency Noise (The biggest performance killer)
 node_modules/
 bower_components/
