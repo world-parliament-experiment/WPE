@@ -39,83 +39,83 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    AppBundle\Controller\:
-        resource: '../lib/AppBundle/Controller'
+    App\Controller\:
+        resource: '../src/Controller'
         public: true
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    AppBundle\Service\:
-        resource: '../lib/AppBundle/Service/'
+    App\Service\:
+        resource: '../src/Service/'
         autowire: true
-    AppBundle\Command\:
-        resource: '../lib/AppBundle/Command/'
-        autowire: true
-
-    AppBundle\Util\:
-        resource: '../lib/AppBundle/Util/'
+    App\Command\:
+        resource: '../src/Command/'
         autowire: true
 
-    AppBundle\Service\Mailer:
-        class: AppBundle\Service\Mailer
+    App\Util\:
+        resource: '../src/Util/'
+        autowire: true
+
+    App\Service\Mailer:
+        class: App\Service\Mailer
         arguments:
             $senderEmail: '%env(SENDER_EMAIL)%'
         autowire: true
 
-    # AppBundle\Twig\PageExtension:
+    # App\Twig\PageExtension:
     #     public: false
     #     autowire: true
     #     tags:
     #         - { name: twig.extension }
 
-    # AppBundle\Twig\WidgetExtension:
+    # App\Twig\WidgetExtension:
     #     public: false
     #     tags:
     #         - { name: twig.extension }
 
-    # AppBundle\Twig\TimeDiffExtension:
+    # App\Twig\TimeDiffExtension:
     #     tags:
     #         - { name: twig.extension }
 
-    # AppBundle\Twig\TextExtension:
+    # App\Twig\TextExtension:
     #     tags:
     #         - { name: twig.extension }
 
-    AppBundle\Twig\:
-        resource: '../lib/AppBundle/Twig/'
+    App\Twig\:
+        resource: '../src/Twig/'
         autowire: true
         tags:
             - { name: twig.extension }
 
-    AppBundle\Annotation\Page:
+    App\Annotation\Page:
         public: true
 
-    AppBundle\Menu\MenuBuilder:
+    App\Menu\MenuBuilder:
         arguments: ["@knp_menu.factory", '@security.authorization_checker']
         # arguments: ['@security.authorization_checker']
         autowire: true
         tags:
             - { name: knp_menu.menu_builder, method: createMainMenu, alias: main } # The alias is what is used to retrieve the menu
 
-    AppBundle\EventSubscriber\LoginSubscriber:
+    App\EventSubscriber\LoginSubscriber:
         tags:
             - { name: kernel.event_subscriber }
 
-    # AppBundle\Form\DelegationForm:
+    # App\Form\DelegationForm:
     #     public: false
     #     autowire: true
 
-    # AppBundle\Form\InitiativeUserForm:
+    # App\Form\InitiativeUserForm:
     #     public: false
     #     autowire: true
 
-    AppBundle\Form\:
-        resource: '../lib/AppBundle/Form/'
+    App\Form\:
+        resource: '../src/Form/'
         autowire: true
 
-    AppBundle\Security\InitiativeVoter:
+    App\Security\InitiativeVoter:
         public: false
         arguments:
             - '@security.access.decision_manager'

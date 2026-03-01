@@ -14,10 +14,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+                type: annotation
             AppBundle:
                 is_bundle: false
-                dir: '%kernel.project_dir%/lib/AppBundle/Entity'
-                prefix: 'AppBundle\Entity'
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
                 alias: AppBundle
                 type: annotation
             gedmo_loggable:

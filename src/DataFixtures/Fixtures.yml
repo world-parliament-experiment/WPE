@@ -1,7 +1,7 @@
 # https://github.com/fzaninotto/Faker#fakerprovideren_ustext
 # https://github.com/nelmio/alice/tree/2.x#installation
 
-AppBundle\Entity\Category:
+App\Entity\Category:
   category_1:
     name: Security and Conflict Resolution
     description: '<text(200)>'
@@ -59,7 +59,7 @@ AppBundle\Entity\Category:
     description: NO
     type: 2
 
-AppBundle\Entity\User:
+App\Entity\User:
 
   user_base (template):
     description: "<paragraphs(2, true)>"
@@ -121,14 +121,14 @@ AppBundle\Entity\User:
     emailCanonical: "<email()>"
     gender: "<randomElement(['MALE', 'FEMALE', 'DIVERSE', 'NOT STATED'])>"
 
-AppBundle\Entity\UserImage:
+App\Entity\UserImage:
   image_{1..50}:
     user: "@user_<current()>"
     imageType: 1
     contentType: 'image/png'
     path: "default.png"
 
-AppBundle\Entity\Initiative:
+App\Entity\Initiative:
 
   initiative_base (template):
     title: "<sentence()>"
@@ -195,7 +195,7 @@ AppBundle\Entity\Initiative:
   initiative_{131..160}_program_finished (extends initiative_program):
     state: 2
  
-AppBundle\Entity\Voting:
+App\Entity\Voting:
   voting_root (template):
     quorum: 0.1
     consensus: 0.5
@@ -212,7 +212,7 @@ AppBundle\Entity\Voting:
     state: 1
     initiative: "@initiative_current_active_<current()>"
 
-AppBundle\Entity\Comment:
+App\Entity\Comment:
   comment_root (template):
     initiative: "@initiative_*"
     message: "<paragraph(4)>"
@@ -230,7 +230,7 @@ AppBundle\Entity\Comment:
   comment_children_{501..700} (extends comment_root):
     parent: "@comment_root_*"
 
-AppBundle\Entity\Delegation:
+App\Entity\Delegation:
 
   delegation_{5..10}:
       user: "@user_<current()>"

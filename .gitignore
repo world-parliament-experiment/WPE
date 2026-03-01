@@ -35,3 +35,4 @@ coverage/
 
 git
 git.pub
+.env

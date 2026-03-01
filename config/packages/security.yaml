@@ -12,7 +12,7 @@ security:
     encoders:
         # FOS\UserBundle\Model\UserInterface: bcrypt
         # FOS\UserBundle\Model\UserInterface: auto
-        AppBundle\Entity\User:
+        App\Entity\User:
             algorithm: bcrypt
 
     role_hierarchy:
@@ -24,7 +24,7 @@ security:
     providers:
         app_user_provider:
             entity:
-                class: AppBundle\Entity\User
+                class: App\Entity\User
                 property: username
 
     firewalls:

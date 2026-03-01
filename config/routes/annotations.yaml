@@ -3,7 +3,7 @@ appControllers:
     type: annotation
 
 controllers:
-    resource: ../../lib/AppBundle/Controller/
+    resource: ../../src/Controller/
     type: annotation
 
 kernel:

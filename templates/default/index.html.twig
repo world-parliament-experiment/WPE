@@ -19,28 +19,28 @@
         <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
             <!-- Sidebar Widget -->
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::trendingCWidgetAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::trendingCWidgetAction')) }}
             </div>
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
+                {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
             </div>
             <div class="single-sidebar-widget p-30">
-               {{ render(controller('AppBundle\\Controller\\WidgetController::MostPopularAction')) }}
+               {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
             </div>
 {#              <div class="single-sidebar-widget p-30">#}
-{#                {{ render(controller('AppBundle:Widget:MostCommentedInitiatives')) }}#}
+{#                {{ render(controller('App:Widget:MostCommentedInitiatives')) }}#}
 {#            </div>#}
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::MostViewsAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::MostViewsAction')) }}
             </div>
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::MostCommentsAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
             </div>
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::mostDelegationsAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::mostDelegationsAction')) }}
             </div>
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::MostInitiativesAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
             </div>
 
 
@@ -104,13 +104,13 @@
 
         <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::trendingFWidgetAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::trendingFWidgetAction')) }}
             </div>
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
+                {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
             </div>
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('AppBundle\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+                {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
             </div>
         </div> 
 
