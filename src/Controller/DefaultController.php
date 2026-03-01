@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Initiative;
+use App\Enum\InitiativeEnum;
 use JMS\Serializer\SerializerInterface;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -55,7 +56,8 @@ class DefaultController extends BaseController
             }
         }
 
-        $initiatives = $em->getRepository(Initiative::class)->slider(25, $countries);
+        $proposals = $em->getRepository(Initiative::class)->slider(6, $countries, InitiativeEnum::TYPE_FUTURE);
+        $ongoingVotes = $em->getRepository(Initiative::class)->slider(6, $countries, InitiativeEnum::TYPE_CURRENT);
 
         $votesf = $em->getRepository(Initiative::class)
             ->future();
@@ -65,7 +67,8 @@ class DefaultController extends BaseController
             'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
             'votesf' => $votesf,
             'votesc' => $votesc,
-            'top' => $initiatives,
+            'proposals' => $proposals,
+            'ongoing_votes' => $ongoingVotes,
         ]);
 
     }

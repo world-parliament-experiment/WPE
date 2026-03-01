@@ -123,18 +123,24 @@ class InitiativeRepository extends EntityRepository
             ->execute();
     }
 
-    public function slider($maxResults, array $countries = ['UN'])
+    public function slider($maxResults, array $countries = ['UN'], $type = null)
     {
-        return $this->createQueryBuilder('initiative')
+        $qb = $this->createQueryBuilder('initiative')
             ->leftJoin('initiative.category', 'c')
-            ->andWhere('initiative.type IN (0,1)')
             ->andWhere('initiative.state = 1')
             ->andWhere('c.type = 0 OR (c.type != 0 AND c.country IN (:countries))')
             ->setParameter('countries', $countries)
             ->setMaxResults($maxResults)
-            ->orderBy('initiative.publishedAt', 'DESC')
-            ->getQuery()
-            ->execute();
+            ->orderBy('initiative.publishedAt', 'DESC');
+
+        if ($type !== null) {
+            $qb->andWhere('initiative.type = :type')
+               ->setParameter('type', $type);
+        } else {
+            $qb->andWhere('initiative.type IN (0,1)');
+        }
+
+        return $qb->getQuery()->execute();
     }
 
     public function getDraftInitiativesByUser(User $user)

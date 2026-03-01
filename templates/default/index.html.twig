@@ -19,17 +19,22 @@
         <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
             <!-- Sidebar Widget -->
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('App\\Controller\\WidgetController::trendingCWidgetAction')) }}
+                <div class="section-heading">
+                    <h5>Global Democracy</h5>
+                </div>
+                <div class="wpe-sidebar-text">
+                    <p style="font-weight: bold; margin-bottom: 10px;">Global Democracy is possible, if YOU take part in it!</p>
+                    <p style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
+                    <p style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}">login</a> or create a <a href="{{ path("app_register") }}">user account</a>.</p>
+                </div>
             </div>
+            
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
             </div>
             <div class="single-sidebar-widget p-30">
                {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
             </div>
-{#              <div class="single-sidebar-widget p-30">#}
-{#                {{ render(controller('App:Widget:MostCommentedInitiatives')) }}#}
-{#            </div>#}
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('App\\Controller\\WidgetController::MostViewsAction')) }}
             </div>
@@ -42,8 +47,6 @@
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
             </div>
-
-
         </div>
 
         <!-- >>>>>>>>>>>>>>>>>>>>
@@ -54,11 +57,11 @@
             <div class="feature-video-posts m-b-30">
                 <!-- Section Title -->
                 <div class="section-heading">
-                    <h5>Latest Proposals &#8226; Vote Now</h5>
+                    <h5>Ongoing Votes &#8226; Decide Now</h5>
                 </div>
 
                 <div class="proposal-grid">
-                    {% for vote in top|slice(0, 6) %}
+                    {% for vote in ongoing_votes %}
                         <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
                             <div class="proposal-content">
                                 <div class="proposal-meta">
@@ -70,22 +73,38 @@
                                 </div>
                             </div>
                         </div>
+                    {% else %}
+                        <p>No ongoing votes at the moment.</p>
+                    {% endfor %}
+                </div>
+
+                <hr>
+
+                <!-- Section Title -->
+                <div class="section-heading mt-5">
+                    <h5>Latest Proposals &#8226; Discuss Now</h5>
+                </div>
+
+                <div class="proposal-grid">
+                    {% for vote in proposals %}
+                        <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
+                            <div class="proposal-content">
+                                <div class="proposal-meta">
+                                    <a href="{{ path('category_type', {id: vote.category.id, slug:vote.category.slug, type:vote.typename|lower}) }}">{{ vote.category.name }}</a>
+                                </div>
+                                <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="proposal-title">{{ vote.title }}</a>
+                                <div class="proposal-action">
+                                    <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="btn mag-btn btn-sm">Discuss Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No new proposals at the moment.</p>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Section Title -->
-            <div class="section-heading">
-                <h5>Global Democracy is possible, if <u>YOU</u> take part in it!</h5>
-            </div>
-            <div class="wpe-intro">
-                    <p>Create your own political proposals or vote on real-world political initiatives. To start creating proposals, vote, discuss or be elected, <a href="{{ path("login") }}"> login</a> or create a <a href="{{ path("app_register") }}"> global citizen user account</a>. For detailed instructions and further information, please visit the <a href="{{ path("faq") }}">FAQ section</a>.</p>              
-                <br />
-                <blockquote>
-                    <h6 class="quote-text">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
-                    <h6 class="quote-name">ABRAHAM LINCOLN</h6>
-                </blockquote>
-                <br />
+            <div class="wpe-intro mt-5">
                 <p>This project is completely open source. To contribute, please check out our <a href="https://github.com/world-parliament-experiment/WPE">GitHub project</a>. There you will also find a <a href="https://github.com/world-parliament-experiment/WPE/wiki">Wiki</a> where you can contribute ideas or draft your next proposals before posting them on the website.</p>
             </div>
         </div>
@@ -96,8 +115,12 @@
 
         <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
             <div class="single-sidebar-widget p-30">
-                {{ render(controller('App\\Controller\\WidgetController::trendingFWidgetAction')) }}
+                <blockquote style="margin-bottom: 0;">
+                    <h6 class="quote-text" style="font-size: 14px; line-height: 1.6; font-style: italic;">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
+                    <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
+                </blockquote>
             </div>
+            
             <div class="single-sidebar-widget p-30">
                 {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
             </div>
