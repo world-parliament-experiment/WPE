@@ -1,0 +1,58 @@
+# --- Gemini Context Exclusions ---
+
+# 1. Dependency Noise (The biggest performance killer)
+node_modules/
+bower_components/
+vendor/
+env/
+venv/
+.env/
+__pycache__/
+
+# 2. Build & Distribution Folders
+dist/
+out/
+build/
+bin/
+obj/
+.next/
+.nuxt/
+
+# 3. Large Data & Logs
+*.log
+logs/
+*.csv
+*.jsonl
+*.sqlite
+*.db
+tmp/
+
+# 4. Media & Binaries (AI can't "read" these effectively anyway)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf
+*.zip
+*.tar.gz
+*.exe
+
+# 5. IDE & Tool Metadata
+.vscode/
+.idea/
+.project
+.classpath
+.settings/
+.DS_Store
+
+# 6. Sensitive Files (Privacy Protection)
+.env*
+*.pem
+*.key
+certs/
+secrets/
+
+# --- WHAT TO KEEP ---
+# Note: We do NOT ignore the /docker folder because 
+# you want Gemini to be able to help with Dockerfiles!
