@@ -17,52 +17,61 @@
          Post Left Sidebar Area
         <<<<<<<<<<<<<<<<<<<<< -->
         <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
-            <!-- Sidebar Widget -->
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
-                <div class="section-heading">
-                    <h5 class="text-dark">Global Democracy is possible, if YOU take part in it!</h5>
+            {# Desktop Left Sidebar - only visible on Desktop #}
+            <div class="desktop-only">
+                <div class="single-sidebar-widget p-30">
+                    <div class="section-heading">
+                        <h5 class="text-dark">Global Democracy</h5>
+                    </div>
+                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
+                        <div class="wpe-sidebar-text">
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4; font-weight: bold; margin-bottom: 10px;">Global Democracy is possible, if YOU take part in it!</p>
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">This project is completely open source. To contribute, please check out our <a href="https://github.com/world-parliament-experiment/WPE" class="text-white" style="text-decoration: underline;">GitHub project</a>. There you will also find a <a href="https://github.com/world-parliament-experiment/WPE/wiki" class="text-white" style="text-decoration: underline;">Wiki</a> where you can contribute ideas or draft your next proposals before posting them on the website.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="wpe-sidebar-text">
-                    <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
-                    <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
-                    <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">This project is completely open source. To contribute, please check out our <a href="https://github.com/world-parliament-experiment/WPE" class="text-white" style="text-decoration: underline;">GitHub project</a>. There you will also find a <a href="https://github.com/world-parliament-experiment/WPE/wiki" class="text-white" style="text-decoration: underline;">Wiki</a> where you can contribute ideas or draft your next proposals before posting them on the website.</p>
+                
+                <div class="single-sidebar-widget p-30 w-categories-current">
+                    {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
                 </div>
-            </div>
-            
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/header/parliament_small.jpeg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
-            </div>
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_28_small.jpg') }}');">
-               {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
-            </div>
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_29_small.jpg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::MostViewsAction')) }}
-            </div>
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_30_small.jpg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+                <div class="single-sidebar-widget p-30 w-popular">
+                   {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
+                </div>
+                <div class="single-sidebar-widget p-30 w-views">
+                    {{ render(controller('App\\Controller\\WidgetController::MostViewsAction')) }}
+                </div>
+                <div class="single-sidebar-widget p-30 w-citizens">
+                    {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+                </div>
             </div>
         </div>
-
-        <style>
-            .post-sidebar-area .single-sidebar-widget.bg-overlay p,
-            .post-sidebar-area .single-sidebar-widget.bg-overlay a,
-            .post-sidebar-area .single-sidebar-widget.bg-overlay span,
-            .post-sidebar-area .single-sidebar-widget.bg-overlay div,
-            .post-sidebar-area .single-sidebar-widget.bg-overlay i {
-                color: #ffffff !important;
-            }
-            .post-sidebar-area .single-sidebar-widget.bg-overlay .section-heading h5 {
-                color: #1a1a1a !important;
-            }
-        </style>
 
         <!-- >>>>>>>>>>>>>>>>>>>>
              Main Posts Area
         <<<<<<<<<<<<<<<<<<<<< -->
 
         <div class="mag-posts-content m-t-30 m-b-30 p-30 box-shadow">
+            
+            {# MOBILE INTERLEAVED WIDGETS START #}
+            <div class="mobile-only">
+                <div class="single-sidebar-widget p-30 m-b-30">
+                    <div class="section-heading">
+                        <h5 class="text-dark">Global Democracy</h5>
+                    </div>
+                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
+                        <div class="wpe-sidebar-text">
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4; font-weight: bold;">Global Democracy is possible, if YOU take part in it!</p>
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
+                            <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# MOBILE INTERLEAVED WIDGETS END #}
+
             <div class="feature-video-posts m-b-30">
-                <!-- Section Title -->
                 <div class="section-heading">
                     <h5>Ongoing Votes &#8226; Decide Now</h5>
                 </div>
@@ -87,7 +96,6 @@
 
                 <hr>
 
-                <!-- Section Title -->
                 <div class="section-heading mt-5">
                     <h5>Latest Proposals &#8226; Discuss Now</h5>
                 </div>
@@ -111,6 +119,36 @@
                 </div>
             </div>
 
+            {# MOBILE INTERLEAVED WIDGETS PART 2 #}
+            <div class="mobile-only">
+                <div class="single-sidebar-widget p-30 m-b-30">
+                    <div class="section-heading">
+                        <h5 class="text-dark">Abraham Lincoln</h5>
+                    </div>
+                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/category/K_33_small.jpg') }}');">
+                        <blockquote style="margin-bottom: 0; background-color: transparent; border-left: 3px solid #ffffff;">
+                            <h6 class="quote-text text-white" style="font-size: 14px; line-height: 1.6; font-style: italic;">“... that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
+                            <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
+                        </blockquote>
+                    </div>
+                </div>
+                
+                <div class="single-sidebar-widget p-30 m-b-30 w-categories-current">
+                    {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
+                </div>
+
+                <div class="single-sidebar-widget p-30 m-b-30 w-categories-future">
+                    {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
+                </div>
+
+                <div class="single-sidebar-widget p-30 m-b-30 w-popular">
+                   {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
+                </div>
+
+                <div class="single-sidebar-widget p-30 m-b-30 w-comments">
+                    {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
+                </div>
+            </div>
         </div>
 
         <!-- >>>>>>>>>>>>>>>>>>>>
@@ -118,29 +156,91 @@
         <<<<<<<<<<<<<<<<<<<<< -->
 
         <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_33_small.jpg') }}');">
-                <blockquote style="margin-bottom: 0; background-color: transparent; border-left: 3px solid #ffffff;">
-                    <h6 class="quote-text text-white" style="font-size: 14px; line-height: 1.6; font-style: italic;">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
-                    <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
-                </blockquote>
-            </div>
-            
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_26_small.jpg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
-            </div>
-            
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_31_small.jpg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
-            </div>
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_32_small.jpg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::mostDelegationsAction')) }}
-            </div>
-            <div class="single-sidebar-widget p-30 bg-img bg-overlay" style="background-image: url('{{ asset('assets/img/category/K_34_small.jpg') }}');">
-                {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
+            <div class="desktop-only">
+                <div class="single-sidebar-widget p-30">
+                    <div class="section-heading">
+                        <h5 class="text-dark">Abraham Lincoln</h5>
+                    </div>
+                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/category/K_33_small.jpg') }}');">
+                        <blockquote style="margin-bottom: 0; background-color: transparent; border-left: 3px solid #ffffff;">
+                            <h6 class="quote-text text-white" style="font-size: 14px; line-height: 1.6; font-style: italic;">“It is rather for us to be here dedicated to the great task remaining before us [...] that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
+                            <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
+                        </blockquote>
+                    </div>
+                </div>
+                
+                <div class="single-sidebar-widget p-30 w-categories-future">
+                    {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
+                </div>
+                
+                <div class="single-sidebar-widget p-30 w-comments">
+                    {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
+                </div>
+                <div class="single-sidebar-widget p-30 w-delegations">
+                    {{ render(controller('App\\Controller\\WidgetController::mostDelegationsAction')) }}
+                </div>
+                <div class="single-sidebar-widget p-30 w-initiatives">
+                    {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
+                </div>
             </div>
         </div> 
 
     </section>
+
+    <style>
+        /* Sidebar styling for white text on overlay */
+        .widget-content-bg.bg-overlay,
+        .widget-content-bg.bg-overlay p,
+        .widget-content-bg.bg-overlay a,
+        .widget-content-bg.bg-overlay span,
+        .widget-content-bg.bg-overlay div,
+        .widget-content-bg.bg-overlay i,
+        .widget-content-bg.bg-overlay h6 {
+            color: #ffffff !important;
+        }
+        
+        /* Ensure overlay doesn't cover content background */
+        .bg-overlay {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Background Images Assignment */
+        .w-categories-current .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_27_small.jpg') }}'); }
+        .w-categories-future .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_26_small.jpg') }}'); }
+        .w-popular .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_28_small.jpg') }}'); }
+        .w-views .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_29_small.jpg') }}'); }
+        .w-citizens .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_30_small.jpg') }}'); }
+        .w-comments .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_31_small.jpg') }}'); }
+        .w-delegations .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_32_small.jpg') }}'); }
+        .w-initiatives .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_34_small.jpg') }}'); }
+
+        .widget-content-bg {
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Responsive Display Logic */
+        @media (min-width: 992px) {
+            .mobile-only { display: none !important; }
+            .desktop-only { display: block !important; }
+        }
+        @media (max-width: 991px) {
+            .mobile-only { display: block !important; }
+            .desktop-only { display: none !important; }
+            
+            .post-sidebar-area { display: none !important; }
+            .mag-posts-content { 
+                -ms-flex: 0 0 100% !important;
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
     <!-- ##### Mag Posts Area End ##### -->
 
 {% endblock %}

@@ -3,16 +3,16 @@
     <h5>Popular Initiatives</h5>
 </div>
 
-{% for initiative in initiatives %}
-
-    <div class="single-blog-post d-flex">
-        <div class="post-content" style="padding-left: 0;">
-            <a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}" class="post-title">{{ initiative.title }}</a>
-            <div class="post-meta d-flex justify-content-between">
-                <a href="#"><i class="fas fa-eye" aria-hidden="true"></i> {{ initiative.views }}</a>
-                <a href="#"><i class="fas fa-comments" aria-hidden="true"></i> {{ initiative.countComments }}</a>
+<div class="widget-content-bg bg-overlay p-30">
+    {% for initiative in initiatives %}
+        <div class="single-blog-post d-flex">
+            <div class="post-content" style="padding-left: 0;">
+                <a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}" class="post-title">{{ initiative.title }}</a>
+                <div class="post-meta d-flex justify-content-between">
+                    <a href="#"><i class="fas fa-eye" aria-hidden="true"></i> {{ initiative.views }}</a>
+                    <a href="#"><i class="fas fa-comments" aria-hidden="true"></i> {{ initiative.countComments }}</a>
+                </div>
             </div>
         </div>
-    </div>
-
-{% endfor %}
+    {% endfor %}
+</div>
