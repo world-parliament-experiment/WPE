@@ -16,54 +16,58 @@ import requests
 import re
 #import numpy as np
 
+import json
+
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-output = []
+output = {}
 
 header = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
 }
 
 # URl needs to be dynamic
-
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 238
+# start = 238  # Original start ID
+start = 1300 # Try a more recent ID range for 2024-2026
 errorcount = 0
-while not stop:
+max_errors = 10
 
-    # Read the XML file
-    url = 'https://dpr.go.id/uu/detail/id/'+str(start)
-    #url = "https:/dpr.go.id/uu/prolegnas-long-list"
+while not stop and len(output) < 20: # Limit to 20 per run
+    url = 'https://www.dpr.go.id/uu/detail/id/'+str(start)
     try:
-        soup = BeautifulSoup(requests.get(url, headers=header).text, features="lxml")
-    except urllib.error.HTTPError as e:
-        if e: # check the return code
+        response = requests.get(url, headers=header, timeout=10)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, features="lxml")
+            h3 = soup.find("h3")
+            if h3:
+                title = h3.getText().strip()
+                if title:
+                    desc = "Source: " + url
+                    output[title] = desc
+                    errorcount = 0 # reset error count on success
+            else:
+                errorcount += 1
+        elif response.status_code == 403:
+            # If we get 403, we might be blocked, but let's try a few more IDs
             errorcount += 1
-            start += 1
-            if errorcount == 5:
-                stop = True
-            continue
-    
-    title = ""
-    title = soup.find("h3").getText()
-    if not title:
+        else:
+            errorcount += 1
+            
+    except Exception as e:
         errorcount += 1
-        start += 1
-        if errorcount == 5:
-            stop = True
-        continue
-    desc = url
-    output.append(title)
-    output.append(desc) 
-
+    
+    if errorcount >= max_errors:
+        stop = True
+    
     start += 1
 
-print(output)
+print(json.dumps(output))
 
 #print(topicno)
 #print(status)

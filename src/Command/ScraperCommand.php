@@ -110,7 +110,7 @@ class ScraperCommand extends Command
 
         if ($input->getOption('update') === true) {
 
-            $command = '/usr/bin/python3 '.dirname(__FILE__, 4).'/python/scrape_'.$country.'.py';
+            $command = '/usr/bin/python3 '.dirname(__FILE__, 3).'/python/scrape_'.$country.'.py';
             $process = Process::fromShellCommandline($command);
             //var_dump($process->getCommandLine());
             $process->setTimeout(600);
@@ -121,27 +121,45 @@ class ScraperCommand extends Command
                 throw new ProcessFailedException($process);
             }
 
-            $contents = $process->getOutput();
-            $contentstring = explode("', '", $contents);
-
-            $NewEntry = [];
-            for ($i = 0; $i < count($contentstring); $i++) {
-                $NewEntry[$contentstring[$i]] = $contentstring[++$i];
+            $contents = trim($process->getOutput());
+            
+            // Try to decode JSON first
+            $json = json_decode($contents, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($json)) {
+                $NewEntry = $json;
+                $isJson = true;
+            } else {
+                // Fallback for legacy format
+                $contentstring = explode("', '", $contents);
+                $NewEntry = [];
+                for ($i = 0; $i < count($contentstring); $i++) {
+                    if (isset($contentstring[$i+1])) {
+                        $NewEntry[$contentstring[$i]] = $contentstring[++$i];
+                    }
+                }
+                $isJson = false;
             }
 
             foreach ($NewEntry as $title => $desc) {
 
-                //title
-                $title = str_replace("'", "", ($title));
-                $title = str_replace("[", "", ($title));
-                $title = substr($title,0,255);
+                // title cleanup
+                if (!$isJson) {
+                    $title = str_replace("'", "", ($title));
+                    $title = str_replace("[", "", ($title));
+                }
+                $title = trim($title);
+                $title = substr($title, 0, 255);
 
-                //Description
+                // Description cleanup
+                if (!$isJson) {
+                    $desc = str_replace("]", "", ($desc));
+                    $desc = str_replace("'", "", ($desc));
+                }
                 $desc = str_replace("\\n", " <br /> ", ($desc));
-                $desc = str_replace("]", "", ($desc));
+                $desc = str_replace("\n", " <br /> ", ($desc));
+                
                 $url_regex = '~(?:http|https|ftps)?://(?:www\.)?([a-z0-9.-]+\.[a-z0-9]{1,3}(?:/\S*)?)~i';
                 $desc = preg_replace($url_regex, '<a href="$0" rel="nofollow" target="_blank">$1</a>', $desc);
-                $desc = str_replace("'", "", ($desc));
 
                 $checkdata = $this->em->getRepository('App\Entity\Initiative')->findOneBy(array('title' => $title)); //existing initiatives
                 if(!is_null($checkdata)) {

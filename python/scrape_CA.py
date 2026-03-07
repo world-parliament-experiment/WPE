@@ -21,10 +21,11 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-output = []
+import json
 
-# URl needs to be dynamic
-import datetime
+# ... (keep existing imports and setup)
+
+output = {}
 
 # Read the XML file
 url = 'https://www.parl.ca/legisinfo/en/bills/xml'
@@ -42,10 +43,9 @@ for bill in bills:
     if title == '\n':
         title = desc
     desc = desc + "\n" + link 
-    output.append(title)
-    output.append(desc) 
+    output[title] = desc
 
-print(output)
+print(json.dumps(output))
 
 #print(topicno)
 #print(status)

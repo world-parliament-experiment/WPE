@@ -14,22 +14,26 @@ import ssl
 import sys
 #import numpy as np
 
+import json
+
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-refs = []
-output = []
+output = {}
 
 # URl needs to be dynamic
 import datetime
 today = datetime.datetime.now()
 stop = False
-start = 1350
+# Global ID 2615 is approx start of 2026
+start = 2600 
 errorcount = 0
+max_errors = 10
 rooturl = 'https://www.senado.gob.ar'
-while not stop:
+
+while not stop and len(output) < 20:
     url = rooturl+'/votaciones/detalleActa/'+str(start)
     try:
         html = urllib.request.urlopen(url, context=ctx).read()
@@ -37,7 +41,7 @@ while not stop:
         if e.getcode() == 404: # check the return code
             errorcount += 1
             start += 1
-            if errorcount == 5:
+            if errorcount >= max_errors:
                 stop = True
             continue
         raise # if other than 404, raise the error
@@ -49,62 +53,48 @@ while not stop:
     if not section:
         errorcount += 1
         start += 1
-        if errorcount == 5:
+        if errorcount >= max_errors:
             stop = True
         continue
-    
-    section = section.find_all('p')
-    if len(section) > 1:
-        topic = section[1].get_text().strip()
+
+    ps = section.find_all('p')
+    if len(ps) > 1:
+        topic = ps[1].get_text().strip()
         topic = topic.replace("\n", "")
         topic = topic.replace(u'\xa0', u' ')
         if len(str(topic)) < 4:
             errorcount += 1
             start += 1
-            if errorcount == 5:
-                stop = True
             continue
     else:
         errorcount += 1
         start += 1
-        if errorcount == 5:
-            stop = True
         continue
-    topic = topic.split(". ", 1)
-    topic = [t.strip() for t in topic if t.strip() != ""]
-    title = topic[0].replace(u'\xa0', u' ')
-    if len(topic) > 1:
-        id = topic[1]
-        id = " ".join(id.split())
-        if '(' not in id:
-            title = id + ' - ' + title
-        desc = topic[0] + "\n" + topic[1]
-        desc = " ".join(desc.split())
-        desc = desc.replace("( ", "")
+
+    topic_split = topic.split(". ", 1)
+    topic_clean = [t.strip() for t in topic_split if t.strip() != ""]
+    title = topic_clean[0].replace(u'\xa0', u' ')
+
+    if len(topic_clean) > 1:
+        doc_id = topic_clean[1]
+        doc_id = " ".join(doc_id.split())
+        if '(' not in doc_id:
+            title = doc_id + ' - ' + title
+        desc = topic_clean[0] + "\n" + topic_clean[1]
+        desc = " ".join(desc.split()).replace("( ", "")
 
         href = ''
-            
-        for links in section[1].findAll('a'):
-            href = rooturl + links.get('href')
-            desc = desc + "\n" + href
-        if not href:
-            errorcount += 1
-            start += 1
-            if errorcount == 5:
-                stop = True
-            continue
-    else:
-        errorcount += 1
-        start += 1
-        if errorcount == 5:
-            stop = True
-        continue
+        for links in ps[1].findAll('a'):
+            link_href = links.get('href')
+            if link_href:
+                href = rooturl + link_href
+                desc = desc + "\n" + href
 
-    output.append(title)
-    output.append(desc) 
+        if href:
+            output[title] = desc
+            # successful scrape
+            errorcount = 0
 
-    #successful scrape
-    errorcount = 0
     start += 1
 
-print(output)
+print(json.dumps(output))
