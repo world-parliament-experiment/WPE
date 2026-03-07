@@ -1,6 +1,23 @@
 version: '3'
 
 services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/apache/Dockerfile
+      args:
+        TIMEZONE: ${TIMEZONE:-Europe/Paris}
+    volumes:
+      - .:/var/www/wpe:rw
+      # Optional: log mapping
+      # - ./var/log/apache2:/var/log/apache2
+    ports:
+      - "8080:80"
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-15}&charset=utf8"
+    depends_on:
+      - database
+
 ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
@@ -11,8 +28,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-app}
     volumes:
       - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
 
 volumes:
