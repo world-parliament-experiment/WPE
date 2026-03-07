@@ -54,23 +54,6 @@
 
         <div class="mag-posts-content m-t-30 m-b-30 p-30 box-shadow">
             
-            {# MOBILE INTERLEAVED WIDGETS START #}
-            <div class="mobile-only">
-                <div class="single-sidebar-widget p-30 m-b-30">
-                    <div class="section-heading">
-                        <h5 class="text-dark">Global Democracy</h5>
-                    </div>
-                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
-                        <div class="wpe-sidebar-text">
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4; font-weight: bold;">Global Democracy is possible, if YOU take part in it!</p>
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {# MOBILE INTERLEAVED WIDGETS END #}
-
             <div class="feature-video-posts m-b-30">
                 <div class="section-heading">
                     <h5>Ongoing Votes &#8226; Decide Now</h5>
@@ -119,34 +102,75 @@
                 </div>
             </div>
 
-            {# MOBILE INTERLEAVED WIDGETS PART 2 #}
-            <div class="mobile-only">
-                <div class="single-sidebar-widget p-30 m-b-30">
-                    <div class="section-heading">
-                        <h5 class="text-dark">Abraham Lincoln</h5>
+            {# MOBILE & TABLET INTERLEAVED WIDGETS #}
+            <div class="mobile-tablet-only">
+                <div class="interleaved-widgets-container">
+                    {# L1: Global Democracy #}
+                    <div class="single-sidebar-widget p-30 m-b-30">
+                        <div class="section-heading">
+                            <h5 class="text-dark">Global Democracy</h5>
+                        </div>
+                        <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
+                            <div class="wpe-sidebar-text">
+                                <p class="text-white" style="font-size: 14px; line-height: 1.4; font-weight: bold;">Global Democracy is possible, if YOU take part in it!</p>
+                                <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
+                                <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/category/K_33_small.jpg') }}');">
-                        <blockquote style="margin-bottom: 0; background-color: transparent; border-left: 3px solid #ffffff;">
-                            <h6 class="quote-text text-white" style="font-size: 14px; line-height: 1.6; font-style: italic;">“... that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
-                            <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
-                        </blockquote>
+
+                    {# R1: Abraham Lincoln #}
+                    <div class="single-sidebar-widget p-30 m-b-30">
+                        <div class="section-heading">
+                            <h5 class="text-dark">Abraham Lincoln</h5>
+                        </div>
+                        <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/category/K_33_small.jpg') }}');">
+                            <blockquote style="margin-bottom: 0; background-color: transparent; border-left: 3px solid #ffffff;">
+                                <h6 class="quote-text text-white" style="font-size: 14px; line-height: 1.6; font-style: italic;">“... that government of the people, by the people, for the people, shall not perish from the earth.”</h6>
+                                <h6 class="quote-name" style="font-size: 12px; margin-top: 15px; font-weight: bold; color: #ed1c24;">ABRAHAM LINCOLN</h6>
+                            </blockquote>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="single-sidebar-widget p-30 m-b-30 w-categories-current">
-                    {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
-                </div>
+                    
+                    {# L2: Categories Current #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-categories-current">
+                        {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
+                    </div>
 
-                <div class="single-sidebar-widget p-30 m-b-30 w-categories-future">
-                    {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
-                </div>
+                    {# R2: Categories Future #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-categories-future">
+                        {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'future' })) }}
+                    </div>
 
-                <div class="single-sidebar-widget p-30 m-b-30 w-popular">
-                   {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
-                </div>
+                    {# L3: Most Popular #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-popular">
+                    {{ render(controller('App\\Controller\\WidgetController::MostPopularAction')) }}
+                    </div>
 
-                <div class="single-sidebar-widget p-30 m-b-30 w-comments">
-                    {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
+                    {# R3: Most Comments #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-comments">
+                        {{ render(controller('App\\Controller\\WidgetController::MostCommentsAction')) }}
+                    </div>
+
+                    {# L4: Most Views #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-views">
+                        {{ render(controller('App\\Controller\\WidgetController::MostViewsAction')) }}
+                    </div>
+
+                    {# R4: Most Delegations #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-delegations">
+                        {{ render(controller('App\\Controller\\WidgetController::mostDelegationsAction')) }}
+                    </div>
+
+                    {# L5: Most Citizens #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-citizens">
+                        {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
+                    </div>
+
+                    {# R5: Most Initiatives #}
+                    <div class="single-sidebar-widget p-30 m-b-30 w-initiatives">
+                        {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -223,12 +247,12 @@
         }
 
         /* Responsive Display Logic */
-        @media (min-width: 992px) {
-            .mobile-only { display: none !important; }
+        @media (min-width: 1200px) {
+            .mobile-tablet-only { display: none !important; }
             .desktop-only { display: block !important; }
         }
-        @media (max-width: 991px) {
-            .mobile-only { display: block !important; }
+        @media (max-width: 1199px) {
+            .mobile-tablet-only { display: block !important; }
             .desktop-only { display: none !important; }
             
             .post-sidebar-area { display: none !important; }
@@ -238,6 +262,32 @@
                 max-width: 100% !important;
                 width: 100% !important;
                 margin: 0 !important;
+            }
+        }
+        
+        /* Tablet Grid (768px - 1199px) */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .interleaved-widgets-container {
+                display: flex;
+                flex-wrap: wrap;
+                margin: 0 -15px;
+            }
+            .interleaved-widgets-container .single-sidebar-widget {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding: 15px !important;
+            }
+        }
+
+        /* Mobile Grid (< 768px) */
+        @media (max-width: 767px) {
+            .mag-posts-content {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+            .interleaved-widgets-container .single-sidebar-widget {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
             }
         }
     </style>
