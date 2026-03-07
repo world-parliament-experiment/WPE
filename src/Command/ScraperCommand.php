@@ -29,14 +29,15 @@ class ScraperCommand extends Command
     protected static $_explchar = "', '";
     private $SocialmediaPoster;
     private $router;
+    private $projectDir;
 
-    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $router, SocialmediaPoster $SocialmediaPoster)
+    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $router, SocialmediaPoster $SocialmediaPoster, string $projectDir)
     {
         parent::__construct();
         $this->em = $em;
         $this->SocialmediaPoster = $SocialmediaPoster;
         $this->router = $router;
-
+        $this->projectDir = $projectDir;
     }
 
     protected function configure()
@@ -110,7 +111,7 @@ class ScraperCommand extends Command
 
         if ($input->getOption('update') === true) {
 
-            $command = '/usr/bin/python3 '.dirname(__FILE__, 3).'/python/scrape_'.$country.'.py';
+            $command = '/usr/bin/python3 ' . $this->projectDir . '/python/scrape_' . $country . '.py';
             $process = Process::fromShellCommandline($command);
             //var_dump($process->getCommandLine());
             $process->setTimeout(600);
