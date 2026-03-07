@@ -212,40 +212,6 @@
     </section>
 
     <style>
-        /* Sidebar styling for white text on overlay */
-        .widget-content-bg.bg-overlay,
-        .widget-content-bg.bg-overlay p,
-        .widget-content-bg.bg-overlay a,
-        .widget-content-bg.bg-overlay span,
-        .widget-content-bg.bg-overlay div,
-        .widget-content-bg.bg-overlay i,
-        .widget-content-bg.bg-overlay h6 {
-            color: #ffffff !important;
-        }
-        
-        /* Ensure overlay doesn't cover content background */
-        .bg-overlay {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Background Images Assignment */
-        .w-categories-current .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_27_small.jpg') }}'); }
-        .w-categories-future .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_26_small.jpg') }}'); }
-        .w-popular .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_28_small.jpg') }}'); }
-        .w-views .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_29_small.jpg') }}'); }
-        .w-citizens .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_30_small.jpg') }}'); }
-        .w-comments .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_31_small.jpg') }}'); }
-        .w-delegations .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_32_small.jpg') }}'); }
-        .w-initiatives .widget-content-bg { background-image: url('{{ asset('assets/img/category/K_34_small.jpg') }}'); }
-
-        .widget-content-bg {
-            background-size: cover;
-            background-position: center;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
         /* Responsive Display Logic */
         @media (min-width: 1200px) {
             .mobile-tablet-only { display: none !important; }

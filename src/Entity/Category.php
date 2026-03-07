@@ -170,6 +170,9 @@ class Category
      * @return string
      */
     public function getImageLarge(){
+        if ($this->getType() == CategoryEnum::TYPE_NATIONAL && $this->getCountry()) {
+            return '/assets/img/category/' . strtoupper($this->getCountry()) . '_large.jpg';
+        }
         return '/assets/img/category/K_' . $this->getId() . '_large.jpg';
     }
 
@@ -177,6 +180,9 @@ class Category
      * @return string
      */
     public function getImageSmall(){
+        if ($this->getType() == CategoryEnum::TYPE_NATIONAL && $this->getCountry()) {
+            return '/assets/img/category/' . strtoupper($this->getCountry()) . '_small.jpg';
+        }
         return '/assets/img/category/K_' . $this->getId() . '_small.jpg';
     }
 

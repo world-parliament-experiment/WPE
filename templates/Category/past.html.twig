@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 
-    {{ include ('Widget/_breadcrumb.html.twig', {title: alias|capitalize, background: "/assets/img/header/" ~ type ~ "_large.jpg"}, with_context = false) }}
+    {{ include ('Widget/_breadcrumb.html.twig', {title: alias|capitalize, background: category is defined and category ? asset(category.imageLarge) : "/assets/img/header/" ~ type ~ "_large.jpg"}, with_context = false) }}
 
     {{ apy_breadcrumb_trail_render() }}
 
