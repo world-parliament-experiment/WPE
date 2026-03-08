@@ -3,6 +3,9 @@ import json
 import requests
 import datetime
 import ssl
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
@@ -14,34 +17,49 @@ output = {}
 today = datetime.datetime.now()
 three_months_ago = today - datetime.timedelta(days=90)
 
-# Spain Congreso AJAX endpoint
-base_url = "https://www.congreso.es/busqueda-de-iniciativas"
-params_base = {
-    "p_p_id": "iniciativas",
-    "p_p_lifecycle": "2",
-    "p_p_state": "normal",
-    "p_p_mode": "view",
-    "p_p_resource_id": "filtrarListado",
-    "p_p_cacheability": "cacheLevelPage",
-    "_iniciativas_legislatura": "15",
-    "_iniciativas_indice": "1",
-    "_iniciativas_resultadosPorPagina": "50",
-    "_iniciativas_ordenarPor": "f_presentacion",
-    "_iniciativas_sentidoOrden": "DESC",
-    "_iniciativas_texto": today.year
-}
-
 header = {
-    "User-Agent": "Mozilla/5.0"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 }
 
-# Types: 121 (Proyecto de Ley), 122 (Proposicion de Ley)
-for type_id in ["121", "122"]:
-    params = params_base.copy()
-    params["_iniciativas_tipoIniciativa"] = type_id
+# Sources and their corresponding CINI filters for Spanish Congress
+# 121.CINI. = Proyectos de Ley (Government bills)
+# (proposicion+adj2+ley).tipo. = Proposiciones de Ley (Member bills)
+# 181.CINI. = Preguntas con respuesta oral
+# 184.CINI. = Preguntas con respuesta escrita
+sources = [
+    {
+        "url": "https://www.congreso.es/es/proyectos-de-ley",
+        "cini": "121.CINI."
+    },
+    {
+        "url": "https://www.congreso.es/es/proposiciones-de-ley",
+        "cini": "(proposicion+adj2+ley).tipo."
+    },
+    {
+        "url": "https://www.congreso.es/es/busqueda-de-iniciativas",
+        "cini": "181.CINI."
+    },
+    {
+        "url": "https://www.congreso.es/es/busqueda-de-iniciativas",
+        "cini": "184.CINI."
+    }
+]
+
+ajax_base = "?p_p_id=iniciativas&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=filtrarListado&p_p_cacheability=cacheLevelPage"
+
+for src in sources:
+    ajax_url = src["url"] + ajax_base
+    payload = {
+        "_iniciativas_legislatura": "15",
+        "_iniciativas_estadoTramitacion": "",
+        "_iniciativas_faseTramitacion": "",
+        "_iniciativas_cini": src["cini"],
+        "_iniciativas_tipoLlamada": "T",
+        "_iniciativas_paginaActual": "1"
+    }
     
     try:
-        response = requests.get(base_url, params=params, headers=header, timeout=15)
+        response = requests.post(ajax_url, data=payload, headers=header, timeout=15, verify=False)
         if response.status_code == 200:
             data = response.json()
             initiatives = data.get('lista_iniciativas', {})
@@ -59,23 +77,33 @@ for type_id in ["121", "122"]:
                         if not title_raw:
                             continue
                         
-                        # Bill reference
                         bill_ref = item.get('id_iniciativa', '')
+                        legislatura = item.get('legislatura', 'XV')
+                        
+                        # Author extraction
+                        autores_obj = item.get('autores', {})
+                        autores_list = []
+                        if isinstance(autores_obj, dict):
+                            for k in autores_obj:
+                                nombre = autores_obj[k].get('nombre', '')
+                                if nombre:
+                                    autores_list.append(nombre)
+                        autor_str = ", ".join(autores_list) if autores_list else "N/A"
                         
                         # Create descriptive title
                         title = f"{bill_ref}: {title_raw}"
                         if len(title) > 250:
                             title = title[:247] + "..."
                         
-                        # Public link
-                        # Format: https://www.congreso.es/busqueda-de-iniciativas?p_p_id=iniciativas&p_p_lifecycle=0&p_p_mode=mostrarDetalle&_iniciativas_expediente=121/000001
-                        link = f"https://www.congreso.es/busqueda-de-iniciativas?p_p_id=iniciativas&p_p_lifecycle=0&p_p_mode=mostrarDetalle&_iniciativas_expediente={bill_ref}"
+                        # Target URL exactly as requested:
+                        link = f"https://www.congreso.es/es/busqueda-de-iniciativas?p_p_id=iniciativas&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_iniciativas_mode=mostrarDetalle&_iniciativas_legislatura={legislatura}&_iniciativas_id={bill_ref}"
                         
-                        desc = f"{title_raw}\n\nAutor: {item.get('autor', 'N/A')}\nFecha: {date_str}\nSource: {link}"
+                        # Using "Documentation" label as requested
+                        desc = f"{title_raw}\n\nAutor: {autor_str}\nFecha: {date_str}\nDocumentation: {link}"
                         output[title] = desc
                 except Exception:
                     continue
     except Exception:
         pass
 
-print(json.dumps(output))
+print(json.dumps(output, ensure_ascii=False))

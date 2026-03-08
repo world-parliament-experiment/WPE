@@ -67,7 +67,19 @@ class ScraperCommand extends Command
     {
         $country = $input->getArgument('country');
         $user = $this->em->getRepository('App\Entity\User')->findOneBy(array('username' => $input->getArgument('user')));
-        $category = $this->em->getRepository('App\Entity\Category')->findOneBy(array('name' => $input->getArgument('category')));
+        $categoryName = $input->getArgument('category');
+        $category = $this->em->getRepository('App\Entity\Category')->findOneBy(array('name' => $categoryName));
+
+        if (!$user) {
+            $output->writeln('<error>User not found: ' . $input->getArgument('user') . '</error>');
+            return Command::FAILURE;
+        }
+
+        if (!$category) {
+            $output->writeln('<error>Category not found: ' . $categoryName . '</error>');
+            return Command::FAILURE;
+        }
+
         $explchar = self::$_explchar;
         $slugger = new AsciiSlugger();
 
@@ -149,7 +161,7 @@ class ScraperCommand extends Command
                     $title = str_replace("[", "", ($title));
                 }
                 $title = trim($title);
-                $title = substr($title, 0, 255);
+                $title = mb_substr($title, 0, 255);
 
                 // Description cleanup
                 if (!$isJson) {
