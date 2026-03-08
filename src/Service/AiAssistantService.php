@@ -40,18 +40,23 @@ class AiAssistantService
     public function draftProposal(string $userPrompt, string $personaKey = 'neutral'): string
     {
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
-        $systemPrompt = $persona['system_prompt'];
+        $systemPrompt = $persona['system_prompt'] . " IMPORTANT: You MUST respond in the same language as the user's request. Keep the response concise (maximum 500 words) to fit the form requirements.";
 
         // Gemini API endpoint
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $this->apiKey;
 
         $response = $this->httpClient->request('POST', $url, [
             'json' => [
+                'system_instruction' => [
+                    'parts' => [
+                        ['text' => $systemPrompt]
+                    ]
+                ],
                 'contents' => [
                     [
                         'role' => 'user',
                         'parts' => [
-                            ['text' => "System instruction: " . $systemPrompt . "\n\nUser request: " . $userPrompt]
+                            ['text' => $userPrompt]
                         ]
                     ]
                 ],
@@ -59,7 +64,7 @@ class AiAssistantService
                     'temperature' => 0.7,
                     'topK' => 40,
                     'topP' => 0.95,
-                    'maxOutputTokens' => 2048,
+                    'maxOutputTokens' => 800,
                 ]
             ]
         ]);
