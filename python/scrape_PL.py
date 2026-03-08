@@ -4,8 +4,12 @@ import requests
 import datetime
 import ssl
 import sys
+import urllib3
 
-# Ignore SSL certificate errors
+# Suppress InsecureRequestWarning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Ignore SSL certificate errors for stdlib if needed
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
@@ -28,7 +32,7 @@ header = {
     "User-Agent": "Mozilla/5.0"
 }
 
-response = requests.get(url, params=params, headers=header, timeout=15)
+response = requests.get(url, params=params, headers=header, timeout=15, verify=False)
 if response.status_code == 200:
     data = response.json()
     # The list is usually chronological by receipt, but we check just in case
