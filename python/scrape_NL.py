@@ -19,6 +19,7 @@ three_months_ago = today - datetime.timedelta(days=90)
 url = "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak"
 params = {
     "$filter": "Soort eq 'Wetgeving' or Soort eq 'Initiatiefwetgeving'",
+    "$expand": "Kamerstukdossier",
     "$orderby": "GestartOp desc",
     "$top": 50
 }
@@ -58,8 +59,14 @@ try:
                     desc = full_title if full_title else title
                     
                     # Link to the case on the Tweede Kamer website
-                    # Format is usually based on the bill number
-                    link = f"https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?id={item.get('Id')}"
+                    # New format uses the Kamerstukdossier number if available
+                    dossier = item.get('Kamerstukdossier', [])
+                    if dossier and isinstance(dossier, list) and len(dossier) > 0:
+                        bill_nr_official = dossier[0].get('Nummer')
+                        link = f"https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel%3A{bill_nr_official}"
+                    else:
+                        # Fallback to Nummer (e.g. 2025Z22479) which works with id parameter
+                        link = f"https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?id={item.get('Nummer')}"
                     
                     desc = f"{desc}\nSource: {link}"
                     output[title] = desc
