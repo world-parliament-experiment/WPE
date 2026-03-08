@@ -16,6 +16,10 @@ This is a modern Symfony PHP project. Use this context for all code generation a
 ## Terminal Instructions
 - Always run `php bin/console cache:clear` after changing configuration or translations.
 - Use `php bin/console make:*` commands for generating boilerplate.
+- **Scraper:** Use `php bin/console wpe:scrape <country_code> <user> <category>`. 
+  - Standard user for scraping: `borchert`.
+  - Common categories: `Australia`, `Brazil`, `Canada`, `France`, `United Kingdom`, `Indonesia`, `Italy`, `Netherlands`, `Norway`, `Poland`, `Sweden`, `Thailand`, `United States`, `Human rights`, `Security and Conflict Resolution`.
+  - Flags: `--delete` (removes old initiatives in category) and `--update` (runs the script).
 
 ## "Vibe Coding" Rules
 - Be concise. Don't explain basic PHP concepts unless asked.

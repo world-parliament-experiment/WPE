@@ -20,6 +20,31 @@
                         <h5>Create a new Proposal</h5>
                     </div>
 
+                    <div class="card mb-4 bg-light border-info">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="fas fa-robot text-info"></i> AI Drafting Assistant</h6>
+                            <p class="small text-muted">Choose a political persona and provide a topic or bullet points. The AI will draft a proposal for you.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <select id="ai-persona-select" class="form-control">
+                                            <option value="neutral">Neutral Drafter</option>
+                                            <option value="conservative">Traditionalist</option>
+                                            <option value="environmentalist">Eco-Steward</option>
+                                            <option value="socialist">Social Equity Expert</option>
+                                            <option value="libertarian">Free-Market Specialist</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" id="btn-ai-draft" class="btn btn-info btn-block">
+                                        <i class="fas fa-magic"></i> Generate Draft
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{ form_start(form) }}
                     {{ form_row(form.category) }}
                     {{ form_row(form.title) }}
@@ -45,6 +70,52 @@
 {% endblock body %}
 {% block javascripts %}
     {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('#btn-ai-draft').on('click', function() {
+                var prompt = $('#app_bundle_initiative_form_title').val();
+                var persona = $('#ai-persona-select').val();
+                
+                if (!prompt) {
+                    alert('Please enter a title or brief topic first.');
+                    return;
+                }
+
+                var $btn = $(this);
+                var originalHtml = $btn.html();
+                $btn.html('<i class="fas fa-spinner fa-spin"></i> Generating...').prop('disabled', true);
+
+                $.ajax({
+                    url: '{{ path("user_ai_draft") }}',
+                    method: 'POST',
+                    data: JSON.stringify({
+                        prompt: prompt,
+                        persona: persona
+                    }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.draft) {
+                            // Convert newlines to <p> tags for CKEditor
+                            var htmlDraft = response.draft.replace(/\n/g, '<br>');
+                            CKEDITOR.instances['app_bundle_initiative_form_description'].setData(htmlDraft);
+                        } else {
+                            alert('AI returned an empty draft.');
+                        }
+                    },
+                    error: function(xhr) {
+                        var error = 'Error calling AI Assistant.';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            error = xhr.responseJSON.error;
+                        }
+                        alert(error);
+                    },
+                    complete: function() {
+                        $btn.html(originalHtml).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
 {% block stylesheets %}
     {{ parent() }}
