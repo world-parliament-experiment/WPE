@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\Voting;
 use App\Entity\Category;
+use App\Enum\CategoryEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 
@@ -38,8 +39,12 @@ class InitiativeUserForm extends AbstractType
         $country = $user->getCountry();
             
         $categories = $repoCategory->createQueryBuilder("q")
-            ->where("length(q.description) > 2 OR q.description = :country")
+            ->where("q.type = :global")
+            ->orWhere("q.type = :national AND q.country = :country")
+            ->setParameter("global", CategoryEnum::TYPE_GLOBAL)
+            ->setParameter("national", CategoryEnum::TYPE_NATIONAL)
             ->setParameter("country", $country)
+            ->orderBy("q.name", "ASC")
             ->getQuery()
             ->getResult();
 
