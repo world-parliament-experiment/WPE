@@ -269,6 +269,16 @@ class User implements UserInterface
      */
     protected $lastLogin;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    protected $isAi = false;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $aiPersona;
+
     public function __construct()
     {
         // parent::__construct();
@@ -704,6 +714,38 @@ class User implements UserInterface
     public function generateToken()
     {
         return rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAi(): bool
+    {
+        return $this->isAi;
+    }
+
+    /**
+     * @param bool $isAi
+     */
+    public function setIsAi(bool $isAi): void
+    {
+        $this->isAi = $isAi;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAiPersona(): ?string
+    {
+        return $this->aiPersona;
+    }
+
+    /**
+     * @param string|null $aiPersona
+     */
+    public function setAiPersona(?string $aiPersona): void
+    {
+        $this->aiPersona = $aiPersona;
     }
 
     public function __toString() 

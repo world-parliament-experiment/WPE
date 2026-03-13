@@ -41,9 +41,11 @@ class TestAiCommand extends Command
         $io->info(sprintf('Prompt: %s', $prompt));
 
         try {
-            $draft = $this->aiAssistant->draftProposal($prompt, $persona);
-            $io->section('Generated Draft:');
-            $io->writeln($draft);
+            $draft = $this->aiAssistant->draftFullInitiative($prompt, $persona);
+            $io->section('Generated Title:');
+            $io->writeln($draft['title']);
+            $io->section('Generated Content:');
+            $io->writeln($draft['description']);
         } catch (\Exception $e) {
             $io->error('Error calling AI: ' . $e->getMessage());
             return Command::FAILURE;

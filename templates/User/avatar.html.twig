@@ -11,26 +11,133 @@
     <div class="wpe-content-area">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-12">
+                <div class="col-12 col-lg-10">
                     <div class="login-content bg-white p-30 box-shadow">
-                        <!-- Section Title -->
+                        
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs mb-4" id="avatarTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="dicebear-tab" data-toggle="tab" href="#dicebear" role="tab">
+                                    <i class="fa fa-magic"></i> AI Generator
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="upload-tab" data-toggle="tab" href="#upload" role="tab">
+                                    <i class="fa fa-camera"></i> Photo Upload
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="legacy-tab" data-toggle="tab" href="#legacy" role="tab">
+                                    <i class="fa fa-pencil"></i> Legacy Editor
+                                </a>
+                            </li>
+                        </ul>
 
-                        <div class="section-heading">
-                            <h5>Edit Your Avatar!</h5>
-                        </div>
+                        <!-- Tab content -->
+                        <div class="tab-content" id="avatarTabContent">
+                            
+                            <!-- Tab: DiceBear Generator -->
+                            <div class="tab-pane fade show active" id="dicebear" role="tabpanel">
+                                <div class="section-heading">
+                                    <h5>Generate Your Avatar</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="avatarStyle">Style</label>
+                                            <select id="avatarStyle" class="form-control">
+                                                <option value="identicon">Identicon (Geometric)</option>
+                                                <option value="bottts">Bottts (Robots)</option>
+                                                <option value="lorelei">Lorelei (Human)</option>
+                                                <option value="avataaars">Avataaars (Modern)</option>
+                                                <option value="pixel-art">Pixel Art</option>
+                                                <option value="adventurer">Adventurer</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="avatarSeed">Seed (Type anything for a unique look)</label>
+                                            <div class="input-group">
+                                                <input type="text" id="avatarSeed" class="form-control" placeholder="Random seed..." value="{{ app.user.username }}">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-secondary" type="button" id="randomizeBtn">
+                                                        <i class="fa fa-random"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button id="saveDiceBearBtn" class="btn btn-primary btn-block mt-3">
+                                            <i class="fa fa-save"></i> Save This Avatar
+                                        </button>
+                                        <div id="dicebearStatus" class="mt-2 status-msg" style="display:none;"></div>
+                                    </div>
+                                    <div class="col-md-6 text-center">
+                                        <label>Preview</label>
+                                        <div class="p-3 border rounded bg-light">
+                                            <img id="dicebearPreview" src="" alt="Avatar Preview" style="width: 200px; height: 200px; background: white;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div id="svgAvatars"></div>
+                            <!-- Tab: Photo Upload -->
+                            <div class="tab-pane fade" id="upload" role="tabpanel">
+                                <div class="section-heading">
+                                    <h5>Upload Your Photo</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <div class="form-group">
+                                            <label for="uploadFile">Select Image File</label>
+                                            <input type="file" id="uploadFile" class="form-control-file" accept="image/*">
+                                        </div>
+                                        <div id="cropperWrapper" style="display:none; max-width: 100%;">
+                                            <div id="cropperContainer"></div>
+                                        </div>
+                                        <button id="saveCropBtn" class="btn btn-primary btn-block mt-3" style="display:none;">
+                                            <i class="fa fa-crop"></i> Crop & Save Avatar
+                                        </button>
+                                        <div id="uploadStatus" class="mt-2 status-msg" style="display:none;"></div>
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <div id="cropPreview" class="border rounded bg-light p-2" style="display:none;">
+                                            <label>Final Preview</label>
+                                            <div id="resultPreview"></div>
+                                        </div>
+                                        <div id="uploadPlaceholder" class="p-5 border rounded bg-light text-muted">
+                                            <i class="fa fa-image fa-4x mb-3"></i>
+                                            <p>Select a photo to start cropping</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab: Legacy Editor -->
+                            <div class="tab-pane fade" id="legacy" role="tabpanel">
+                                <div class="section-heading">
+                                    <h5>Legacy Avatar Editor</h5>
+                                    <small>The classic manual designer.</small>
+                                </div>
+                                <div id="svgAvatars"></div>
+                            </div>
+
+                        </div> <!-- /tab-content -->
 
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
 {% endblock body %}
+
 {% block javascripts %}
     {{ parent() }}
+    
+    {# Croppie (For Photo Upload) #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+
+    {# Legacy Scripts #}
     <script type="text/javascript" src="{{ asset('/assets/plugins/svgavatars/js/tools/svg.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/assets/plugins/svgavatars/js/tools/jquery.scrollbar.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/assets/plugins/svgavatars/js/tools/spectrum.min.js') }}"></script>
@@ -40,9 +147,126 @@
     <script type="text/javascript" src="{{ asset('/assets/plugins/svgavatars/js/svgavatars.defaults.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/assets/plugins/svgavatars/js/languages/svgavatars.en.js') }}"></script>
     <script type="text/javascript" src="{{ asset('/assets/plugins/svgavatars/js/svgavatars.core.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            
+            // --- Common Save Logic ---
+            function saveToServer(base64data, $btn, $status) {
+                $.ajax({
+                    url: Routing.generate('user_avatar_save'),
+                    method: 'POST',
+                    data: {
+                        filename: 'avatar.png',
+                        imgdata: base64data
+                    },
+                    success: function(response) {
+                        if (response === 'saved') {
+                            $status.removeClass('text-danger').addClass('text-success')
+                                .text('Avatar saved successfully!').show();
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            $status.removeClass('text-success').addClass('text-danger')
+                                .text('Error: ' + response).show();
+                            $btn.prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        $status.removeClass('text-success').addClass('text-danger')
+                            .text('Network error occurred.').show();
+                        $btn.prop('disabled', false);
+                    }
+                });
+            }
+
+            // --- DiceBear Logic ---
+            function updateDiceBearPreview() {
+                var style = $('#avatarStyle').val();
+                var seed = encodeURIComponent($('#avatarSeed').val());
+                var url = 'https://api.dicebear.com/7.x/' + style + '/svg?seed=' + seed;
+                $('#dicebearPreview').attr('src', url);
+            }
+
+            $('#avatarStyle, #avatarSeed').on('input change', updateDiceBearPreview);
+            $('#randomizeBtn').on('click', function() {
+                $('#avatarSeed').val(Math.random().toString(36).substring(7));
+                updateDiceBearPreview();
+            });
+
+            $('#saveDiceBearBtn').on('click', function() {
+                var $btn = $(this);
+                var style = $('#avatarStyle').val();
+                var seed = encodeURIComponent($('#avatarSeed').val());
+                var pngUrl = 'https://api.dicebear.com/7.x/' + style + '/png?seed=' + seed + '&width=256&height=256';
+                
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Saving...');
+                $('#dicebearStatus').hide();
+
+                fetch(pngUrl)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        var reader = new FileReader();
+                        reader.onloadend = function() {
+                            saveToServer(reader.result, $btn, $('#dicebearStatus'));
+                        }
+                        reader.readAsDataURL(blob);
+                    });
+            });
+
+            // --- Croppie / Upload Logic ---
+            var $uploadCrop = $('#cropperContainer').croppie({
+                enableExif: true,
+                viewport: { width: 200, height: 200, type: 'square' },
+                boundary: { width: 300, height: 300 }
+            });
+
+            function readFile(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#uploadPlaceholder').hide();
+                        $('#cropperWrapper, #saveCropBtn').show();
+                        $uploadCrop.croppie('bind', {
+                            url: e.target.result
+                        });
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $('#uploadFile').on('change', function () { readFile(this); });
+
+            $('#saveCropBtn').on('click', function () {
+                var $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Saving...');
+                $('#uploadStatus').hide();
+
+                $uploadCrop.croppie('result', {
+                    type: 'base64',
+                    size: 'viewport',
+                    format: 'png'
+                }).then(function (resp) {
+                    saveToServer(resp, $btn, $('#uploadStatus'));
+                });
+            });
+
+            // Initial DiceBear load
+            updateDiceBearPreview();
+        });
+    </script>
 {% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('/assets/plugins/svgavatars/css/spectrum.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('/assets/plugins/svgavatars/css/svgavatars.css') }}"/>
+    <style>
+        .nav-tabs .nav-link { font-weight: bold; padding: 10px 20px; }
+        .section-heading h5 { margin-bottom: 10px; }
+        .status-msg { font-weight: bold; font-size: 0.9em; }
+        #cropperContainer { margin: 0 auto; }
+        .tab-pane { padding-top: 20px; }
+    </style>
 {% endblock %}

@@ -132,6 +132,22 @@ class Initiative
     protected $duration;
 
     /**
+     *
+     * @ORM\Column(type="integer", options={"default": 0})
+     * @JMSSerializer\Expose
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $liked = 0;
+
+    /**
+     *
+     * @ORM\Column(type="integer", options={"default": 0})
+     * @JMSSerializer\Expose
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $disliked = 0;
+
+    /**
      * @var User $createdBy
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
@@ -388,6 +404,38 @@ class Initiative
     }
 
     /**
+     * @return mixed
+     */
+    public function getLiked()
+    {
+        return $this->liked;
+    }
+
+    /**
+     * @param mixed $liked
+     */
+    public function setLiked($liked)
+    {
+        $this->liked = $liked;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDisliked()
+    {
+        return $this->disliked;
+    }
+
+    /**
+     * @param mixed $disliked
+     */
+    public function setDisliked($disliked)
+    {
+        $this->disliked = $disliked;
+    }
+
+    /**
      * @return User
      */
     public function getCreatedBy()
@@ -461,7 +509,11 @@ class Initiative
 
     public function setSlug(SluggerInterface $slugger): self
     {
-        $this->slug = $slugger->slug($this->title);
+        $this->slug = (string) $slugger->slug($this->title)->lower();
+        
+        if (empty($this->slug)) {
+            $this->slug = 'proposal-' . bin2hex(random_bytes(4));
+        }
 
         return $this;
     }
