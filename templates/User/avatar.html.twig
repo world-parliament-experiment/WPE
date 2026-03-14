@@ -13,6 +13,21 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-10">
                     <div class="login-content bg-white p-30 box-shadow">
+
+                        <!-- Current Avatar Display -->
+                        <div class="row mb-4 align-items-center pb-3 border-bottom">
+                            <div class="col-md-3 text-center">
+                                <img src="{{ asset('/assets/img/avatar/' ~ (image ? image.path : 'default.png')) }}" 
+                                     alt="Current Avatar" 
+                                     class="img-thumbnail rounded-circle" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            </div>
+                            <div class="col-md-9">
+                                <h4>{{ app.user.firstname }} {{ app.user.lastname }}</h4>
+                                <p class="text-muted mb-0">Current Profile Identity</p>
+                                <small class="text-info"><i class="fa fa-info-circle"></i> Choose a new style below to update your look.</small>
+                            </div>
+                        </div>
                         
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs mb-4" id="avatarTabs" role="tablist">
@@ -154,7 +169,7 @@
             // --- Common Save Logic ---
             function saveToServer(base64data, $btn, $status) {
                 $.ajax({
-                    url: Routing.generate('user_avatar_save'),
+                    url: '/user/avatar/save',
                     method: 'POST',
                     data: {
                         filename: 'avatar.png',

@@ -37,6 +37,19 @@ class AiAssistantService
         return $this->personas;
     }
 
+    public function inventTopic(string $personaKey, string $categoryName): string
+    {
+        $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
+        $prompt = sprintf(
+            "You are %s. Think of one pressing global issue or a legislative proposal that you would want to introduce in the World Parliament under the category '%s'.
+            Respond with ONLY the topic title (max 10 words).",
+            $persona['name'],
+            $categoryName
+        );
+
+        return trim($this->generateContent($prompt, $personaKey));
+    }
+
     public function draftFullInitiative(string $topic, string $personaKey = 'neutral'): array
     {
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];

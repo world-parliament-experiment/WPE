@@ -529,7 +529,11 @@ class UserController extends BaseController
      */
     public function avatarEditAction(Request $request)
     {
+        $em = $this->managerRegistry->getManager();
+        $image = $em->getRepository(User::class)->getUserAvatarImage($this->getUser());
+
         return $this->render('User/avatar.html.twig', array(
+            'image' => $image
         ));
     }
 

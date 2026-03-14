@@ -43,8 +43,8 @@ class AiAgentActionCommand extends Command
             ->setDescription('Triggers AI agents to perform autonomous actions (drafting, commenting, replying, or reacting)')
             ->addArgument('action', InputArgument::REQUIRED, 'Action to perform: "draft", "comment", "reply", or "react"')
             ->addOption('persona', 'p', InputOption::VALUE_REQUIRED, 'Target a specific persona (if omitted, a random AI agent is chosen)')
-            ->addOption('topic', 't', InputOption::VALUE_REQUIRED, 'Topic for drafting (required for "draft")')
-            ->addOption('category', 'c', InputOption::VALUE_REQUIRED, 'Category name for drafting (must be Type 0 / Global)')
+            ->addOption('topic', 't', InputOption::VALUE_REQUIRED, 'Topic for drafting (if omitted, the agent will invent one)')
+            ->addOption('category', 'c', InputOption::VALUE_REQUIRED, 'Category name for drafting (if omitted, a random Type 0 category is chosen)')
         ;
     }
 
@@ -92,29 +92,43 @@ class AiAgentActionCommand extends Command
     {
         $topic = $input->getOption('topic');
         $categoryName = $input->getOption('category');
+        $category = null;
 
-        if (!$topic || !$categoryName) {
-            $io->error('Drafting requires --topic and --category');
-            return Command::FAILURE;
+        // 1. Resolve Category
+        if ($categoryName) {
+            $category = $this->entityManager->getRepository(Category::class)->findOneBy(['name' => $categoryName]);
+            if (!$category) {
+                $io->error(sprintf('Category "%s" not found.', $categoryName));
+                return Command::FAILURE;
+            }
+        } else {
+            // Pick a random Global (Type 0) category
+            $globalCategories = $this->entityManager->getRepository(Category::class)->findBy(['type' => 0]);
+            if (empty($globalCategories)) {
+                $io->error('No Global (Type 0) categories found in database.');
+                return Command::FAILURE;
+            }
+            $category = $globalCategories[array_rand($globalCategories)];
         }
 
-        $category = $this->entityManager->getRepository(Category::class)->findOneBy(['name' => $categoryName]);
-        if (!$category) {
-            $io->error(sprintf('Category "%s" not found.', $categoryName));
-            return Command::FAILURE;
+        // 2. Resolve Topic (Autonomous Invention if missing)
+        if (!$topic) {
+            $io->info('No topic provided. Asking agent to invent one...');
+            try {
+                $topic = $this->aiAssistant->inventTopic($agent->getAiPersona(), $category->getName());
+                $io->info(sprintf('Agent invented topic: "%s"', $topic));
+            } catch (\Exception $e) {
+                $io->error('Failed to invent topic: ' . $e->getMessage());
+                return Command::FAILURE;
+            }
         }
 
-        // Validate Type 0 (Global) - assuming Type 0 corresponds to a specific check
-        // Looking at common patterns, Type 0 usually means global/platform level.
         if ($category->getType() !== 0) {
-            $io->warning('Requested category is not Type 0 (Global). AI agents are currently restricted to Global level.');
-            // We proceed if the user really wants it, or we could enforce it.
-            // For now, let's enforce as per instructions.
             $io->error('AI agents can only draft in Type 0 categories.');
             return Command::FAILURE;
         }
 
-        $io->info(sprintf('Drafting proposal about "%s" in category "%s"...', $topic, $categoryName));
+        $io->info(sprintf('Drafting proposal about "%s" in category "%s"...', $topic, $category->getName()));
 
         try {
             $draft = $this->aiAssistant->draftFullInitiative($topic, $agent->getAiPersona());
