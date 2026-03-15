@@ -11,19 +11,8 @@ class UserEncryptionService
 
     public function __construct(string $userEncryptSecret)
     {
-        // Final diagnostic check.
-        $length = strlen($userEncryptSecret);
-        $firstChar = substr($userEncryptSecret, 0, 1);
-        $lastChar = substr($userEncryptSecret, -1);
-
-        throw new \InvalidArgumentException(
-            "DIAGNOSTIC: Please check your server's environment variable for USER_ENCRYPT_SECRET. " .
-            "The service received a string with Length: $length, First char: '$firstChar', Last char: '$lastChar'. " .
-            "Compare this with your actual secret to find the discrepancy (e.g., a typo or special characters being misinterpreted by the server config)."
-        );
-
         if (empty($userEncryptSecret)) {
-            throw new \InvalidArgumentException('The USER_ENCRYPT_SECRET environment variable is empty or not loaded correctly in your web server environment. Please check your server configuration (e.g., Apache SetEnv) and ensure the service has been restarted.');
+            throw new \InvalidArgumentException('The USER_ENCRYPT_SECRET environment variable is empty or not loaded correctly in your web server environment.');
         }
         $this->secret = hash('sha256', $userEncryptSecret);
     }
@@ -66,7 +55,7 @@ class UserEncryptionService
         $decrypted = openssl_decrypt($encrypted_data, $this->method, $this->secret, 0, $iv);
         
         if ($decrypted === false) {
-            throw new Exception("Could not decrypt user data. Key hash used: " . $this->secret);
+            throw new Exception("Could not decrypt user data.");
         }
         
         return $decrypted;
