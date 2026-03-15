@@ -11,6 +11,9 @@ class UserEncryptionService
 
     public function __construct(string $userEncryptSecret)
     {
+        if (empty($userEncryptSecret)) {
+            throw new \InvalidArgumentException('The USER_ENCRYPT_SECRET environment variable is empty or not loaded correctly in your web server environment. Please check your server configuration (e.g., Apache SetEnv) and ensure the service has been restarted.');
+        }
         $this->secret = hash('sha256', $userEncryptSecret);
     }
 
@@ -52,7 +55,7 @@ class UserEncryptionService
         $decrypted = openssl_decrypt($encrypted_data, $this->method, $this->secret, 0, $iv);
         
         if ($decrypted === false) {
-            throw new Exception("Could not decrypt user data.");
+            throw new Exception("Could not decrypt user data. Key hash used: " . $this->secret);
         }
         
         return $decrypted;
