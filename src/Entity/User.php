@@ -98,7 +98,7 @@ class User implements UserInterface
     protected $lastname;
 
      /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="encrypted_string", length=500, nullable=true)
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default", "simple"})
   
@@ -215,14 +215,14 @@ class User implements UserInterface
     protected $plainPassword;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="encrypted_string", length=500, unique=true)
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default"})
      */
     protected $email;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="encrypted_string", length=500, nullable=true)
      */
     protected $emailCanonical;
 
