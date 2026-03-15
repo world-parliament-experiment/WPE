@@ -9,9 +9,9 @@ class VoteEncryptionService
     private $secret;
     private $method = 'aes-256-cbc';
 
-    public function __construct(string $appSecret)
+    public function __construct(string $userEncryptSecret)
     {
-        $this->secret = hash('sha256', $appSecret);
+        $this->secret = hash('sha256', $userEncryptSecret);
     }
 
     public function encrypt(int $value): string
