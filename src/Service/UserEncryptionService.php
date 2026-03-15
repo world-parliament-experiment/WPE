@@ -11,6 +11,9 @@ class UserEncryptionService
 
     public function __construct(string $appSecret)
     {
+        if (empty($appSecret)) {
+            throw new \InvalidArgumentException('The $appSecret is empty. This means the APP_SECRET environment variable is not being loaded correctly in your web server environment. Please check your server configuration (e.g., Apache SetEnv) and clear the cache.');
+        }
         error_log("DEBUG: UserEncryptionService received APP_SECRET: " . $appSecret);
         $this->secret = hash('sha256', $appSecret);
     }
