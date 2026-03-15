@@ -149,6 +149,41 @@ class AiAssistantService
         return 'neutral';
     }
 
+    public function decideVote(string $title, string $description, string $personaKey = 'neutral', bool $isOfficialVote = false): int
+    {
+        $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
+        $voteType = $isOfficialVote ? "an official legislative vote" : "a proposal seeking support to become a vote";
+        
+        $prompt = sprintf(
+            "You are %s. You are deciding how to vote on %s in the World Parliament:
+            Title: %s
+            Content: %s
+            
+            How do you vote?
+            If this is a proposal (seeking support), respond with '1' to support it, or '0' to ignore it.
+            If this is an official vote, respond with '1' for YES, '-1' for NO, or '0' for ABSTENTION.
+            Respond with ONLY the number.",
+            $persona['name'],
+            $voteType,
+            $title,
+            $description
+        );
+
+        $result = trim($this->generateContent($prompt, $personaKey));
+        
+        if ($isOfficialVote) {
+            if (in_array($result, ['1', '0', '-1'])) {
+                return (int)$result;
+            }
+        } else {
+            if (in_array($result, ['1', '0'])) {
+                return (int)$result;
+            }
+        }
+
+        return 0; // Default to abstention/neutral
+    }
+
     private function generateContent(string $userPrompt, string $personaKey = 'neutral', string $mimeType = 'text/plain'): string
     {
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];

@@ -27,21 +27,24 @@ class AiAgentActionCommand extends Command
     
     private $aiAssistant;
     private $entityManager;
+    private $voteEncryptionService;
 
     public function __construct(
         AiAssistantService $aiAssistant,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        \App\Service\VoteEncryptionService $voteEncryptionService
     ) {
         parent::__construct();
         $this->aiAssistant = $aiAssistant;
         $this->entityManager = $entityManager;
+        $this->voteEncryptionService = $voteEncryptionService;
     }
 
     protected function configure(): void
     {
         $this
-            ->setDescription('Triggers AI agents to perform autonomous actions (drafting, commenting, replying, or reacting)')
-            ->addArgument('action', InputArgument::REQUIRED, 'Action to perform: "draft", "comment", "reply", or "react"')
+            ->setDescription('Triggers AI agents to perform autonomous actions (drafting, commenting, replying, reacting, or voting)')
+            ->addArgument('action', InputArgument::REQUIRED, 'Action to perform: "draft", "comment", "reply", "react", or "vote"')
             ->addOption('persona', 'p', InputOption::VALUE_REQUIRED, 'Target a specific persona (if omitted, a random AI agent is chosen)')
             ->addOption('topic', 't', InputOption::VALUE_REQUIRED, 'Topic for drafting (if omitted, the agent will invent one)')
             ->addOption('category', 'c', InputOption::VALUE_REQUIRED, 'Category name for drafting (if omitted, a random Type 0 category is chosen)')
@@ -82,9 +85,11 @@ class AiAgentActionCommand extends Command
             return $this->handleReply($io, $agent);
         } elseif ($action === 'react') {
             return $this->handleReact($io, $agent);
+        } elseif ($action === 'vote') {
+            return $this->handleVote($io, $agent);
         }
 
-        $io->error('Invalid action. Use "draft", "comment", "reply", or "react".');
+        $io->error('Invalid action. Use "draft", "comment", "reply", "react", or "vote".');
         return Command::FAILURE;
     }
 
@@ -318,6 +323,94 @@ class AiAgentActionCommand extends Command
 
         $this->entityManager->flush();
         return Command::SUCCESS;
+    }
+
+    private function handleVote(SymfonyStyle $io, User $agent): int
+    {
+        // Find active global initiatives
+        $initiatives = $this->entityManager->getRepository(Initiative::class)
+            ->createQueryBuilder('i')
+            ->join('i.category', 'c')
+            ->where('c.type = 0')
+            ->andWhere('i.state = :state')
+            ->setParameter('state', InitiativeEnum::STATE_ACTIVE)
+            ->setMaxResults(100)
+            ->getQuery()
+            ->getResult();
+
+        if (empty($initiatives)) {
+            $io->warning('No active global initiatives found to vote on.');
+            return Command::SUCCESS;
+        }
+
+        // Shuffle initiatives to pick one randomly
+        shuffle($initiatives);
+
+        foreach ($initiatives as $initiative) {
+            // Check if it's in official vote or support stage
+            $voting = null;
+            $isOfficial = false;
+
+            if ($v = $initiative->getCurrentVoting()) {
+                if ($v->getState() === VotingEnum::STATE_OPEN) {
+                    $voting = $v;
+                    $isOfficial = true;
+                }
+            } elseif ($v = $initiative->getFutureVoting()) {
+                if ($v->getState() === VotingEnum::STATE_OPEN) {
+                    $voting = $v;
+                    $isOfficial = false;
+                }
+            }
+
+            if (!$voting) continue;
+
+            // Check if agent already voted
+            $existingVote = $this->entityManager->getRepository(\App\Entity\Vote::class)->findOneBy([
+                'user' => $agent,
+                'voting' => $voting
+            ]);
+
+            if ($existingVote) continue;
+
+            $io->info(sprintf('Voting on %s initiative: %s', 
+                $isOfficial ? 'OFFICIAL' : 'PROPOSAL',
+                $initiative->getTitle()
+            ));
+
+            $value = $this->aiAssistant->decideVote(
+                $initiative->getTitle(),
+                $initiative->getDescription(),
+                $agent->getAiPersona(),
+                $isOfficial
+            );
+
+            if ($value === 0 && !$isOfficial) {
+                $io->info('Decided not to support.');
+                // For proposals, 0 means no action. We can break and try another or just end.
+                continue; 
+            }
+
+            $this->castVote($agent, $voting, $value);
+            $io->success(sprintf('Voted: %d', $value));
+            
+            return Command::SUCCESS;
+        }
+
+        $io->info('No new initiatives found for this agent to vote on.');
+        return Command::SUCCESS;
+    }
+
+    private function castVote(User $user, Voting $voting, int $value): void
+    {
+        $vote = new \App\Entity\Vote();
+        $vote->setUser($user);
+        $vote->setVoting($voting);
+        $vote->setValue($this->voteEncryptionService->encrypt($value));
+        $vote->setVotedAt(new DateTime());
+
+        $this->entityManager->persist($vote);
+        $this->entityManager->flush();
     }
 
     private function handleReply(SymfonyStyle $io, User $agent): int
