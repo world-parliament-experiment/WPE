@@ -9,12 +9,9 @@ class UserEncryptionService
     private $secret;
     private $method = 'aes-256-cbc';
 
-    public function __construct(string $appSecret)
+    public function __construct(string $userEncryptSecret)
     {
-        if (empty($appSecret)) {
-            throw new \InvalidArgumentException('The $appSecret is empty. This means the APP_SECRET environment variable is not being loaded correctly in your web server environment. Please check your server configuration (e.g., Apache SetEnv) and clear the cache.');
-        }
-        $this->secret = hash('sha256', $appSecret);
+        $this->secret = hash('sha256', $userEncryptSecret);
     }
 
     /**
@@ -55,7 +52,7 @@ class UserEncryptionService
         $decrypted = openssl_decrypt($encrypted_data, $this->method, $this->secret, 0, $iv);
         
         if ($decrypted === false) {
-            throw new Exception("Could not decrypt user data. Key hash used: " . $this->secret);
+            throw new Exception("Could not decrypt user data.");
         }
         
         return $decrypted;
