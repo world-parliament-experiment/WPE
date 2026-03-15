@@ -656,7 +656,7 @@ class VoteController extends BaseController
                     $voting = $initiative->getFutureVoting();
                     $vote->setUser($this->getUser());
                     $vote->setVoting($voting);
-                    $vote->setValue(1);
+                    $vote->setValue($this->voteEncryptionService->encrypt(1));
                     $vote->setVotedAt(new \DateTime());
 
 //                    dump($form);
@@ -714,13 +714,12 @@ class VoteController extends BaseController
                     $vote->setVoting($voting);
 
                     if ($form->get('voteYes')->isClicked()) {
-                        $vote->setValue(1);
+                        $vote->setValue($this->voteEncryptionService->encrypt(1));
                     } elseif ($form->get('voteAbstention')->isClicked()) {
-                        $vote->setValue(0);
+                        $vote->setValue($this->voteEncryptionService->encrypt(0));
                     } elseif ($form->get('voteNo')->isClicked()) {
-                        $vote->setValue(-1);
+                        $vote->setValue($this->voteEncryptionService->encrypt(-1));
                     }
-
                     $vote->setVotedAt(new DateTime());
                     $em->persist($vote);
                     $em->flush();

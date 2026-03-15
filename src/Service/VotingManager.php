@@ -10,10 +10,10 @@ use App\Entity\NonVoter;
 use App\Entity\User;
 use App\Entity\Vote;
 use App\Entity\Voting;
-use App\Entity\Category;
 use App\Enum\DelegationEnum;
 use App\Enum\InitiativeEnum;
 use App\Enum\VotingEnum;
+use App\Service\VoteEncryptionService;
 use App\Enum\CategoryEnum;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,29 +50,36 @@ class VotingManager
      * @var LoggerInterface
      */
     private $logger;
-    
+
     /**
      * @var SocialmediaPoster
      */
     private $SocialmediaPoster;
 
     /**
+     * @var VoteEncryptionService
+     */
+    private $voteEncryptionService;
+
+    /**
      * VotingManager constructor.
      * @param EntityManagerInterface $manager
      * @param LoggerInterface $logger
+     * @param SocialmediaPoster $SocialmediaPoster
+     * @param VoteEncryptionService $voteEncryptionService
      */
 
-    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger, SocialmediaPoster $SocialmediaPoster)
+    public function __construct(EntityManagerInterface $manager, LoggerInterface $logger, SocialmediaPoster $SocialmediaPoster, VoteEncryptionService $voteEncryptionService)
     {
 
         ini_set('xdebug.max_nesting_level', 1000);
 
         $this->manager = $manager;
         $this->logger = $logger;
-        $this->SocialmediaPoster = $SocialmediaPoster; 
+        $this->SocialmediaPoster = $SocialmediaPoster;
+        $this->voteEncryptionService = $voteEncryptionService;
 
     }
-
     /**
      * Set all active future initiatives with voting state waiting to voting state open
      * returns number of affected initiatives
@@ -279,6 +286,13 @@ class VotingManager
                 $em->persist($voting);
                 $em->persist($initiative);
 
+                if ($voting->getState() === VotingEnum::STATE_FINISHED) {
+                    $em->flush(); // Ensure everything is saved before the UPDATE query
+                    $em->createQuery('UPDATE App\Entity\Vote v SET v.user = NULL WHERE v.voting = :voting')
+                       ->setParameter('voting', $voting)
+                       ->execute();
+                }
+
                 $cntVotings++;
             }
         });
@@ -361,10 +375,13 @@ class VotingManager
         foreach ($votes as $vote) {
 
             $user = $vote->getUser();
+            if (!$user) {
+                continue; // Skip already anonymized votes just in case
+            }
 
             $votesArr[$user->getId()] = [
                 'user' => $user->getId(),
-                'value' => $vote->getValue(),
+                'value' => $this->voteEncryptionService->decrypt($vote->getValue()),
             ];
 
         }
@@ -412,7 +429,7 @@ class VotingManager
                         $vote->setVoting($voting);
 
                         if ($future === true) {
-                            $vote->setValue(self::VOTE_ACCEPT);
+                            $vote->setValue($this->voteEncryptionService->encrypt(self::VOTE_ACCEPT));
                         } else {
                             $prob = [
                                 self::VOTE_REJECT,
@@ -426,7 +443,7 @@ class VotingManager
                                 self::VOTE_ACCEPT,
                                 self::VOTE_ACCEPT
                             ];
-                            $vote->setValue($prob[mt_rand(0,count($prob)-1)]);
+                            $vote->setValue($this->voteEncryptionService->encrypt($prob[mt_rand(0,count($prob)-1)]));
                         }
 
                         $this->manager->persist($vote);
@@ -682,7 +699,6 @@ class VotingManager
                     $dv->setVoting($voting);
                     $dv->setUser($u);
                     $dv->setWeight($vote['weight']);
-                    $dv->setValue($vote['value']);
                     $this->manager->persist($dv);
                 }
             });
@@ -695,7 +711,6 @@ class VotingManager
                     $dv->setVoting($voting);
                     $dv->setUser($u);
                     $dv->setWeight($vote['weight']);
-                    $dv->setValue($vote['value']);
                     $dv->setDelegateUserIds($vote['path']);
                     $em->persist($dv);
                 }

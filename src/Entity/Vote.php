@@ -23,20 +23,25 @@ class Vote
 
     /**
      * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     */
+    protected $id;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Voting", inversedBy="votes")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $voting;
 
     /**
-     * @ORM\Id()
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="votes")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=true)
      */
     protected $user;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     protected $value;
 
@@ -47,6 +52,11 @@ class Vote
      * @Gedmo\Timestampable(on="create")
      */
     protected $votedAt;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     /**
      * @return Voting
@@ -65,7 +75,7 @@ class Vote
     }
 
     /**
-     * @return User
+     * @return User|null
      */
     public function getUser()
     {
@@ -73,7 +83,7 @@ class Vote
     }
 
     /**
-     * @param User $user
+     * @param User|null $user
      */
     public function setUser($user)
     {

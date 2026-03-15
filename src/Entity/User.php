@@ -197,11 +197,6 @@ class User implements UserInterface
     protected $friends;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Vote", mappedBy="user")
-     */
-    protected $votes;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Voter", mappedBy="user")
      */
     protected $voters;
@@ -285,7 +280,6 @@ class User implements UserInterface
 
         $this->delegations = new ArrayCollection();
         $this->trustees = new ArrayCollection();
-        $this->votes = new ArrayCollection();
         $this->enabled = false;
         $this->roles = [];
 

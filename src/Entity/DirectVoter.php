@@ -22,12 +22,6 @@ class DirectVoter extends Voter
     protected $weight;
 
     /**
-     *
-     * @ORM\Column(type="integer", nullable=false)
-     */
-    protected $value;
-
-    /**
      * @return mixed
      */
     public function getWeight()
@@ -41,22 +35,6 @@ class DirectVoter extends Voter
     public function setWeight($weight)
     {
         $this->weight = $weight;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
     }
 
 }

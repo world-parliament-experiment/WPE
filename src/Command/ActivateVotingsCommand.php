@@ -65,6 +65,7 @@ class ActivateVotingsCommand extends Command
         $debug = $input->getOption('debug');
 
         $output->writeln("Activate votings ... ");
+        $message = "No votings were activated.";
 
         if ($debug) {
             $output->writeln("with debug output...");
@@ -83,6 +84,6 @@ class ActivateVotingsCommand extends Command
         }
 
         $this->logger->info($message);
-        return Command::SUCCESS;;
+        return Command::SUCCESS;
     }
 }
