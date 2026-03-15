@@ -25,7 +25,7 @@ class EncryptedStringType extends StringType
     private function getEncryptionService(): UserEncryptionService
     {
         if (self::$encryptionService === null) {
-            $secret = $_ENV['APP_SECRET'] ?? $_SERVER['APP_SECRET'] ?? 'local';
+            $secret = $_ENV['USER_ENCRYPT_SECRET'] ?? $_SERVER['USER_ENCRYPT_SECRET'] ?? 'local';
             self::$encryptionService = new UserEncryptionService($secret);
         }
         return self::$encryptionService;
