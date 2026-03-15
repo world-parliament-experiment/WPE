@@ -11,6 +11,7 @@ class UserEncryptionService
 
     public function __construct(string $appSecret)
     {
+        error_log("DEBUG: UserEncryptionService received APP_SECRET: " . $appSecret);
         $this->secret = hash('sha256', $appSecret);
     }
 
