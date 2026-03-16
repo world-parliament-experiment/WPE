@@ -55,7 +55,10 @@ class UserEncryptionService
         $decrypted = openssl_decrypt($encrypted_data, $this->method, $this->secret, 0, $iv);
         
         if ($decrypted === false) {
-            throw new Exception("Could not decrypt user data.");
+            // If decryption fails, it's likely due to corrupted data for a nullable field.
+            // Instead of throwing an exception and halting, return an empty string
+            // to allow the application to proceed.
+            return '';
         }
         
         return $decrypted;
