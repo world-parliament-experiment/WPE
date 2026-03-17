@@ -11,6 +11,7 @@ use App\Enum\CommentEnum;
 use App\Enum\InitiativeEnum;
 use App\Enum\VotingEnum;
 use App\Service\Mailer;
+use App\Service\VoteEncryptionService;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
@@ -32,12 +33,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class VoteController extends BaseController
 {
     private $mailer;
+    private VoteEncryptionService $voteEncryptionService;
 
-    public function __construct(SerializerInterface $serializer,ManagerRegistry $managerRegistry, Mailer $mailer)
+    public function __construct(SerializerInterface $serializer, ManagerRegistry $managerRegistry, Mailer $mailer, VoteEncryptionService $voteEncryptionService)
     {
-        parent::__construct($serializer,$managerRegistry);
+        parent::__construct($serializer, $managerRegistry);
         $this->_serializeGroups = ["simple"];
         $this->mailer = $mailer;
+        $this->voteEncryptionService = $voteEncryptionService;
     }
 
     /**
