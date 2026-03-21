@@ -65,6 +65,72 @@ class CategoryRepository extends EntityRepository
             ->execute();
     }
 
+    public function getFutureInitiativesByUser(string $countryCode = null)
+    {
+        $qb = $this->createQueryBuilder('category')
+            ->select(['category', 'initiative'])
+            ->leftJoin('category.initiatives', 'initiative')
+            ->where('initiative.type = :initiativeType')
+            ->andWhere('initiative.state > 0 AND initiative.state < 3');
+
+        if ($countryCode) {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('category.type', ':globalType'),
+                    $qb->expr()->andX(
+                        $qb->expr()->eq('category.type', ':nationalType'),
+                        $qb->expr()->eq('category.country', ':countryCode')
+                    )
+                )
+            )
+                ->setParameter('globalType', \App\Enum\CategoryEnum::TYPE_GLOBAL)
+                ->setParameter('nationalType', \App\Enum\CategoryEnum::TYPE_NATIONAL)
+                ->setParameter('countryCode', $countryCode);
+        } else {
+            $qb->andWhere('category.type = :globalType')
+                ->setParameter('globalType', \App\Enum\CategoryEnum::TYPE_GLOBAL);
+        }
+
+        $qb->setParameter('initiativeType', InitiativeEnum::TYPE_FUTURE)
+            ->addOrderBy('category.type', 'asc')
+            ->addOrderBy('initiative.createdAt', 'desc');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getCurrentInitiativesByUser(string $countryCode = null)
+    {
+        $qb = $this->createQueryBuilder('category')
+            ->select(['category', 'initiative'])
+            ->leftJoin('category.initiatives', 'initiative')
+            ->where('initiative.type = :initiativeType')
+            ->andWhere('initiative.state > 0 AND initiative.state < 3');
+
+        if ($countryCode) {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('category.type', ':globalType'),
+                    $qb->expr()->andX(
+                        $qb->expr()->eq('category.type', ':nationalType'),
+                        $qb->expr()->eq('category.country', ':countryCode')
+                    )
+                )
+            )
+                ->setParameter('globalType', \App\Enum\CategoryEnum::TYPE_GLOBAL)
+                ->setParameter('nationalType', \App\Enum\CategoryEnum::TYPE_NATIONAL)
+                ->setParameter('countryCode', $countryCode);
+        } else {
+            $qb->andWhere('category.type = :globalType')
+                ->setParameter('globalType', \App\Enum\CategoryEnum::TYPE_GLOBAL);
+        }
+
+        $qb->setParameter('initiativeType', InitiativeEnum::TYPE_CURRENT)
+            ->addOrderBy('category.type', 'asc')
+            ->addOrderBy('initiative.createdAt', 'desc');
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function getCurrentInitiatives()
     {
         return $this->createQueryBuilder('category')

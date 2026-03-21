@@ -41,9 +41,11 @@ class CategoryController extends BaseController
         $em = $this->managerRegistry->getManager();
 
         if ($type === 'future') {
+            $user = $this->getUser();
+            $countryCode = ($user && $user->getCountry()) ? $user->getCountry() : null;
 
             $initiatives = $em->getRepository(Category::class)
-                ->getFutureInitiatives();
+                ->getFutureInitiativesByUser($countryCode);
 
             return $this->render('Category/future.html.twig', [
                 'initiatives' => $initiatives,
@@ -52,8 +54,11 @@ class CategoryController extends BaseController
             ]);
 
         } elseif ($type === 'current') {
+            $user = $this->getUser();
+            $countryCode = ($user && $user->getCountry()) ? $user->getCountry() : null;
+
             $initiatives = $em->getRepository(Category::class)
-                ->getCurrentInitiatives();
+                ->getCurrentInitiativesByUser($countryCode);
 
             return $this->render('Category/current.html.twig', [
                 'initiatives' => $initiatives,
