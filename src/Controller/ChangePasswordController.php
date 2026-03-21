@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
@@ -15,14 +15,14 @@ use Throwable;
 class ChangePasswordController extends AbstractController
 {
 
-    private $passwordEncoder;
+    private $passwordHasher;
     private TokenStorageInterface $tokenStorage;
     private ManagerRegistry $managerRegistry;
     private  LoggerInterface $logger;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder,TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry,LoggerInterface $logger)
+    public function __construct(UserPasswordHasherInterface $passwordHasher,TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry,LoggerInterface $logger)
     {
-        $this->passwordEncoder = $passwordEncoder;
+        $this->passwordHasher = $passwordHasher;
         $this->tokenStorage = $tokenStorage;
         $this->managerRegistry = $managerRegistry;
         $this->logger = $logger;
@@ -50,7 +50,7 @@ class ChangePasswordController extends AbstractController
                 $newPassword = $form->get('newPassword')->getData();
 
                 // Encode the new password using the password encoder service
-                $encodedPassword = $this->passwordEncoder->encodePassword($user, $newPassword);
+                $encodedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
 
                 // Set the user's new password
                 $user->setPassword($encodedPassword);

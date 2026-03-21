@@ -9,10 +9,10 @@ class UserEncryptionService
     private $secret;
     private $method = 'aes-256-cbc';
 
-    public function __construct(string $userEncryptSecret)
+    public function __construct(?string $userEncryptSecret)
     {
         if (empty($userEncryptSecret)) {
-            throw new \InvalidArgumentException('The USER_ENCRYPT_SECRET environment variable is empty or not loaded correctly in your web server environment.');
+            throw new \InvalidArgumentException('The USER_ENCRYPT_SECRET environment variable is not set or empty.');
         }
         $this->secret = hash('sha256', $userEncryptSecret);
     }

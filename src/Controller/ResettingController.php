@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use App\Service\Mailer;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 class ResettingController extends AbstractController
@@ -24,15 +24,15 @@ class ResettingController extends AbstractController
     private $tokenGenerator;
     private $mailer;
     private $managerRegistry;
-    private $passwordEncoder;
+    private $passwordHasher;
 
-    public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer,ManagerRegistry $managerRegistry,UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(TokenGeneratorInterface $tokenGenerator, UserManager $userManager,  Mailer $mailer,ManagerRegistry $managerRegistry,UserPasswordHasherInterface $passwordHasher)
     {
         $this->tokenGenerator = $tokenGenerator;
         $this->userManager = $userManager;
         $this->mailer = $mailer;
         $this->managerRegistry = $managerRegistry;
-        $this->passwordEncoder = $passwordEncoder;
+        $this->passwordHasher = $passwordHasher;
     }
 
     /**
@@ -121,7 +121,7 @@ class ResettingController extends AbstractController
             $newPassword = $form->get('plainPassword')->getData();
             
             // Encode the new password using the password encoder service
-            $encodedPassword = $this->passwordEncoder->encodePassword($user, $newPassword);
+            $encodedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
 
             // Set the user's new password
             $user->setPassword($encodedPassword);

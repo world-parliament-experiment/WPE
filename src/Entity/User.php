@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use JMS\Serializer\Annotation as JMSSerializer;
 // use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -23,7 +24,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @UniqueEntity(fields={"email"}, message="This email address has already been taken.")
  **/
 
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
     const USER_GENDER_MALE = "MALE";

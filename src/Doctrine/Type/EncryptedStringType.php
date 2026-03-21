@@ -25,8 +25,9 @@ class EncryptedStringType extends StringType
     private function getEncryptionService(): UserEncryptionService
     {
         if (self::$encryptionService === null) {
-            $secret = $_ENV['USER_ENCRYPT_SECRET'] ?? $_SERVER['USER_ENCRYPT_SECRET'] ?? 'local';
-            self::$encryptionService = new UserEncryptionService($secret);
+            // This will now only happen if the injector service fails for some reason.
+            // Throwing an exception is more secure than falling back to a default key.
+            throw new \LogicException('The UserEncryptionService has not been injected into EncryptedStringType. Please ensure the EncryptionServiceInjector is configured correctly.');
         }
         return self::$encryptionService;
     }
