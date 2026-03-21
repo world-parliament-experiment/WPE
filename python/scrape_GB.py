@@ -10,6 +10,8 @@ from bs4 import BeautifulSoup
 import ssl
 import sys
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 #import numpy as np
 
 # Ignore SSL certificate errors
@@ -21,7 +23,7 @@ output = []
 
 # URl needs to be dynamic
 url = 'https://bills.parliament.uk/rss/allbills.rss'
-xml = requests.get(url)
+xml = requests.get(url, verify=False)
 soup = BeautifulSoup(xml.content, features='xml')
 
 items = soup.find_all("item")

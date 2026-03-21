@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 import ssl
 import sys
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import re
 #import numpy as np
 
@@ -41,7 +43,7 @@ max_errors = 10
 while not stop and len(output) < 20: # Limit to 20 per run
     url = 'https://www.dpr.go.id/uu/detail/id/'+str(start)
     try:
-        response = requests.get(url, headers=header, timeout=10)
+        response = requests.get(url, headers=header, timeout=10, verify=False)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, features="lxml")
             h3 = soup.find("h3")

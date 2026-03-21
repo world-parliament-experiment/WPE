@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 import ssl
 import sys
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import re
 #import numpy as np
 
@@ -30,7 +32,7 @@ year = today.year
 errorcount = 0
 # Read the XML file
 url = 'https://www.congress.gov/rss/most-viewed-bills.xml'
-xml = requests.get(url)
+xml = requests.get(url, verify=False)
 soup = BeautifulSoup(xml.content, features='xml')
 content = soup.find("item").getText()
 lines = content.split("<li>")

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import json
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import datetime
 import ssl
 from bs4 import BeautifulSoup
@@ -23,7 +25,7 @@ header = {
 }
 
 try:
-    response = requests.get(url, headers=header, timeout=15)
+    response = requests.get(url, headers=header, timeout=15, verify=False)
     if response.status_code == 200:
         # Use BeautifulSoup to parse the XML
         soup = BeautifulSoup(response.content, features="xml")

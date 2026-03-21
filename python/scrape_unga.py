@@ -1,4 +1,6 @@
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from lxml import etree
 
 session = 79
@@ -14,7 +16,7 @@ headers = {
 
 def get_file_urls(api_url):
     """Fetches URLs for XML files from the GitHub API."""
-    response = requests.get(api_url, headers=headers)
+    response = requests.get(api_url, headers=headers, verify=False)
     response.raise_for_status()
     
     # List of XML file URLs
@@ -28,7 +30,7 @@ def get_file_urls(api_url):
 
 def parse_xml_from_url(url):
     """Fetches and parses XML data from a URL."""
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     response.raise_for_status()
 
     try:

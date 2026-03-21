@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import json
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import datetime
 import ssl
 from bs4 import BeautifulSoup

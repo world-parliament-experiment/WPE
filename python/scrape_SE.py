@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 import ssl
 import sys
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import re
 #import numpy as np
 
@@ -30,7 +32,7 @@ year = today.year
 errorcount = 0
 # Read the XML file
 url = 'https://data.riksdagen.se/dokumentlista/?avd=dokument&doktyp=bet&utskforslag=1&sort=debattdag&sortorder=asc&utformat=rss'
-xml = requests.get(url)
+xml = requests.get(url, verify=False)
 soup = BeautifulSoup(xml.content, features='xml')
 items = soup.find_all("item")
 for item in items:

@@ -24,7 +24,7 @@ query = """
 """
 
 try:
-    response = requests.post(api_url, json={'query': query}, timeout=15)
+    response = requests.post(api_url, json={'query': query}, timeout=15, verify=False)
     if response.status_code == 200:
         data = response.json()
         bills = data.get('data', {}).get('bills', [])

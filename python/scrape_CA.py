@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 import ssl
 import sys
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import re
 #import numpy as np
 
@@ -29,7 +31,7 @@ output = {}
 
 # Read the XML file
 url = 'https://www.parl.ca/legisinfo/en/bills/xml'
-xml = requests.get(url)
+xml = requests.get(url, verify=False)
 soup = BeautifulSoup(xml.content, features='xml')
 bills = soup.find_all("Bill")
 for bill in bills:

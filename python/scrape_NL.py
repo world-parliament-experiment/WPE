@@ -3,6 +3,10 @@ import json
 import requests
 import datetime
 import ssl
+import urllib3
+
+# Suppress InsecureRequestWarning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
@@ -30,7 +34,7 @@ header = {
 }
 
 try:
-    response = requests.get(url, params=params, headers=header, timeout=15)
+    response = requests.get(url, params=params, headers=header, timeout=15, verify=False)
     if response.status_code == 200:
         data = response.json()
         for item in data.get('value', []):

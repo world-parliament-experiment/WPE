@@ -16,6 +16,8 @@ import sys
 
 import json
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from bs4 import BeautifulSoup
 import ssl
 import datetime
@@ -45,7 +47,7 @@ rooturl = 'https://www.aph.gov.au/Parliamentary_Business/Bills_Legislation/Bills
 while not stop and len(output) < 20:
     url = rooturl + str(start)
     try:
-        response = requests.get(url, headers=header, timeout=15)
+        response = requests.get(url, headers=header, timeout=15, verify=False)
         if response.status_code == 404:
             errorcount += 1
             start += 1
