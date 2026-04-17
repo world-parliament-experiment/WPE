@@ -964,6 +964,58 @@ input:focus {
 
 .header-area .mag-main-menu .classy-navbar {
   flex-wrap: wrap;
+  position: relative;
+}
+
+/* Wide desktop: keep one row and let the tagline flex between brand and menu+search */
+@media only screen and (min-width: 1600px) {
+  .header-area .mag-main-menu {
+    height: auto;
+    min-height: 70px;
+  }
+
+  .header-area .mag-main-menu .classy-navbar {
+    flex-wrap: nowrap;
+    align-items: center;
+    column-gap: 12px;
+  }
+
+  .header-area .mag-main-menu .classy-navbar .responsive-div {
+    flex: 1 1 0%;
+    min-width: 0;
+    text-align: center;
+    padding: 0 12px;
+  }
+
+  .header-area .mag-main-menu .classy-navbar .nav-content {
+    flex: 0 0 auto;
+    flex-shrink: 0;
+  }
+}
+
+/* Primary nav links on one row, search bar on the row below (within .nav-content) */
+.header-area .mag-main-menu .classy-navbar .nav-content.nav-content-stack {
+  row-gap: 6px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.header-area .mag-main-menu .classy-navbar .nav-content.nav-content-stack .top-search-area {
+  margin-left: 0;
+  height: auto;
+}
+
+.header-area .mag-main-menu .classy-navbar .nav-content.nav-content-stack .top-search-area form {
+  border-left: none;
+  border-top: 1px solid #ebebeb;
+  padding-top: 6px;
+}
+
+@media only screen and (min-width: 768px) {
+  .header-area .mag-main-menu .classy-navbar .nav-content.nav-content-stack .top-search-area form input,
+  .header-area .mag-main-menu .classy-navbar .nav-content.nav-content-stack .top-search-area form button {
+    height: 40px;
+  }
 }
 
 /* Mobile overrides */
@@ -1042,10 +1094,25 @@ input:focus {
   }
 }
 
+/* In-flow so it never stacks over the site title or primary nav (absolute + 50% did on wide viewports). */
 .header-area .mag-main-menu .top-search-area {
   position: relative;
-  z-index: 1;
+  left: auto;
+  top: auto;
+  z-index: 2;
   margin-left: 30px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  transform: none;
+  flex: 0 0 auto;
+}
+
+@media only screen and (max-width: 1599px) {
+  .header-area .mag-main-menu .top-search-area {
+    height: auto;
+    display: block;
+  }
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
@@ -1604,6 +1671,44 @@ input:focus {
     flex: 0 0 calc(100% - 30px);
     max-width: calc(100% - 30px);
     width: calc(100% - 30px);
+  }
+}
+
+/* Homepage: stack main + sidebars vertically on large screens (was 3 columns in one row) */
+@media only screen and (min-width: 1200px) {
+  .mag-posts-area.mag-posts-area-stack {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+  }
+
+  .mag-posts-area.mag-posts-area-stack .mag-posts-content {
+    -webkit-box-ordinal-group: 0;
+    -ms-flex-order: -1;
+    order: -1;
+    -webkit-box-flex: 0;
+    -ms-flex: none;
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .mag-posts-area.mag-posts-area-stack .post-sidebar-area {
+    -webkit-box-flex: 0;
+    -ms-flex: none;
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
   }
 }
 
@@ -4052,6 +4157,7 @@ textarea.form-control {
 }
 
 .header-area .responsive-div .site-title {
+  width: 506px;
   font-size: clamp(1rem, 0.8rem + 2vw, 1.6rem);
   margin: 0;
   line-height: 1.2;
@@ -4198,4 +4304,37 @@ textarea.form-control {
     top: 0;
     width: 100%;
     z-index: 1;
+}
+
+/* Global Democracy sidebar (narrow column): clear chunks instead of one text block */
+.wpe-sidebar-text {
+    position: relative;
+    z-index: 2;
+}
+
+.wpe-sidebar-text > p,
+.wpe-sidebar-text .wpe-sidebar-secondary p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 0.75rem;
+}
+
+.wpe-sidebar-text .wpe-sidebar-lead {
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.wpe-sidebar-text .wpe-sidebar-secondary {
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
+    padding-top: 0.75rem;
+    margin-top: 0.15rem;
+}
+
+.wpe-sidebar-text .wpe-sidebar-secondary p:last-child {
+    margin-bottom: 0;
+}
+
+.wpe-sidebar-link {
+    text-decoration: underline;
+    font-weight: 600;
 }
