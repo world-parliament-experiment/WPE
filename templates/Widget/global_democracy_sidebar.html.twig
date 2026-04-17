@@ -1,0 +1,17 @@
+{# Reusable “Global Democracy” sidebar card. Pass wrapper_class, e.g. 'single-sidebar-widget p-30' or add 'm-b-30' for interleaved mobile layout. #}
+<div class="{{ wrapper_class }}">
+    <div class="section-heading">
+        <h5 class="text-dark">Global Democracy</h5>
+    </div>
+    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
+        <div class="wpe-sidebar-text">
+            <p class="text-white wpe-sidebar-lead">Global Democracy is possible, if <strong>YOU</strong> take part in it!</p>
+            <p class="text-white">Create your own political proposals or vote on real-world political initiatives.</p>
+            <p class="text-white wpe-sidebar-cta">To start, <a href="{{ path('login') }}" class="text-white wpe-sidebar-link">login</a> or create a <a href="{{ path('app_register') }}" class="text-white wpe-sidebar-link">user account</a>.</p>
+            <div class="wpe-sidebar-secondary">
+                <p class="text-white">This project is completely open source. To contribute, check out our <a href="https://github.com/world-parliament-experiment/WPE" class="text-white wpe-sidebar-link" target="_blank" rel="noopener noreferrer">GitHub project</a>.</p>
+                <p class="text-white">The <a href="https://github.com/world-parliament-experiment/WPE/wiki" class="text-white wpe-sidebar-link" target="_blank" rel="noopener noreferrer">Wiki</a> is a good place to contribute ideas or draft proposals before posting them on the website.</p>
+            </div>
+        </div>
+    </div>
+</div>

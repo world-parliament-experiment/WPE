@@ -19,19 +19,7 @@
         <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
             {# Desktop Left Sidebar - only visible on Desktop #}
             <div class="desktop-only">
-                <div class="single-sidebar-widget p-30">
-                    <div class="section-heading">
-                        <h5 class="text-dark">Global Democracy</h5>
-                    </div>
-                    <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
-                        <div class="wpe-sidebar-text">
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4; font-weight: bold; margin-bottom: 10px;">Global Democracy is possible, if YOU take part in it!</p>
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
-                            <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">This project is completely open source. To contribute, please check out our <a href="https://github.com/world-parliament-experiment/WPE" class="text-white" style="text-decoration: underline;">GitHub project</a>. There you will also find a <a href="https://github.com/world-parliament-experiment/WPE/wiki" class="text-white" style="text-decoration: underline;">Wiki</a> where you can contribute ideas or draft your next proposals before posting them on the website.</p>
-                        </div>
-                    </div>
-                </div>
+                {{ include('Widget/global_democracy_sidebar.html.twig', { wrapper_class: 'single-sidebar-widget p-30' }, with_context = false) }}
                 
                 <div class="single-sidebar-widget p-30 w-categories-current">
                     {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': 'current' })) }}
@@ -106,18 +94,7 @@
             <div class="mobile-tablet-only">
                 <div class="interleaved-widgets-container">
                     {# L1: Global Democracy #}
-                    <div class="single-sidebar-widget p-30 m-b-30">
-                        <div class="section-heading">
-                            <h5 class="text-dark">Global Democracy</h5>
-                        </div>
-                        <div class="widget-content-bg bg-img bg-overlay p-30" style="background-image: url('{{ asset('assets/img/header/initiative_small.jpg') }}');">
-                            <div class="wpe-sidebar-text">
-                                <p class="text-white" style="font-size: 14px; line-height: 1.4; font-weight: bold;">Global Democracy is possible, if YOU take part in it!</p>
-                                <p class="text-white" style="font-size: 14px; line-height: 1.4;">Create your own political proposals or vote on real-world political initiatives.</p>
-                                <p class="text-white" style="font-size: 14px; line-height: 1.4; margin-top: 10px;">To start, <a href="{{ path("login") }}" class="text-white" style="text-decoration: underline;">login</a> or create a <a href="{{ path("app_register") }}" class="text-white" style="text-decoration: underline;">user account</a>.</p>
-                            </div>
-                        </div>
-                    </div>
+                    {{ include('Widget/global_democracy_sidebar.html.twig', { wrapper_class: 'single-sidebar-widget p-30 m-b-30' }, with_context = false) }}
 
                     {# R1: Abraham Lincoln #}
                     <div class="single-sidebar-widget p-30 m-b-30">
