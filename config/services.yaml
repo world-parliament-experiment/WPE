@@ -102,9 +102,9 @@ services:
         tags:
             - { name: knp_menu.menu_builder, method: createMainMenu, alias: main } # The alias is what is used to retrieve the menu
 
-    App\EventSubscriber\LoginSubscriber:
+    App\Security\UserChecker:
         tags:
-            - { name: kernel.event_subscriber }
+            - { name: security.user_checker }
 
     # App\Form\DelegationForm:
     #     public: false
