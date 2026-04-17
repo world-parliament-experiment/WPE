@@ -187,53 +187,6 @@
         </div> 
 
     </section>
-
-    <style>
-        /* Responsive Display Logic */
-        @media (min-width: 1200px) {
-            .mobile-tablet-only { display: none !important; }
-            .desktop-only { display: block !important; }
-        }
-        @media (max-width: 1199px) {
-            .mobile-tablet-only { display: block !important; }
-            .desktop-only { display: none !important; }
-            
-            .post-sidebar-area { display: none !important; }
-            .mag-posts-content { 
-                -ms-flex: 0 0 100% !important;
-                flex: 0 0 100% !important;
-                max-width: 100% !important;
-                width: 100% !important;
-                margin: 0 !important;
-            }
-        }
-        
-        /* Tablet Grid (768px - 1199px) */
-        @media (min-width: 768px) and (max-width: 1199px) {
-            .interleaved-widgets-container {
-                display: flex;
-                flex-wrap: wrap;
-                margin: 0 -15px;
-            }
-            .interleaved-widgets-container .single-sidebar-widget {
-                flex: 0 0 50%;
-                max-width: 50%;
-                padding: 15px !important;
-            }
-        }
-
-        /* Mobile Grid (< 768px) */
-        @media (max-width: 767px) {
-            .mag-posts-content {
-                padding-left: 15px !important;
-                padding-right: 15px !important;
-            }
-            .interleaved-widgets-container .single-sidebar-widget {
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-            }
-        }
-    </style>
     <!-- ##### Mag Posts Area End ##### -->
 
 {% endblock %}

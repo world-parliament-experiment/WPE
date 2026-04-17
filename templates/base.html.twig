@@ -83,14 +83,16 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to content</a>
+
 <!-- Preloader -->
-<div class="preloader d-flex align-items-center justify-content-center">
+<div class="preloader d-flex align-items-center justify-content-center" aria-hidden="true">
     <div class="spinner">
         <div class="double-bounce1"></div>
         <div class="double-bounce2"></div>
     </div>
 </div>
-<div role="alert" aria-live="assertive" aria-atomic="true" class="toast bg-success text-white d-none p-15" data-bs-autohide="true", data-bs-delay="10000">
+<div role="alert" aria-live="assertive" aria-atomic="true" class="toast bg-success text-white d-none p-15" data-bs-autohide="true" data-bs-delay="10000">
 		<div class="toast-body">
 			Otp send successfully..
 			<i class="fa-solid fa-circle-check" style="color: #fffafa;"></i>
@@ -106,7 +108,9 @@
             <nav class="classy-navbar justify-content-between" id="magNav">
 
                 <!-- Nav brand -->
-                <a href="{{ path("homepage") }}" class="nav-brand"><img src="/assets/img/small.png" alt=""></a>
+                <a href="{{ path("homepage") }}" class="nav-brand">
+                    <img src="/assets/img/small.png" alt="World Parliament Experiment">
+                </a>
 
                 <!-- Navbar Toggler -->
                 <div class="classy-navbar-toggler">
@@ -136,7 +140,7 @@
                         <!-- Top Search Area -->
                         <div class="top-search-area">
                             <form action="{{ path('quicksearch') }}" method="post">
-                                <input type="search" name="search[query]" id="topSearch" placeholder="Search and hit enter...">
+                                <input type="search" name="search[query]" id="topSearch" placeholder="Search and hit enter..." aria-label="Search">
                                 <input type="hidden" name="search_token" id="topToken" value="{{ csrf_token('top-search') }}">
                                 <button type="submit" class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                             </form>
@@ -150,7 +154,9 @@
 </header>
 <!-- ##### Header Area End ##### -->
 
+<main id="main-content" tabindex="-1">
     {% block body %}{% endblock %}
+</main>
 
 <!-- ##### Footer Area Start ##### -->
 

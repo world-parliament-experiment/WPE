@@ -1,7 +1,10 @@
 /* Master Stylesheet */
 /* :: 2.0 Import All CSS */
 /* :: 3.0 Base CSS */
-* {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
@@ -10,6 +13,41 @@ body {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   background-color: #f2f4f5;
+  overflow-x: hidden;
+}
+
+/* Accessible skip-link (base layout) */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  padding: 10px 12px;
+  background: #000;
+  color: #fff;
+  border-radius: 8px;
+  z-index: 100000;
+  transform: translateY(-200%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Focus styles: avoid removing outlines globally */
+:focus-visible {
+  outline: 2px solid #f74a06;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 h1,
@@ -857,9 +895,7 @@ img {
 }
 
 input:focus {
-  outline-style: none;
   box-shadow: none;
-  border-color: transparent;
 }
 
 .box-shadow {
@@ -4157,7 +4193,9 @@ textarea.form-control {
 }
 
 .header-area .responsive-div .site-title {
-  width: 506px;
+  display: block;
+  width: auto;
+  max-width: 100%;
   font-size: clamp(1rem, 0.8rem + 2vw, 1.6rem);
   margin: 0;
   line-height: 1.2;
@@ -4224,6 +4262,60 @@ textarea.form-control {
 @media (min-width: 1200px) {
   .wpe-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Home page widget layout (moved from templates/default/index.html.twig) */
+@media (min-width: 1200px) {
+  .mobile-tablet-only {
+    display: none !important;
+  }
+  .desktop-only {
+    display: block !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  .mobile-tablet-only {
+    display: block !important;
+  }
+  .desktop-only {
+    display: none !important;
+  }
+
+  .post-sidebar-area {
+    display: none !important;
+  }
+  .mag-posts-content {
+    -ms-flex: 0 0 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .interleaved-widgets-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+  }
+  .interleaved-widgets-container .single-sidebar-widget {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 15px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .mag-posts-content {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+  .interleaved-widgets-container .single-sidebar-widget {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 }
 
