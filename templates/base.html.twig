@@ -112,43 +112,41 @@
                     <img src="/assets/img/small.png" alt="World Parliament Experiment">
                 </a>
 
+                <!-- Nav Content -->
+                <div class="nav-content nav-content-stack d-flex align-items-center">
+                    <div class="responsive-div">
+                        <h2 class="site-title">A Global Polity for the Citizens of the World</h2>
+                    </div>
+                </div>
+
                 <!-- Navbar Toggler -->
                 <div class="classy-navbar-toggler">
                     <span class="navbarToggler"><span></span><span></span><span></span></span>
                 </div>
-                <div class="responsive-div">
-                    <h2 class="site-title">A Global Polity for the Citizens of the World</h2>
-                </div>
-                <!-- Nav Content -->
-                <div class="nav-content nav-content-stack d-flex flex-column align-items-end justify-content-center">
-                    <div class="classy-menu">
 
-                        <!-- Close Button -->
-                        <div class="classycloseIcon">
-                            <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
-                        </div>
-
-                        <!-- Nav Start -->
-                        <div class="classynav">
-                        {{ knp_menu_render('main', {'currentClass': 'active'}) }}
-                        </div>
-                        <!-- Nav End -->
+                <div class="classy-menu">
+                    <!-- Close Button -->
+                    <div class="classycloseIcon">
+                        <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
                     </div>
 
-
-                    <div class="top-meta-data d-flex align-items-center">
-                        <!-- Top Search Area -->
-                        <div class="top-search-area">
-                            <form action="{{ path('quicksearch') }}" method="post">
-                                <input type="search" name="search[query]" id="topSearch" placeholder="Search and hit enter..." aria-label="Search">
-                                <input type="hidden" name="search_token" id="topToken" value="{{ csrf_token('top-search') }}">
-                                <button type="submit" class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                            </form>
-                        </div>
+                    <!-- Nav Start -->
+                    <div class="classynav">
+                    {{ knp_menu_render('main', {'currentClass': 'active'}) }}
                     </div>
-
+                    <!-- Nav End -->
                 </div>
             </nav>
+            <div class="top-meta-data d-flex align-items-center justify-content-end">
+                <!-- Top Search Area -->
+                <div class="top-search-area">
+                    <form action="{{ path('quicksearch') }}" method="post">
+                        <input type="search" name="search[query]" id="topSearch" placeholder="Search and hit enter..." aria-label="Search">
+                        <input type="hidden" name="search_token" id="topToken" value="{{ csrf_token('top-search') }}">
+                        <button type="submit" class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </header>
