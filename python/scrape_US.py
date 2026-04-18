@@ -1,73 +1,60 @@
-#!/usr/bin/env python
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+#!/usr/bin/env python3
+"""
+Scrape titles and links from the U.S. Congress \"most viewed bills\" RSS feed.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Parses the first RSS item's embedded HTML list and prints a flat Python list
+(alternating title strings and href strings) for stdout consumption.
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import ssl
-import sys
+Dependencies: beautifulsoup4, requests, urllib3
+"""
+
+from __future__ import annotations
+
+import re
+
 import requests
 import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import re
-#import numpy as np
+from bs4 import BeautifulSoup
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-
-output = []
-
-# URl needs to be dynamic
-import datetime
-today = datetime.datetime.now()
-year = today.year
-errorcount = 0
-# Read the XML file
-url = 'https://www.congress.gov/rss/most-viewed-bills.xml'
-xml = requests.get(url, verify=False)
-soup = BeautifulSoup(xml.content, features='xml')
-content = soup.find("item").getText()
-lines = content.split("<li>")
-for line in lines:
-    title = re.search('>(.+?)</li>', line)
-    if title:
-        title = title.group(1)
-        title = title.replace("</a>", "")
-        output.append(title)
-    desc = re.search('href=(.+?)>', line)
-    if desc:
-        desc = desc.group(1)
-        desc = desc.replace("'", "")
-        output.append(desc)
-
-# output.append(desc) 
-
-print(output)
-
-#print(topicno)
-#print(status)
-#print(url)
-#print(uzeit) 
-#list_of_contents.remove("\n")
-#list_of_contents.remove(" ")
+RSS_URL = "https://www.congress.gov/rss/most-viewed-bills.xml"
+REQUEST_TIMEOUT = 30
 
 
-#print(list_of_contents)
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-#print(topiclist)
 
-#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in output))
-#f.close
+def fetch_most_viewed_bills() -> list[str]:
+    """Return alternating titles and link hrefs extracted from the RSS payload."""
+    _disable_insecure_request_warnings()
+    response = requests.get(RSS_URL, timeout=REQUEST_TIMEOUT, verify=False)
+    response.raise_for_status()
 
-#f = open('BT_Tagesordnung.txt', 'a')
-#f.write("\n".join(str(item) for item in url))
-#f.close
+    soup = BeautifulSoup(response.content, features="xml")
+    first_item = soup.find("item")
+    if not first_item or first_item.getText() is None:
+        return []
+
+    content = first_item.getText()
+    output: list[str] = []
+
+    for line in content.split("<li>"):
+        title_match = re.search(r">(.+?)</li>", line)
+        if title_match:
+            title = title_match.group(1).replace("</a>", "")
+            output.append(title)
+        desc_match = re.search(r"href=(.+?)>", line)
+        if desc_match:
+            desc = desc_match.group(1).replace("'", "")
+            output.append(desc)
+
+    return output
+
+
+def main() -> None:
+    result: list[str] = fetch_most_viewed_bills()
+    print(result)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,91 +1,92 @@
-#!/usr/bin/env python
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+#!/usr/bin/env python3
+"""
+Scrape Irish Oireachtas bill pages for the current calendar year.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Walks /en/bills/bill/{year}/{n}/ until consecutive HTTP failures, and prints
+a flat list of title and description (long title plus bill URL).
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import ssl
-import sys
-#import numpy as np
+Dependencies: beautifulsoup4
+"""
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+from __future__ import annotations
 
-output = []
-
-# URl needs to be dynamic
 import datetime
-today = datetime.datetime.now()
-year = today.year
-stop = False
-start = 1
-errorcount = 0
-while not stop:
-    url = 'https://www.oireachtas.ie/en/bills/bill/'+str(year)+'/'+str(start)+'/'
-    try:
-        html = urllib.request.urlopen(url, context=ctx).read()
-    except urllib.error.HTTPError as e:
-        if e:
-            errorcount += 1
-            start += 1
-            if errorcount == 5:
+import ssl
+import urllib.error
+import urllib.request
+from bs4 import BeautifulSoup
+
+MAX_CONSECUTIVE_FAILURES = 5
+BILL_URL_TEMPLATE = "https://www.oireachtas.ie/en/bills/bill/{year}/{num}/"
+
+
+def create_unverified_ssl_context() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def scrape_oireachtas_bills() -> list[str]:
+    ctx = create_unverified_ssl_context()
+    year = datetime.date.today().year
+    output: list[str] = []
+    bill_num = 1
+    consecutive_failures = 0
+    stop = False
+
+    while not stop:
+        url = BILL_URL_TEMPLATE.format(year=year, num=bill_num)
+        try:
+            with urllib.request.urlopen(url, context=ctx) as response:
+                html = response.read()
+        except urllib.error.HTTPError:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
                 stop = True
             continue
-    soup = BeautifulSoup(html, 'html.parser')
 
-    title = ""
-    desc = ""
+        soup = BeautifulSoup(html, "html.parser")
+        hero = soup.find("div", {"class": "c-hero__content"})
+        if not hero:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                stop = True
+            continue
 
-    title = soup.find("div", {'class': 'c-hero__content'}).getText().strip()
-    if not title:
-        errorcount += 1
-        start += 1
-        if errorcount == 5:
-            stop = True
-        continue
-    title = title.replace("'", "&#39;")
-    title = title.replace("\n", " ")
-    desc = soup.find("p", {'class': 'c-bill-intro__long-title'})
-    #if not desc:
-    #    desc = soup.find("p", {'class': 'NormalInd'})
-        
-    desc = desc.getText().strip()
-    desc = desc.replace("'", "&#39;")
-    href = url
-    desc = desc + "\n" + href
+        title = hero.getText().strip()
+        if not title:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                stop = True
+            continue
 
-    output.append(title)
-    output.append(desc) 
-    #print(start)   
+        title = title.replace("'", "&#39;").replace("\n", " ")
 
-    start = start + 1
+        desc_el = soup.find("p", {"class": "c-bill-intro__long-title"})
+        if not desc_el:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                stop = True
+            continue
 
-print(output)
+        desc = desc_el.getText().strip().replace("'", "&#39;")
+        desc = desc + "\n" + url
 
-#print(topicno)
-#print(status)
-#print(url)
-#print(uzeit) 
-#list_of_contents.remove("\n")
-#list_of_contents.remove(" ")
+        output.append(title)
+        output.append(desc)
+        bill_num += 1
+
+    return output
 
 
-#print(list_of_contents)
+def main() -> None:
+    print(scrape_oireachtas_bills())
 
-#print(topiclist)
 
-#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in output))
-#f.close
-
-#f = open('BT_Tagesordnung.txt', 'a')
-#f.write("\n".join(str(item) for item in url))
-#f.close
+if __name__ == "__main__":
+    main()

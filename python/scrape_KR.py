@@ -1,64 +1,86 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Scrape South Korea-related legislative news via Google News RSS.
+
+Keyword-filters Korean headlines and prints JSON (UTF-8 preserved).
+
+Dependencies: beautifulsoup4, requests, urllib3
+"""
+
+from __future__ import annotations
+
 import json
+
 import requests
-import datetime
-import ssl
-from bs4 import BeautifulSoup
-import warnings
 import urllib3
-import re
+from bs4 import BeautifulSoup
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-warnings.filterwarnings("ignore", category=urllib3.exceptions.InsecureRequestWarning)
+RSS_URL = (
+    "https://news.google.com/rss/search?q="
+    "%EA%B5%AD%ED%9A%8C+%EB%B0%9C%EC%9D%98+%EB%B2%95%EC%95%88"
+    "&hl=ko&gl=KR&ceid=KR:ko"
+)
+REQUEST_TIMEOUT = 15
+MAX_TITLE_LEN = 250
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+KEYWORDS = ["국회", "발의", "법안", "개정안", "제정안", "의안"]
 
-output = {}
 
-# Google News RSS workaround for South Korean legislative initiatives
-# Querying for "국회 발의 법안" (National Assembly proposed bills)
-url = "https://news.google.com/rss/search?q=%EA%B5%AD%ED%9A%8C+%EB%B0%9C%EC%9D%98+%EB%B2%95%EC%95%88&hl=ko&gl=KR&ceid=KR:ko"
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-header = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-}
 
-# Keywords to ensure we get legislation-related news
-# 국회 (National Assembly), 발의 (propose), 법안 (bill), 개정안 (amendment)
-keywords = ["국회", "발의", "법안", "개정안", "제정안", "의안"]
+def scrape_kr_news() -> dict[str, str]:
+    _disable_insecure_request_warnings()
+    output: dict[str, str] = {}
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        )
+    }
 
-try:
-    response = requests.get(url, headers=header, timeout=15, verify=False)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, features="xml")
-        items = soup.find_all("item")
-        
-        for item in items:
-            title_raw = item.find("title").text if item.find("title") else ""
-            link = item.find("link").text if item.find("link") else ""
-            pub_date = item.find("pubDate").text if item.find("pubDate") else ""
-            
-            title = title_raw.strip()
-            
-            # Filter for relevance
-            is_relevant = any(kw in title for kw in keywords)
-            
-            if is_relevant:
-                # Clean up title (remove source name at the end)
-                if " - " in title:
-                    title = title.rsplit(" - ", 1)[0]
-                
-                if len(title) > 250:
-                    title = title[:247] + "..."
-                
-                desc = f"{title}\n날짜: {pub_date}\nSource: {link}"
-                
-                output[title] = desc
+    try:
+        response = requests.get(
+            RSS_URL,
+            headers=headers,
+            timeout=REQUEST_TIMEOUT,
+            verify=False,
+        )
+    except requests.RequestException:
+        return output
 
-except Exception:
-    pass
+    if response.status_code != 200:
+        return output
 
-print(json.dumps(output, ensure_ascii=False))
+    soup = BeautifulSoup(response.content, features="xml")
+    for item in soup.find_all("item"):
+        title_el = item.find("title")
+        link_el = item.find("link")
+        pub_el = item.find("pubDate")
+        if not title_el or not link_el:
+            continue
+
+        title = (title_el.text or "").strip()
+        if not any(kw in title for kw in KEYWORDS):
+            continue
+
+        if " - " in title:
+            title = title.rsplit(" - ", 1)[0]
+        if len(title) > MAX_TITLE_LEN:
+            title = title[: MAX_TITLE_LEN - 3] + "..."
+
+        link = link_el.text or ""
+        pub_date = pub_el.text if pub_el and pub_el.text else ""
+        desc = f"{title}\n날짜: {pub_date}\nSource: {link}"
+        output[title] = desc
+
+    return output
+
+
+def main() -> None:
+    print(json.dumps(scrape_kr_news(), ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

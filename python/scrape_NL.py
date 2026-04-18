@@ -1,82 +1,105 @@
-#!/usr/bin/env python
-import json
-import requests
+#!/usr/bin/env python3
+"""
+Scrape recent Dutch Tweede Kamer legislation cases via OData.
+
+Filters government and private member bills to roughly the last 90 days and
+prints JSON mapping citeertitel (or titel) to description with source URL.
+
+Dependencies: requests, urllib3
+"""
+
+from __future__ import annotations
+
 import datetime
-import ssl
+import json
+
+import requests
 import urllib3
 
-# Suppress InsecureRequestWarning
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+API_URL = "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak"
+REQUEST_TIMEOUT = 15
+RECENT_DAYS = 90
+MAX_TITLE_LEN = 250
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
 
-output = {}
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-today = datetime.datetime.now()
-three_months_ago = today - datetime.timedelta(days=90)
 
-# Tweede Kamer OData API v2.0
-# Filters for 'Wetgeving' (Government bills) and 'Initiatiefwetgeving' (Private member bills)
-url = "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak"
-params = {
-    "$filter": "Soort eq 'Wetgeving' or Soort eq 'Initiatiefwetgeving'",
-    "$expand": "Kamerstukdossier",
-    "$orderby": "GestartOp desc",
-    "$top": 50
-}
+def scrape_tweede_kamer() -> dict[str, str]:
+    _disable_insecure_request_warnings()
+    today = datetime.datetime.now()
+    cutoff = today - datetime.timedelta(days=RECENT_DAYS)
+    output: dict[str, str] = {}
 
-header = {
-    "accept": "application/json",
-    "User-Agent": "Mozilla/5.0"
-}
+    params = {
+        "$filter": "Soort eq 'Wetgeving' or Soort eq 'Initiatiefwetgeving'",
+        "$expand": "Kamerstukdossier",
+        "$orderby": "GestartOp desc",
+        "$top": 50,
+    }
+    headers = {
+        "accept": "application/json",
+        "User-Agent": "Mozilla/5.0",
+    }
 
-try:
-    response = requests.get(url, params=params, headers=header, timeout=15, verify=False)
-    if response.status_code == 200:
+    try:
+        response = requests.get(
+            API_URL,
+            params=params,
+            headers=headers,
+            timeout=REQUEST_TIMEOUT,
+            verify=False,
+        )
+        if response.status_code != 200:
+            return output
         data = response.json()
-        for item in data.get('value', []):
-            # GestartOp format: "2026-03-03T00:00:00+01:00"
-            date_str = item.get('GestartOp', '')
-            if not date_str:
-                continue
-                
-            try:
-                item_date = datetime.datetime.strptime(date_str.split('T')[0], "%Y-%m-%d")
-                if item_date >= three_months_ago:
-                    # Citeertitel is usually the short name, Titel is the full official name
-                    short_title = item.get('Citeertitel')
-                    full_title = item.get('Titel')
-                    bill_nr = item.get('Nummer')
-                    
-                    title = short_title if short_title else full_title
-                    if not title:
-                        continue
-                        
-                    # Truncate if extremely long
-                    if len(title) > 250:
-                        title = title[:247] + "..."
-                    
-                    # Description
-                    desc = full_title if full_title else title
-                    
-                    # Link to the case on the Tweede Kamer website
-                    # New format uses the Kamerstukdossier number if available
-                    dossier = item.get('Kamerstukdossier', [])
-                    if dossier and isinstance(dossier, list) and len(dossier) > 0:
-                        bill_nr_official = dossier[0].get('Nummer')
-                        link = f"https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel%3A{bill_nr_official}"
-                    else:
-                        # Fallback to Nummer (e.g. 2025Z22479) which works with id parameter
-                        link = f"https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?id={item.get('Nummer')}"
-                    
-                    desc = f"{desc}\nSource: {link}"
-                    output[title] = desc
-            except Exception:
-                continue
-except Exception:
-    pass
+    except (requests.RequestException, ValueError):
+        return output
 
-print(json.dumps(output))
+    for item in data.get("value", []):
+        date_str = item.get("GestartOp", "")
+        if not date_str:
+            continue
+        try:
+            item_date = datetime.datetime.strptime(date_str.split("T")[0], "%Y-%m-%d")
+        except ValueError:
+            continue
+        if item_date < cutoff:
+            continue
+
+        short_title = item.get("Citeertitel")
+        full_title = item.get("Titel")
+
+        title = short_title or full_title
+        if not title:
+            continue
+        if len(title) > MAX_TITLE_LEN:
+            title = title[: MAX_TITLE_LEN - 3] + "..."
+
+        desc = full_title or title
+        dossier = item.get("Kamerstukdossier", [])
+        if dossier and isinstance(dossier, list) and dossier:
+            bill_nr_official = dossier[0].get("Nummer")
+            link = (
+                "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?"
+                f"cfg=wetsvoorsteldetails&qry=wetsvoorstel%3A{bill_nr_official}"
+            )
+        else:
+            link = (
+                "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?"
+                f"id={item.get('Nummer')}"
+            )
+
+        desc = f"{desc}\nSource: {link}"
+        output[title] = desc
+
+    return output
+
+
+def main() -> None:
+    print(json.dumps(scrape_tweede_kamer()))
+
+
+if __name__ == "__main__":
+    main()

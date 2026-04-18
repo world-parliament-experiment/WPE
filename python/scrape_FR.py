@@ -1,67 +1,84 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Scrape recent French National Assembly parliamentary documents from RSS.
+
+Filters items to roughly the last 90 days by pubDate and prints a JSON object
+mapping truncated title to a short description with source link.
+
+Dependencies: beautifulsoup4, requests, urllib3
+"""
+
+from __future__ import annotations
+
+import datetime
 import json
+
 import requests
 import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import datetime
-import ssl
 from bs4 import BeautifulSoup
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+RSS_URL = "http://www2.assemblee-nationale.fr/feeds/detail/documents-parlementaires"
+REQUEST_TIMEOUT = 15
+RECENT_DAYS = 90
+MAX_TITLE_LEN = 250
 
-output = {}
 
-today = datetime.datetime.now()
-three_months_ago = today - datetime.timedelta(days=90)
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Assemblée Nationale RSS feed for parliamentary documents
-url = "http://www2.assemblee-nationale.fr/feeds/detail/documents-parlementaires"
 
-header = {
-    "User-Agent": "Mozilla/5.0"
-}
+def scrape_assemblee_documents() -> dict[str, str]:
+    _disable_insecure_request_warnings()
+    today = datetime.datetime.now()
+    cutoff = today - datetime.timedelta(days=RECENT_DAYS)
+    output: dict[str, str] = {}
 
-try:
-    response = requests.get(url, headers=header, timeout=15, verify=False)
-    if response.status_code == 200:
-        # Use BeautifulSoup to parse the XML
-        soup = BeautifulSoup(response.content, features="xml")
-        items = soup.find_all("item")
-        
-        for item in items:
-            pub_date_str = item.find("pubDate").text if item.find("pubDate") else ""
-            if not pub_date_str:
-                continue
-                
-            try:
-                # Format: Tue, 03 Mar 2026 00:00:00 +0000
-                # We only need the date part
-                date_clean = " ".join(pub_date_str.split()[1:4])
-                item_date = datetime.datetime.strptime(date_clean, "%d %b %Y")
-                
-                if item_date >= three_months_ago:
-                    title_raw = item.find("title").text if item.find("title") else ""
-                    if not title_raw:
-                        continue
-                    
-                    # France format is often: "N° 2548 - Proposition de loi de M. ..."
-                    # We can use the whole title as it is quite descriptive
-                    title = title_raw.strip()
-                    
-                    # Truncate if too long
-                    if len(title) > 250:
-                        title = title[:247] + "..."
-                    
-                    link = item.find("link").text if item.find("link") else ""
-                    desc = f"{title}\nSource: {link}"
-                    
-                    output[title] = desc
-            except Exception:
-                continue
-except Exception:
-    pass
+    try:
+        response = requests.get(
+            RSS_URL,
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=REQUEST_TIMEOUT,
+            verify=False,
+        )
+    except requests.RequestException:
+        return output
 
-print(json.dumps(output))
+    if response.status_code != 200:
+        return output
+
+    soup = BeautifulSoup(response.content, features="xml")
+    for item in soup.find_all("item"):
+        pub_el = item.find("pubDate")
+        if not pub_el or not pub_el.text:
+            continue
+        pub_date_str = pub_el.text
+        try:
+            date_clean = " ".join(pub_date_str.split()[1:4])
+            item_date = datetime.datetime.strptime(date_clean, "%d %b %Y")
+        except (ValueError, IndexError):
+            continue
+
+        if item_date < cutoff:
+            continue
+
+        title_el = item.find("title")
+        if not title_el or not title_el.text:
+            continue
+        title = title_el.text.strip()
+        if len(title) > MAX_TITLE_LEN:
+            title = title[: MAX_TITLE_LEN - 3] + "..."
+
+        link_el = item.find("link")
+        link = link_el.text.strip() if link_el and link_el.text else ""
+        desc = f"{title}\nSource: {link}"
+        output[title] = desc
+
+    return output
+
+
+def main() -> None:
+    print(json.dumps(scrape_assemblee_documents()))
+
+
+if __name__ == "__main__":
+    main()
