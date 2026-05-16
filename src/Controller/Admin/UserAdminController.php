@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Controller\BaseController;
+use App\Entity\UserImage;
 use JMS\Serializer\SerializerInterface;
 use App\Entity\User;
 use App\Entity\Category;
@@ -174,6 +175,94 @@ class UserAdminController extends BaseController
             'delete_form' => $deleteForm->createView(),
             "roles" => $roles,
         ));
+    }
+
+    /**
+     * Admin: display the avatar edit page for any user.
+     *
+     * @Route("/{id}/avatar", name="admin_user_avatar", methods={"GET"})
+     * @param int $id
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function avatarAction(int $id)
+    {
+        $em = $this->managerRegistry->getManager();
+        /** @var User $user */
+        $user = $em->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            throw $this->createNotFoundException('User not found.');
+        }
+
+        $image = $em->getRepository(User::class)->getUserAvatarImage($user);
+
+        return $this->render('User/avatar.html.twig', [
+            'image'      => $image,
+            'saveUrl'    => $this->generateUrl('admin_user_avatar_save', ['id' => $id]),
+            'targetUser' => $user,
+        ]);
+    }
+
+    /**
+     * Admin: save a new avatar (base64 PNG) for any user.
+     *
+     * @Route("/{id}/avatar/save", name="admin_user_avatar_save", methods={"POST"}, options={"expose"=true})
+     * @param Request $request
+     * @param int $id
+     */
+    public function avatarSaveAction(Request $request, int $id)
+    {
+        $em = $this->managerRegistry->getManager();
+        /** @var User $user */
+        $user = $em->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            die('error_user_not_found');
+        }
+
+        $file = \App\Service\AvatarManager::validateFilename($request->get('filename'));
+        if ($file['type'] === 'invalid') {
+            die('error_file_type');
+        }
+
+        $data = \App\Service\AvatarManager::validateImagedata($_POST['imgdata'], $file['type']);
+        if ($data === false) {
+            die('error_file_data');
+        }
+
+        $data = base64_decode($data);
+        $dir = $this->getParameter('avatar_image_path');
+
+        if (!is_dir($dir) || !is_writable($dir)) {
+            die('error_uploads_dir');
+        }
+
+        $image = $em->getRepository(User::class)->getUserAvatarImage($user);
+
+        if (is_null($image)) {
+            $image = new UserImage();
+            $image->setUser($user);
+        } elseif ($image->getPath() !== 'default.png') {
+            @unlink($dir . $image->getPath());
+        }
+
+        $image->setImageType(UserImage::USER_IMAGE_TYPE_AVATAR);
+        $image->setContentType('image/png');
+        $fn = tempnam($dir, $user->getId() . '_');
+        if ($fn === false) {
+            die('error_file_data');
+        }
+        if (rename($fn, $fn . '.png') === false) {
+            die('error_file_data');
+        }
+        $fn .= '.png';
+        $image->setPath(basename($fn));
+        file_put_contents($fn, $data);
+
+        $em->persist($image);
+        $em->flush();
+
+        die('saved');
     }
 
 

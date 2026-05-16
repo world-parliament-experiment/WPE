@@ -23,7 +23,7 @@
                                      style="width: 120px; height: 120px; object-fit: cover;">
                             </div>
                             <div class="col-md-9">
-                                <h4>{{ app.user.firstname }} {{ app.user.lastname }}</h4>
+                                <h4>{{ targetUser.firstname }} {{ targetUser.lastname }}</h4>
                                 <p class="text-muted mb-0">Current Profile Identity</p>
                                 <small class="text-info"><i class="fa fa-info-circle"></i> Choose a new style below to update your look.</small>
                             </div>
@@ -72,7 +72,7 @@
                                         <div class="form-group">
                                             <label for="avatarSeed">Seed (Type anything for a unique look)</label>
                                             <div class="input-group">
-                                                <input type="text" id="avatarSeed" class="form-control" placeholder="Random seed..." value="{{ app.user.username }}">
+                                                <input type="text" id="avatarSeed" class="form-control" placeholder="Random seed..." value="{{ targetUser.username }}">
                                                 <div class="input-group-append">
                                                     <button class="btn btn-secondary" type="button" id="randomizeBtn">
                                                         <i class="fa fa-random"></i>
@@ -169,7 +169,7 @@
             // --- Common Save Logic ---
             function saveToServer(base64data, $btn, $status) {
                 $.ajax({
-                    url: '/user/avatar/save',
+                    url: '{{ saveUrl }}',
                     method: 'POST',
                     data: {
                         filename: 'avatar.png',
