@@ -1,0 +1,14 @@
+/.github/ @RoPhSe1978 @cylusion
+docker-compose.yml      @RoPhSe1978 @cylusion
+Dockerfile              @RoPhSe1978 @cylusion
+
+# Symfony config
+/config/                @RoPhSe1978 @cylusion
+.env*                   @RoPhSe1978 @cylusion
+
+# Database migrations (extra eyes!)
+/migrations/            @RoPhSe1978 @cylusion
+
+# Composer dependencies
+composer.json           @RoPhSe1978 @cylusion
+composer.lock           @RoPhSe1978 @cylusion
