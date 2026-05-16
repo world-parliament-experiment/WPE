@@ -72,6 +72,7 @@
                         <p>
                             {{ form_start(delete_form) }}
                             <a href="{{ path('admin_user_index') }}" class="btn btn-dark"><i class="fas fa-bars"></i> {{ 'user.button.overview'|trans }} </a>
+                            <a href="{{ path('admin_user_avatar', {id: movieRating.id}) }}" class="btn btn-info"><i class="fa fa-image"></i> Edit Avatar</a>
                             <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> {{ 'user.button.delete'|trans }} </button>
                             {{ form_end(delete_form) }}
                         </p>

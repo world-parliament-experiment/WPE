@@ -533,7 +533,9 @@ class UserController extends BaseController
         $image = $em->getRepository(User::class)->getUserAvatarImage($this->getUser());
 
         return $this->render('User/avatar.html.twig', array(
-            'image' => $image
+            'image'    => $image,
+            'saveUrl'  => $this->generateUrl('user_avatar_save'),
+            'targetUser' => $this->getUser(),
         ));
     }
 
