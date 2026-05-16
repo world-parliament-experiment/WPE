@@ -1,0 +1,75 @@
+name: Deploy Symfony App
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Debian Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -e  # Exit on any error
+            cd /data/httpd/demo.tgde.org
+
+            echo "🔄 Pulling latest changes..."
+            BEFORE_PULL=$(git rev-parse HEAD)
+            git pull origin develop
+            AFTER_PULL=$(git rev-parse HEAD)
+            
+            # Skip everything if nothing changed
+            if [ "$BEFORE_PULL" = "$AFTER_PULL" ]; then
+                echo "✅ No new commits — nothing to deploy."
+                exit 0
+            fi
+
+            # Get list of changed files once
+            CHANGED_FILES=$(git diff --name-only "$BEFORE_PULL" "$AFTER_PULL")
+
+            if git diff --name-only $BEFORE_PULL $AFTER_PULL | grep -q "composer.lock"; then
+                echo "📦 composer.lock changed — installing dependencies..."
+                composer install --no-dev --optimize-autoloader --no-interaction
+            else
+                echo "⏭️ composer.lock unchanged — skipping install."
+            fi
+            
+            # ask Doctrine if there's anything to migrate
+            PENDING=$(php bin/console doctrine:migrations:up-to-date --no-interaction 2>&1 || true)
+            if echo "$PENDING" | grep -q "Out-of-date"; then
+                echo "🗄️ Pending migrations detected — running migrate..."
+                php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+            else
+                echo "⏭️ Database is up-to-date — skipping migrate."
+            fi
+
+            echo "🧹 Clearing and warming cache..."
+            php bin/console cache:clear --env=prod --no-debug
+            php bin/console cache:warmup --env=prod --no-debug
+
+            echo "🎨 Installing assets..."
+            php bin/console assets:install public --symlink
+
+            # Uncomment if you use Webpack Encore
+            # echo "📦 Building frontend assets..."
+            # npm ci
+            # npm run build
+
+            echo "🔐 Fixing permissions..."
+            sudo chown -R www-data:www-data var/
+            sudo chmod -R 775 var/
+
+            echo "🔁 Reloading Apache..."
+            sudo systemctl reload apache2
+
+            echo "✅ Deployment complete!"
