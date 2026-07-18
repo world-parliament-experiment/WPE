@@ -38,6 +38,10 @@ jobs:
             # Get list of changed files once
             CHANGED_FILES=$(git diff --name-only "$BEFORE_PULL" "$AFTER_PULL")
 
+            echo "🔐 Ensuring permissions for var/ directory..."
+            sudo chown -R www-data:www-data var/
+            sudo chmod -R 775 var/
+
             if git diff --name-only $BEFORE_PULL $AFTER_PULL | grep -q "composer.lock"; then
                 echo "📦 composer.lock changed — installing dependencies..."
                 composer install --no-dev --optimize-autoloader --no-interaction
@@ -55,18 +59,14 @@ jobs:
             fi
 
             echo "🧹 Clearing and warming cache..."
+            sudo rm -rf var/cache/prod
             php bin/console cache:clear --env=prod --no-debug
             php bin/console cache:warmup --env=prod --no-debug
 
             echo "🎨 Installing assets..."
             php bin/console assets:install public --symlink
 
-            # Uncomment if you use Webpack Encore
-            # echo "📦 Building frontend assets..."
-            # npm ci
-            # npm run build
-
-            echo "🔐 Fixing permissions..."
+            echo "🔐 Fixing final permissions..."
             sudo chown -R www-data:www-data var/
             sudo chmod -R 775 var/
 
