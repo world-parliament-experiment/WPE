@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Controller\BaseController;
 use App\Entity\Initiative;
+use App\Enum\InitiativeEnum;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
