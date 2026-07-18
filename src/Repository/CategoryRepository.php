@@ -180,24 +180,36 @@ class CategoryRepository extends EntityRepository
     }
 
   /**
-     * All initiatives by category and type
+     * All initiatives by category and type (excluding drafts)
      *
      * @return mixed
      */
     public function getInitiatives($category, $type)
     {
-        return $this->createQueryBuilder('category')
+        $qb = $this->createQueryBuilder('category')
         ->select(['category', 'initiative'])
         ->leftJoin('category.initiatives', 'initiative')
         ->andWhere('initiative.category = :icategory')
         ->andWhere('initiative.type = :itype')
-        ->addOrderBy('initiative.createdAt', 'desc')
-        ->setParameters([
+        ->addOrderBy('initiative.createdAt', 'desc');
+
+        if ($type === InitiativeEnum::TYPE_PAST ||
+            $type === InitiativeEnum::TYPE_PROGRAM
+        ) {
+            $qb->andWhere('initiative.state = :state')
+               ->setParameter('state', InitiativeEnum::STATE_FINISHED);
+        } else {
+            $qb->andWhere('initiative.state = :state')
+               ->setParameter('state', InitiativeEnum::STATE_ACTIVE);
+        }
+
+        $qb->setParameters([
             'icategory' => $category,
             'itype' => $type,
-        ])
-        ->getQuery()
-        ->execute();
+            'state' => ($type === InitiativeEnum::TYPE_PAST || $type === InitiativeEnum::TYPE_PROGRAM) ? InitiativeEnum::STATE_FINISHED : InitiativeEnum::STATE_ACTIVE
+        ]);
+
+        return $qb->getQuery()->execute();
     }
 
 }
