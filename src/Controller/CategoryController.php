@@ -78,7 +78,7 @@ class CategoryController extends BaseController
         } elseif ($type === 'article') {
             $initiatives = $em->getRepository(Initiative::class)->findBy(['type' => InitiativeEnum::TYPE_ARTICLE, 'state' => InitiativeEnum::STATE_ACTIVE], ['publishedAt' => 'DESC']);
 
-            return $this->render('Category/future.html.twig', [ // Reusing future template for list
+            return $this->render('Category/article.html.twig', [
                 'initiatives' => $initiatives,
                 'type' => $type,
                 'alias' => 'articles',
@@ -147,7 +147,7 @@ class CategoryController extends BaseController
             $initiatives = $em->getRepository(Category::class)
                 ->getInitiatives($category, InitiativeEnum::TYPE_ARTICLE);
 
-            return $this->render('Category/future.html.twig', [
+            return $this->render('Category/article.html.twig', [
                 'category' => $category,
                 'type' => $type,
                 'alias' => 'articles',
