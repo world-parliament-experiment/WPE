@@ -101,6 +101,10 @@ class MenuBuilder
 
                 ->setExtra("icon", "fas fa-user-cog fa-fw")
                 ->setUri("#")
+                ->addChild('Article', ["route" => "user_initiative_new", "routeParameters" => ["type" => "article"]])
+                ->setLabel($this->translator->trans('menu.admin.article', [], 'messages'))
+
+                ->getParent()
                 ->addChild('Initiative', ["route" => "admin_initiative_index"])
                 ->setLabel($this->translator->trans('menu.admin.initiative', [], 'messages'))
 

@@ -16,7 +16,7 @@
         <!-- >>>>>>>>>>>>>>>>>>>>
          Post Left Sidebar Area
         <<<<<<<<<<<<<<<<<<<<< -->
-        <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow">
+        <div class="post-sidebar-area left-sidebar m-t-30 m-b-30 bg-white box-shadow sticky-sidebar">
             {# Desktop Left Sidebar - only visible on Desktop #}
             <div class="desktop-only">
                 <div class="single-sidebar-widget p-30">
@@ -55,49 +55,33 @@
         <div class="mag-posts-content m-t-30 m-b-30 p-30 box-shadow">
             
             <div class="feature-video-posts m-b-30">
-                <div class="section-heading">
-                    <h5>Ongoing Votes &#8226; Decide Now</h5>
-                </div>
-
-                <div class="proposal-grid">
-                    {% for vote in ongoing_votes %}
-                        <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
+                <div class="proposal-grid single-column-feed">
+                    {% for item in feed_items %}
+                        <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(item.category.image) }}'); margin-bottom: 30px; flex: 0 0 100%; max-width: 100%;">
                             <div class="proposal-content">
                                 <div class="proposal-meta">
-                                    <a href="{{ path('category_type', {id: vote.category.id, slug:vote.category.slug, type:vote.typename|lower}) }}">{{ vote.category.name }}</a>
+                                    <a href="{{ path('category_type', {id: item.category.id, slug:item.category.slug, type:item.typename|lower}) }}">{{ item.category.name }}</a>
+                                    <span class="text-white ml-2">• {{ item.publishedAt|date('d.m.Y') }}</span>
                                 </div>
-                                <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="proposal-title">{{ vote.title }}</a>
+                                <a href="{{ path('initiative_show', {id: item.id,slug:item.slug}) }}" class="proposal-title">{{ item.title }}</a>
+                                
+                                <div class="proposal-description text-white mb-3" style="font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;">
+                                    {{ item.description|striptags|raw }}
+                                </div>
+
                                 <div class="proposal-action">
-                                    <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="btn mag-btn btn-sm">Vote Now</a>
+                                    {% if item.type == 4 %} {# TYPE_ARTICLE #}
+                                        <a href="{{ path('initiative_show', {id: item.id,slug:item.slug}) }}" class="btn mag-btn btn-sm">Read More</a>
+                                    {% elseif item.type == 1 %} {# TYPE_CURRENT #}
+                                        <a href="{{ path('initiative_show', {id: item.id,slug:item.slug}) }}" class="btn mag-btn btn-sm">Vote Now</a>
+                                    {% else %} {# TYPE_FUTURE or others #}
+                                        <a href="{{ path('initiative_show', {id: item.id,slug:item.slug}) }}" class="btn mag-btn btn-sm">Discuss Now</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     {% else %}
-                        <p>No ongoing votes at the moment.</p>
-                    {% endfor %}
-                </div>
-
-                <hr>
-
-                <div class="section-heading mt-5">
-                    <h5>Latest Proposals &#8226; Discuss Now</h5>
-                </div>
-
-                <div class="proposal-grid">
-                    {% for vote in proposals %}
-                        <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(vote.category.image) }}');">
-                            <div class="proposal-content">
-                                <div class="proposal-meta">
-                                    <a href="{{ path('category_type', {id: vote.category.id, slug:vote.category.slug, type:vote.typename|lower}) }}">{{ vote.category.name }}</a>
-                                </div>
-                                <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="proposal-title">{{ vote.title }}</a>
-                                <div class="proposal-action">
-                                    <a href="{{ path('initiative_show', {id: vote.id,slug:vote.slug}) }}" class="btn mag-btn btn-sm">Discuss Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% else %}
-                        <p>No new proposals at the moment.</p>
+                        <p>No items in the feed at the moment.</p>
                     {% endfor %}
                 </div>
             </div>
@@ -179,7 +163,7 @@
         Post Right Sidebar Area
         <<<<<<<<<<<<<<<<<<<<< -->
 
-        <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow">
+        <div class="post-sidebar-area right-sidebar m-t-30 m-b-30 box-shadow sticky-sidebar">
             <div class="desktop-only">
                 <div class="single-sidebar-widget p-30">
                     <div class="section-heading">
@@ -212,6 +196,32 @@
     </section>
 
     <style>
+        /* Sticky Sidebar logic */
+        @media (min-width: 1200px) {
+            .sticky-sidebar {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 90px; /* Adjust based on your header height */
+                height: calc(100vh - 120px);
+                overflow-y: auto;
+            }
+            /* Hide scrollbar for sticky sidebars but keep functionality */
+            .sticky-sidebar::-webkit-scrollbar {
+                width: 0px;
+                background: transparent;
+            }
+        }
+
+        /* Force Single Column for Feed */
+        .single-column-feed {
+            display: block !important;
+        }
+        .single-column-feed .proposal-card {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+
         /* Responsive Display Logic */
         @media (min-width: 1200px) {
             .mobile-tablet-only { display: none !important; }

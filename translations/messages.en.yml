@@ -125,6 +125,8 @@ menu:
         label: Rejected
     program:
         label: Accepted
+    article:
+        label: Articles
     faq:
         label: FAQ
     user:
@@ -142,6 +144,7 @@ menu:
         favourites: Favourites
     admin:
         label: Administration
+        article: Create Article
         initiative: Initiatives
         user: Users
         category: Categories
@@ -190,10 +193,16 @@ breadcrumb:
           label: Edit Proposal
         create:
           label: Create Proposal
+      article:
+        label: Articles
+        create:
+          label: Create Article
     current:
         label: Ongoing Votes
     future:
         label: Proposals
+    article:
+        label: Articles
     past:
         label: Archive
     program:

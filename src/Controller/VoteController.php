@@ -245,7 +245,7 @@ class VoteController extends BaseController
         $comment->setReported('0');
         $comment->setParent(NULL);
              
-        if ($initiative->getType() === 0) {
+        if ($initiative->getType() === InitiativeEnum::TYPE_FUTURE) {
             return $this->render('Vote/show.html.twig', array(
                 'initiative' => $initiative,
                 'form' => $form->createView(),
@@ -255,7 +255,7 @@ class VoteController extends BaseController
                 'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
-        } elseif ($initiative->getType() === 1) {
+        } elseif ($initiative->getType() === InitiativeEnum::TYPE_CURRENT) {
             return $this->render('Vote/show.html.twig', array(
                 'initiative' => $initiative,
                 'form' => $form->createView(),
@@ -265,12 +265,22 @@ class VoteController extends BaseController
                 'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),
             ));
-        } elseif ($initiative->getType() === 2) {
+        } elseif ($initiative->getType() === InitiativeEnum::TYPE_PAST) {
             return $this->render('Vote/show.html.twig', array(
                 'initiative' => $initiative,
                 'form' => $form->createView(),
                 'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
                 'type' => 'unsuccessful initiative',
+                'mobileVerified' => $isMobileNumberVerified,
+                'phoneNumberExist' => $isPhoneNumberExist,
+                'category' => $initiative->getCategory(),
+            ));
+        } elseif ($initiative->getType() === InitiativeEnum::TYPE_ARTICLE) {
+            return $this->render('Vote/show.html.twig', array(
+                'initiative' => $initiative,
+                'form' => $form->createView(),
+                'repo' => $em->getRepository('Gedmo\Loggable\Entity\LogEntry'),
+                'type' => 'article',
                 'mobileVerified' => $isMobileNumberVerified,
                 'phoneNumberExist' => $isPhoneNumberExist,
                 'category' => $initiative->getCategory(),

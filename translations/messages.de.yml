@@ -4,3 +4,14 @@ vote:
 category:
     edit:
         submit: Kategorie Speichern
+menu:
+    admin:
+        article: Artikel erstellen
+    article:
+        label: Artikel
+breadcrumb:
+    profile:
+        article:
+            create: Artikel erstellen
+    article:
+        label: Artikel

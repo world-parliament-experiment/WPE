@@ -14,6 +14,7 @@ abstract class InitiativeEnum
     const TYPE_CURRENT= 1;
     const TYPE_PAST = 2;
     const TYPE_PROGRAM = 3;
+    const TYPE_ARTICLE = 4;
 
     const STATE_DRAFT = 0;
     const STATE_ACTIVE = 1;
@@ -33,6 +34,7 @@ abstract class InitiativeEnum
         self::TYPE_CURRENT  => "current",
         self::TYPE_PAST     => "past",
         self::TYPE_PROGRAM  => "program",
+        self::TYPE_ARTICLE  => "article",
     ];
 
     /**
@@ -66,7 +68,8 @@ abstract class InitiativeEnum
             self::TYPE_FUTURE,
             self::TYPE_CURRENT,
             self::TYPE_PAST,
-            self::TYPE_PROGRAM
+            self::TYPE_PROGRAM,
+            self::TYPE_ARTICLE
         ];
     }
 
@@ -107,6 +110,8 @@ abstract class InitiativeEnum
             $type = self::TYPE_CURRENT;
         } elseif ($typeName === self::getTypeName(self::TYPE_FUTURE)) {
             $type = self::TYPE_FUTURE;
+        } elseif ($typeName === self::getTypeName(self::TYPE_ARTICLE)) {
+            $type = self::TYPE_ARTICLE;
         }
 
         if (in_array($type, self::getAvailableTypes())) {

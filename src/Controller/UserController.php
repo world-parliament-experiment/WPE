@@ -298,13 +298,13 @@ class UserController extends BaseController
      * @Breadcrumb("breadcrumb.profile.initiative.label", route={"name"="user_initiative_index"}, attributes={"translate": true})
      * @Breadcrumb("breadcrumb.profile.initiative.create.label", attributes={"translate": true})
      *
-     * @Route("/create", name="user_initiative_new", methods={"GET","POST"})
+     * @Route("/create/{type}", name="user_initiative_new", methods={"GET","POST"}, defaults={"type"=null})
      * @param Request $request
      *
      * @return RedirectResponse|Response
      * @throws Exception
      */
-    public function newAction(Request $request, SluggerInterface $slugger)
+    public function newAction(Request $request, SluggerInterface $slugger, $type = null)
     {
         
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -312,7 +312,12 @@ class UserController extends BaseController
         $initiative = new Initiative();
 
         $initiative->setState(InitiativeEnum::STATE_DRAFT);
-        $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+        
+        if ($type === 'article') {
+            $initiative->setType(InitiativeEnum::TYPE_ARTICLE);
+        } else {
+            $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+        }
 
         $form = $this->createForm(InitiativeUserForm::class, $initiative);
         $form->handleRequest($request);
@@ -332,26 +337,29 @@ class UserController extends BaseController
 
                 // $this->denyAccessUnlessGranted("publish", $initiative);
 
-                $voting = New Voting();
-                $startdate = new DateTime();
-                $initiative->setPublishedAt($startdate);
                 $initiative->setState(InitiativeEnum::STATE_ACTIVE);
+                $initiative->setPublishedAt(new \DateTime());
+
+                if ($initiative->getType() !== InitiativeEnum::TYPE_ARTICLE) {
+                    $voting = New Voting();
+                    $startdate = new DateTime();
+                    
+                    $startdate->modify("+2 minutes");
+
+                    // if ($startdate < new DateTime()) {
+                    //     $startdate->modify("tomorrow 20:00");
+                    // }
+
+                    $voting->setStartdate($startdate);
+
+                    $voting->setState(VotingEnum::STATE_WAITING);
+                    $voting->setType(VotingEnum::TYPE_FUTURE);
+                    $voting->setInitiative($initiative);
+
+                    $em->persist($voting);
+                }
                 
-                $startdate->modify("+2 minutes");
-
-                // if ($startdate < new DateTime()) {
-                //     $startdate->modify("tomorrow 20:00");
-                // }
-
-                $voting->setStartdate($startdate);
-
-                $voting->setState(VotingEnum::STATE_WAITING);
-                $voting->setType(VotingEnum::TYPE_FUTURE);
-                $voting->setInitiative($initiative);
-
-                $em->persist($voting);
                 $em->persist($initiative);
-
                 $em->flush();
 
                 $this->addFlash(
@@ -380,6 +388,7 @@ class UserController extends BaseController
 
         return $this->render('User/new.html.twig', array(
             'form' => $form->createView(),
+            'type' => $type
         ));
     }
 

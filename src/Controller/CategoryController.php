@@ -32,7 +32,7 @@ class CategoryController extends BaseController
 
     /**
      * @Breadcrumb("breadcrumb.{type}.label", attributes={"translate": true})
-     * @Route("/{type}", requirements={"type" = "(future|current|past|program)"}, name="category_index")
+     * @Route("/{type}", requirements={"type" = "(future|current|past|program|article)"}, name="category_index")
      */
 
     public function listCategoryOverviewAction($type)
@@ -75,6 +75,14 @@ class CategoryController extends BaseController
                 'type' => $type,
                 'alias' => 'decisions',
             ]);
+        } elseif ($type === 'article') {
+            $initiatives = $em->getRepository(Initiative::class)->findBy(['type' => InitiativeEnum::TYPE_ARTICLE, 'state' => InitiativeEnum::STATE_ACTIVE], ['publishedAt' => 'DESC']);
+
+            return $this->render('Category/future.html.twig', [ // Reusing future template for list
+                'initiatives' => $initiatives,
+                'type' => $type,
+                'alias' => 'articles',
+            ]);
         } else {
             $initiatives = $em->getRepository(Category::class)
                 ->getPastInitiatives();
@@ -90,7 +98,7 @@ class CategoryController extends BaseController
     /**
      * @Breadcrumb("breadcrumb.{type}.label", route={"name"="category_index", "parameters"={"type"="{type}"}}, attributes={"translate": true})
      * @Breadcrumb("{category.name}")
-     * @Route("/{type}/{id}/{slug}", requirements={"id" = "\d+","type" = "(future|current|past|program)"}, name="category_type")
+     * @Route("/{type}/{id}/{slug}", requirements={"id" = "\d+", "type" = "(future|current|past|program|article)"}, name="category_type")
      * @param Category $category {type}
      * @param $type
      * @return Response
@@ -134,13 +142,24 @@ class CategoryController extends BaseController
                 'alias' => 'proposals',
                 'initiatives' => $initiatives,
             ]);
+        } elseif ($type === 'article') {
+
+            $initiatives = $em->getRepository(Category::class)
+                ->getInitiatives($category, InitiativeEnum::TYPE_ARTICLE);
+
+            return $this->render('Category/future.html.twig', [
+                'category' => $category,
+                'type' => $type,
+                'alias' => 'articles',
+                'initiatives' => $initiatives,
+            ]);
         }
     }
 
     /**
      * Lists all initiative entities of certain type.
      *
-     * @Route("/{type}/{id}/{slug}/ajax", name="category_type_search", requirements={"type" = "(future|current|past|program)"},defaults={"id" = 0}, methods={"POST","GET"}, options={"expose"=true})
+     * @Route("/{type}/{id}/{slug}/ajax", name="category_type_search", requirements={"type" = "(future|current|past|program|article)"},defaults={"id" = 0}, methods={"POST","GET"}, options={"expose"=true})
      * @param Request $request
      * @param Category $category
      * @param $type

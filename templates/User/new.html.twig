@@ -2,7 +2,10 @@
 
 {% block body %}
 
-    {{ include ('Widget/_breadcrumb.html.twig', {title: 'New Initiative', background: asset('/assets/img/header/initiative_large.jpg')}, with_context = false) }}
+    {% set isArticle = (type == 'article') %}
+    {% set pageTitle = isArticle ? 'breadcrumb.profile.article.create.label'|trans : 'New Initiative' %}
+
+    {{ include ('Widget/_breadcrumb.html.twig', {title: pageTitle, background: asset('/assets/img/header/initiative_large.jpg')}, with_context = false) }}
 
     {{ apy_breadcrumb_trail_render() }}
 
@@ -17,13 +20,13 @@
                 <div class="login-content bg-white mb-30 p-30 box-shadow">
                     <!-- Section Title -->
                     <div class="section-heading">
-                        <h5>Create a new Proposal</h5>
+                        <h5>{{ isArticle ? 'Create a new Article' : 'Create a new Proposal' }}</h5>
                     </div>
 
                     <div class="card mb-4 bg-light border-info">
                         <div class="card-body">
                             <h6 class="card-title"><i class="fas fa-robot text-info"></i> AI Drafting Assistant</h6>
-                            <p class="small text-muted">Choose a political persona and provide a topic or bullet points. The AI will draft a proposal for you.</p>
+                            <p class="small text-muted">Choose a political persona and provide a topic or bullet points. The AI will draft a {{ isArticle ? 'article' : 'proposal' }} for you.</p>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">

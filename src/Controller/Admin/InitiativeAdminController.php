@@ -133,6 +133,7 @@ class InitiativeAdminController extends BaseController
     {
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
+        $oldState = $initiative->getState();
 
         $deleteForm = $this->createDeleteForm($initiative);
         $editForm = $this->createForm('App\Form\InitiativeForm', $initiative);
@@ -141,6 +142,10 @@ class InitiativeAdminController extends BaseController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
 
             $initiative = $editForm->getData();
+
+            if ($oldState != InitiativeEnum::STATE_ACTIVE && $initiative->getState() == InitiativeEnum::STATE_ACTIVE) {
+                $initiative->setPublishedAt(new \DateTime());
+            }
 
             $em->persist($initiative);
             $em->flush();

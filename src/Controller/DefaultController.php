@@ -56,19 +56,11 @@ class DefaultController extends BaseController
             }
         }
 
-        $proposals = $em->getRepository(Initiative::class)->slider(6, $countries, InitiativeEnum::TYPE_FUTURE);
-        $ongoingVotes = $em->getRepository(Initiative::class)->slider(6, $countries, InitiativeEnum::TYPE_CURRENT);
+        $feedItems = $em->getRepository(Initiative::class)->getFeedItems(20, $countries);
 
-        $votesf = $em->getRepository(Initiative::class)
-            ->future();
-        $votesc = $em->getRepository(Initiative::class)
-            ->current();
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
-            'votesf' => $votesf,
-            'votesc' => $votesc,
-            'proposals' => $proposals,
-            'ongoing_votes' => $ongoingVotes,
+            'feed_items' => $feedItems,
         ]);
 
     }

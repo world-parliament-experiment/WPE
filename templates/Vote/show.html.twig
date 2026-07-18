@@ -40,20 +40,21 @@
                             {% endautoescape %}
 
                             <!-- Vote Area -->
+                            {% if initiative.type != 4 %}
+                                <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
+                                    <!-- Section Title -->
+                                    <div class="section-heading">
+                                        <h5>VOTE</h5>
+                                    </div>
 
-                            <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
-                                <!-- Section Title -->
-                                <div class="section-heading">
-                                    <h5>VOTE</h5>
+                                    <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
+                                        data-slug="{{ initiative.slug }}"></div>
+                                    {% if initiative.type == 1 and  initiative.state == 1 %}
+                                        <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted in either direction, the vote will end and the results will be evaluated immediately.</p><p>You can see the support result history of this initiative <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
+                                    {% endif %}
+
                                 </div>
-
-                                <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
-                                    data-slug="{{ initiative.slug }}"></div>
-                                {% if initiative.type == 1 and  initiative.state == 1 %}
-                                    <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted in either direction, the vote will end and the results will be evaluated immediately.</p><p>You can see the support result history of this initiative <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
-                                {% endif %}
-
-                            </div>
+                            {% endif %}
 
                             {#                    {{ dump(initiative) }}#}
                             {#                    {% for voting in initiative.votings %}#}
@@ -142,9 +143,11 @@
                     <div class="sidebar-area bg-white mb-30 box-shadow">
                         <!-- Sidebar Widget -->
 
-                        <div class="single-sidebar-widget p-30 w-categories-{{ initiative.typeName }}">
-                            {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': initiative.typeName })) }}
-                        </div>
+                        {% if initiative.type != 4 %}
+                            <div class="single-sidebar-widget p-30 w-categories-{{ initiative.typeName }}">
+                                {{ render(controller('App\\Controller\\WidgetController::CategoriesOverviewAction', { 'type': initiative.typeName })) }}
+                            </div>
+                        {% endif %}
                         <div class="single-sidebar-widget p-30 w-citizens">
                             {{ render(controller('App\\Controller\\WidgetController::mostCitizensByCountryAction')) }}
                         </div>

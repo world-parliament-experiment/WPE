@@ -575,4 +575,31 @@ class InitiativeRepository extends EntityRepository
 
     }
 
+    /**
+     * Get items for the homepage feed (Future, Current, and Article types)
+     *
+     * @param int $maxResults
+     * @param array $countries
+     * @return mixed
+     */
+    public function getFeedItems($maxResults, array $countries = ['UN'])
+    {
+        return $this->createQueryBuilder('initiative')
+            ->select('initiative', 'c')
+            ->addSelect('(CASE WHEN initiative.publishedAt IS NOT NULL THEN initiative.publishedAt ELSE initiative.createdAt END) AS HIDDEN sortDate')
+            ->leftJoin('initiative.category', 'c')
+            ->andWhere('initiative.state = :state')
+            ->andWhere('initiative.type IN (:types)')
+            ->andWhere('c.type = 0 OR (c.type != 0 AND c.country IN (:countries))')
+            ->setParameters([
+                'state' => InitiativeEnum::STATE_ACTIVE,
+                'types' => [InitiativeEnum::TYPE_FUTURE, InitiativeEnum::TYPE_CURRENT, InitiativeEnum::TYPE_ARTICLE],
+                'countries' => $countries
+            ])
+            ->setMaxResults($maxResults)
+            ->orderBy('sortDate', 'DESC')
+            ->getQuery()
+            ->execute();
+    }
+
 }
