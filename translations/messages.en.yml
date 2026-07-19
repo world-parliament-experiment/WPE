@@ -10,6 +10,10 @@ vote:
         show: View Ongoing Votes
 
 initiative:
+    types:
+        future: Proposal
+        current: Ongoing Vote
+        article: Article
     edit:
         title: Title
         category: Category

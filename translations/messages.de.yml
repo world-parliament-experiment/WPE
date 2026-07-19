@@ -1,6 +1,11 @@
 vote:
     edit:
         submit: Abstimmung Speichern
+initiative:
+    types:
+        future: Vorschlag
+        current: Abstimmung
+        article: Artikel
 category:
     edit:
         submit: Kategorie Speichern

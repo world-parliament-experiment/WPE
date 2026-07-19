@@ -69,8 +69,9 @@
                     {% for item in feed_items %}
                         <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(item.category.image) }}'); margin-bottom: 30px; flex: 0 0 100%; max-width: 100%;">
                             <div class="proposal-content">
-                                <div class="proposal-meta">
-                                    <a href="{{ path('category_type', {id: item.category.id, slug:item.category.slug, type:item.typename|lower}) }}">{{ item.category.name }}</a>
+                                <div class="proposal-meta">                                    
+                                    <a href="{{ path('category_type', {id: item.category.id, slug:item.category.slug, type:item.typename|lower}) }}" class="d-block mb-1">{{ item.category.name }}</a>
+                                    <span class="text-white">{{ ('initiative.types.' ~ item.typeName)|trans }}</span>
                                     <span class="text-white ml-2">• {{ item.publishedAt|date('d.m.Y') }}</span>
                                 </div>
                                 <a href="{{ path('initiative_show', {id: item.id,slug:item.slug}) }}" class="proposal-title">{{ item.title }}</a>
