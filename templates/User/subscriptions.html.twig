@@ -1,20 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="breadcrumb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ path('homepage') }}"><i class="fa fa-home" aria-hidden="true"></i> {{ 'breadcrumb.home.label'|trans }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ 'user.subscriptions.title'|trans }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
+    {{ include ('Widget/_breadcrumb.html.twig', {title: 'user.subscriptions.title'|trans, background: asset('/assets/img/header/avatar_large.jpg')}, with_context = false) }}
+
+    {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
 
     <div class="archive-post-area m-t-30">
         <div class="container">
