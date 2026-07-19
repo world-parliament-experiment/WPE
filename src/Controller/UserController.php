@@ -821,4 +821,57 @@ class UserController extends BaseController
         ));
     }
 
+    /**
+     * @Breadcrumb("breadcrumb.profile.label", attributes={"translate": true})
+     * @Breadcrumb("breadcrumb.profile.customize_feed.label", attributes={"translate": true})
+     * @Route("/customize-feed", name="user_customize_feed", methods={"GET", "POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function customizeFeedAction(Request $request)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        
+        /** @var User $user */
+        $user = $this->getUser();
+        $em = $this->managerRegistry->getManager();
+
+        // If user has no subscriptions, pre-populate with defaults (Global + Own Country)
+        if ($user->getSubscribedCategories()->isEmpty()) {
+            $repo = $em->getRepository(Category::class);
+            
+            // Global categories
+            $globals = $repo->findBy(['type' => \App\Enum\CategoryEnum::TYPE_GLOBAL]);
+            foreach ($globals as $cat) {
+                $user->addSubscribedCategory($cat);
+            }
+            
+            // Own country category
+            if ($user->getCountry()) {
+                $countryCat = $repo->findOneBy([
+                    'type' => \App\Enum\CategoryEnum::TYPE_NATIONAL,
+                    'country' => $user->getCountry()
+                ]);
+                if ($countryCat) {
+                    $user->addSubscribedCategory($countryCat);
+                }
+            }
+        }
+
+        $form = $this->createForm('App\Form\UserSubscriptionsForm', $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($user);
+            $em->flush();
+
+            $this->addFlash('success', 'user.subscriptions.success');
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('User/subscriptions.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
 }

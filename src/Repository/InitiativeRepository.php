@@ -580,23 +580,32 @@ class InitiativeRepository extends EntityRepository
      *
      * @param int $maxResults
      * @param array $countries
+     * @param array $types
+     * @param array|null $categoryIds
      * @return mixed
      */
-    public function getFeedItems($maxResults, array $countries = ['UN'])
+    public function getFeedItems($maxResults, array $countries = ['UN'], array $types = [0, 1, 4], array $categoryIds = null)
     {
-        return $this->createQueryBuilder('initiative')
+        $qb = $this->createQueryBuilder('initiative')
             ->select('initiative', 'c')
             ->addSelect('(CASE WHEN initiative.publishedAt IS NOT NULL THEN initiative.publishedAt ELSE initiative.createdAt END) AS HIDDEN sortDate')
             ->leftJoin('initiative.category', 'c')
             ->andWhere('initiative.state = :state')
             ->andWhere('initiative.type IN (:types)')
-            ->andWhere('c.type = 0 OR (c.type != 0 AND c.country IN (:countries))')
             ->setParameters([
                 'state' => InitiativeEnum::STATE_ACTIVE,
-                'types' => [InitiativeEnum::TYPE_FUTURE, InitiativeEnum::TYPE_CURRENT, InitiativeEnum::TYPE_ARTICLE],
-                'countries' => $countries
-            ])
-            ->setMaxResults($maxResults)
+                'types' => $types,
+            ]);
+
+        if ($categoryIds !== null && !empty($categoryIds)) {
+            $qb->andWhere('c.id IN (:categoryIds)')
+               ->setParameter('categoryIds', $categoryIds);
+        } else {
+            $qb->andWhere('c.type = 0 OR (c.type != 0 AND c.country IN (:countries))')
+               ->setParameter('countries', $countries);
+        }
+
+        return $qb->setMaxResults($maxResults)
             ->orderBy('sortDate', 'DESC')
             ->getQuery()
             ->execute();

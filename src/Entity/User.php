@@ -203,6 +203,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected $voters;
 
     /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Category")
+     * @ORM\JoinTable(name="user_category_subscription",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="category_id", referencedColumnName="id")}
+     * )
+     */
+    protected $subscribedCategories;
+
+    /**
      * @ORM\Column(type="datetime")
      * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
      * @JMSSerializer\SerializedName("registeredAt")*
@@ -281,9 +290,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         $this->delegations = new ArrayCollection();
         $this->trustees = new ArrayCollection();
+        $this->subscribedCategories = new ArrayCollection();
         $this->enabled = false;
         $this->roles = [];
 
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getSubscribedCategories(): Collection
+    {
+        return $this->subscribedCategories;
+    }
+
+    public function addSubscribedCategory(Category $category): self
+    {
+        if (!$this->subscribedCategories->contains($category)) {
+            $this->subscribedCategories[] = $category;
+        }
+
+        return $this;
+    }
+
+    public function removeSubscribedCategory(Category $category): self
+    {
+        $this->subscribedCategories->removeElement($category);
+
+        return $this;
     }
 
     /**

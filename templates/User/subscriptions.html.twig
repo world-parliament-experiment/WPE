@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ path('homepage') }}"><i class="fa fa-home" aria-hidden="true"></i> {{ 'breadcrumb.home.label'|trans }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ 'user.subscriptions.title'|trans }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="archive-post-area m-t-30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-xl-10">
+                    <div class="archive-posts-content bg-white p-30 box-shadow">
+                        <div class="section-heading">
+                            <h5>{{ 'user.subscriptions.title'|trans }}</h5>
+                        </div>
+
+                        <p class="mb-4">{{ 'user.subscriptions.description'|trans }}</p>
+
+                        {{ form_start(form) }}
+                            <div class="subscription-container">
+                                <div class="subscription-grid">
+                                    {% for child in form.subscribedCategories %}
+                                        <div class="category-item">
+                                            <div class="custom-control custom-checkbox">
+                                                {{ form_widget(child, {'attr': {'class': 'custom-control-input'}}) }}
+                                                {{ form_label(child, null, {'label_attr': {'class': 'custom-control-label'}}) }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                {{ form_row(form.submit) }}
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .subscription-container {
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            background-color: #fcfcfc;
+        }
+        
+        .subscription-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .category-item {
+            flex: 0 0 33.333%;
+            max-width: 33.333%;
+            padding: 10px;
+        }
+
+        @media (max-width: 991px) {
+            .category-item {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .category-item {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+
+        /* Ensure checkboxes and labels are properly aligned and visible */
+        .custom-control-label {
+            cursor: pointer;
+            padding-top: 2px;
+            font-weight: 500;
+            color: #333;
+            display: block;
+        }
+        
+        .custom-control-input {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .category-item:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+    </style>
+{% endblock %}

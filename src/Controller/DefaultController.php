@@ -50,17 +50,35 @@ class DefaultController extends BaseController
         $em = $this->managerRegistry->getManager();
 
         $countries = ['UN'];
+        $categoryIds = null;
         if ($user = $this->getUser()) {
             if ($userCountry = $user->getCountry()) {
                 $countries[] = $userCountry;
             }
+            
+            $subscribed = $user->getSubscribedCategories();
+            if (!$subscribed->isEmpty()) {
+                $categoryIds = $subscribed->map(fn($c) => $c->getId())->toArray();
+            }
         }
 
-        $feedItems = $em->getRepository(Initiative::class)->getFeedItems(20, $countries);
+        $filter = $request->query->get('type');
+        $types = [InitiativeEnum::TYPE_FUTURE, InitiativeEnum::TYPE_CURRENT, InitiativeEnum::TYPE_ARTICLE];
+        
+        if ($filter === 'article') {
+            $types = [InitiativeEnum::TYPE_ARTICLE];
+        } elseif ($filter === 'proposal') {
+            $types = [InitiativeEnum::TYPE_FUTURE];
+        } elseif ($filter === 'vote') {
+            $types = [InitiativeEnum::TYPE_CURRENT];
+        }
+
+        $feedItems = $em->getRepository(Initiative::class)->getFeedItems(20, $countries, $types, $categoryIds);
 
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
             'feed_items' => $feedItems,
+            'current_filter' => $filter
         ]);
 
     }

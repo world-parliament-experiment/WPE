@@ -5,13 +5,25 @@ category:
     edit:
         submit: Kategorie Speichern
 menu:
+    user:
+        customize_feed: Feed anpassen
     admin:
         article: Artikel erstellen
     article:
         label: Artikel
 breadcrumb:
     profile:
+        customize_feed:
+            label: Feed anpassen
         article:
             create: Artikel erstellen
     article:
         label: Artikel
+
+user:
+    subscriptions:
+        title: Feed anpassen
+        description: Wählen Sie die Kategorien aus, die Sie auf Ihrer Homepage sehen möchten. Wenn Sie keine auswählen, werden alle Kategorien aus Ihrem Land angezeigt.
+        categories: Verfügbare Kategorien
+        submit: Einstellungen speichern
+        success: Ihre Feed-Einstellungen wurden gespeichert.

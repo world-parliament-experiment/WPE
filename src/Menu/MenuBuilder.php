@@ -171,6 +171,10 @@ class MenuBuilder
                 ->setLabel($this->translator->trans('menu.user.favourites', [], 'messages'))
 
                 ->getParent()
+                ->addChild('Customize Feed',  ["route" => "user_customize_feed"])
+                ->setLabel($this->translator->trans('menu.user.customize_feed', [], 'messages'))
+
+                ->getParent()
                 ->addChild('Logout', ["route" => "logout"])
                 ->setLabel($this->translator->trans('menu.user.logout', [], 'messages'))
 

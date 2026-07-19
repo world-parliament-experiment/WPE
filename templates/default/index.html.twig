@@ -55,6 +55,16 @@
         <div class="mag-posts-content m-t-30 m-b-30 p-30 box-shadow">
             
             <div class="feature-video-posts m-b-30">
+
+                <div class="feed-filter-bar mb-4">
+                    <div class="btn-group w-100" role="group">
+                        <a href="{{ path('homepage') }}" class="btn filter-btn {{ current_filter is empty ? 'active' : '' }}">All</a>
+                        <a href="{{ path('homepage', {type: 'article'}) }}" class="btn filter-btn {{ current_filter == 'article' ? 'active' : '' }}">Articles</a>
+                        <a href="{{ path('homepage', {type: 'proposal'}) }}" class="btn filter-btn {{ current_filter == 'proposal' ? 'active' : '' }}">Proposals</a>
+                        <a href="{{ path('homepage', {type: 'vote'}) }}" class="btn filter-btn {{ current_filter == 'vote' ? 'active' : '' }}">Ongoing Votes</a>
+                    </div>
+                </div>
+
                 <div class="proposal-grid single-column-feed">
                     {% for item in feed_items %}
                         <div class="proposal-card bg-img bg-overlay" style="background-image: url('{{ asset(item.category.image) }}'); margin-bottom: 30px; flex: 0 0 100%; max-width: 100%;">
@@ -196,6 +206,28 @@
     </section>
 
     <style>
+        /* Filter Bar Styling */
+        .feed-filter-bar {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .filter-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            color: #666;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover {
+            background-color: #eee;
+            color: #333;
+        }
+        .filter-btn.active {
+            background-color: #f74a06;
+            border-color: #f74a06;
+            color: #fff !important;
+        }
+
         /* Sticky Sidebar logic */
         @media (min-width: 1200px) {
             .sticky-sidebar {

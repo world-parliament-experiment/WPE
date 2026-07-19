@@ -89,6 +89,12 @@ category:
         description: Description
 
 user:
+    subscriptions:
+        title: Customize Your Feed
+        description: Select the categories you want to see on your homepage. If you select none, you will see all categories from your country.
+        categories: Available Categories
+        submit: Save Preferences
+        success: Your feed preferences have been saved.
     button:
         delete: Delete
         overview: Overview
@@ -142,6 +148,7 @@ menu:
         avatar: Change Avatar
         friends: Friends
         favourites: Favourites
+        customize_feed: Customize Feed
     admin:
         label: Administration
         article: Create Article
@@ -187,6 +194,8 @@ breadcrumb:
         label: Favourites
       friend:
         label: Friends
+      customize_feed:
+        label: Customize Feed
       initiative:
         label: Your Proposals
         edit:
