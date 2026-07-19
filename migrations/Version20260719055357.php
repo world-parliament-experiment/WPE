@@ -25,8 +25,8 @@ final class Version20260719055357 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_B9150A3F12469DE2 ON user_category_subscription (category_id)');
         $this->addSql('ALTER TABLE user_category_subscription ADD CONSTRAINT FK_B9150A3FA76ED395 FOREIGN KEY (user_id) REFERENCES fos_user (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE user_category_subscription ADD CONSTRAINT FK_B9150A3F12469DE2 FOREIGN KEY (category_id) REFERENCES category (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('DROP INDEX uniq_957a647992fc23a8');
-        $this->addSql('DROP INDEX uniq_957a6479a0d96fbf');
+        $this->addSql('DROP INDEX IF EXISTS uniq_957a647992fc23a8');
+        $this->addSql('DROP INDEX IF EXISTS uniq_957a6479a0d96fbf');
         $this->addSql('ALTER TABLE fos_user ALTER mobile_number TYPE VARCHAR(500)');
         $this->addSql('ALTER TABLE fos_user ALTER email TYPE VARCHAR(500)');
         $this->addSql('ALTER TABLE fos_user ALTER email_canonical TYPE VARCHAR(500)');
