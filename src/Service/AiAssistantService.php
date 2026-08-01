@@ -50,6 +50,21 @@ class AiAssistantService
         return trim($this->generateContent($prompt, $personaKey));
     }
 
+    public function draftProposal(string $prompt, string $personaKey = 'neutral'): string
+    {
+        $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
+        $userPrompt = sprintf(
+            "Based on your persona as %s, draft a legislative proposal for the World Parliament about: %s.
+            Write a professional, structured, and comprehensive draft of the proposal.
+            Use Markdown formatting (like headers, bullet points, and bold text) for structure.
+            Respond in the same language as the input prompt. Do not include any introductory or concluding chatter, just output the proposal itself.",
+            $persona['name'],
+            $prompt
+        );
+
+        return $this->generateContent($userPrompt, $personaKey);
+    }
+
     public function draftFullInitiative(string $topic, string $personaKey = 'neutral'): array
     {
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
