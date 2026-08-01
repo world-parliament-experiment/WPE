@@ -9,6 +9,8 @@
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    globals:
+        fb_domain_verify: '%env(default::FB_DOMAIN_VERIFY)%'
     form_themes:
         - 'bootstrap_4_layout.html.twig'
         - 'Widget/form.html.twig'

@@ -35,7 +35,7 @@ class SocialmediaPoster
         string $fb_secret,
         string $fb_token,
         string $fb_site,
-        string $projectDir,
+        string $projectDir = '',
         Client $client = null
     ) {
         $this->client = $client ?? new Client();
@@ -48,7 +48,7 @@ class SocialmediaPoster
         $this->entityManager = $entityManager;
         $this->em = $entityManager;
         $this->router = $router; 
-        $this->projectDir = $projectDir;
+        $this->projectDir = !empty($projectDir) ? $projectDir : realpath(__DIR__ . '/../../');
     }
 
     public function postUpdate(Initiative $initiative)

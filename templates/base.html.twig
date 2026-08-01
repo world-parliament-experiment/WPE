@@ -10,6 +10,10 @@
     <title>The World Parliament Experiment | {% block title %}Welcome!{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    {% if fb_domain_verify %}
+    <meta name="facebook-domain-verification" content="{{ fb_domain_verify }}" />
+    {% endif %}
+
     <script src="/assets/plugins/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
 
     <!-- ================== BEGIN BASE CSS STYLE ================== -->
