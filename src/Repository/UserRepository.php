@@ -149,6 +149,7 @@ class UserRepository extends EntityRepository
         }
 
         return $query
+            ->setMaxResults(500)
             ->getQuery()
             ->execute();
     }

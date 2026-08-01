@@ -35,17 +35,18 @@ class CategoryController extends BaseController
      * @Route("/{type}", requirements={"type" = "(future|current|past|program|article)"}, name="category_index")
      */
 
-    public function listCategoryOverviewAction($type)
+    public function listCategoryOverviewAction(Request $request, $type)
     {
         // dd($type);
         $em = $this->managerRegistry->getManager();
+        $q = $request->query->get('q');
 
         if ($type === 'future') {
             $user = $this->getUser();
             $countryCode = ($user && $user->getCountry()) ? $user->getCountry() : null;
 
             $initiatives = $em->getRepository(Category::class)
-                ->getFutureInitiativesByUser($countryCode);
+                ->getFutureInitiativesByUser($countryCode, $q);
 
             return $this->render('Category/future.html.twig', [
                 'initiatives' => $initiatives,
@@ -58,7 +59,7 @@ class CategoryController extends BaseController
             $countryCode = ($user && $user->getCountry()) ? $user->getCountry() : null;
 
             $initiatives = $em->getRepository(Category::class)
-                ->getCurrentInitiativesByUser($countryCode);
+                ->getCurrentInitiativesByUser($countryCode, $q);
 
             return $this->render('Category/current.html.twig', [
                 'initiatives' => $initiatives,
@@ -68,7 +69,7 @@ class CategoryController extends BaseController
 
         } elseif ($type === 'program') {
             $initiatives = $em->getRepository(Category::class)
-                ->getProgramInitiatives();
+                ->getProgramInitiatives($q);
 
             return $this->render('Category/program.html.twig', [
                 'initiatives' => $initiatives,
@@ -76,7 +77,28 @@ class CategoryController extends BaseController
                 'alias' => 'decisions',
             ]);
         } elseif ($type === 'article') {
-            $initiatives = $em->getRepository(Initiative::class)->findBy(['type' => InitiativeEnum::TYPE_ARTICLE, 'state' => InitiativeEnum::STATE_ACTIVE], ['publishedAt' => 'DESC']);
+            if ($q) {
+                $initiatives = $em->getRepository(Initiative::class)->createQueryBuilder('i')
+                    ->leftJoin('i.createdBy', 'creator')
+                    ->where('i.type = :type')
+                    ->andWhere('i.state = :state')
+                    ->andWhere('LOWER(i.title) LIKE :query OR LOWER(creator.username) LIKE :query')
+                    ->setParameters([
+                        'type' => InitiativeEnum::TYPE_ARTICLE,
+                        'state' => InitiativeEnum::STATE_ACTIVE,
+                        'query' => '%' . strtolower($q) . '%'
+                    ])
+                    ->orderBy('i.publishedAt', 'DESC')
+                    ->setMaxResults(500)
+                    ->getQuery()
+                    ->getResult();
+            } else {
+                $initiatives = $em->getRepository(Initiative::class)->findBy(
+                    ['type' => InitiativeEnum::TYPE_ARTICLE, 'state' => InitiativeEnum::STATE_ACTIVE],
+                    ['publishedAt' => 'DESC'],
+                    500
+                );
+            }
 
             return $this->render('Category/article.html.twig', [
                 'initiatives' => $initiatives,
@@ -85,7 +107,7 @@ class CategoryController extends BaseController
             ]);
         } else {
             $initiatives = $em->getRepository(Category::class)
-                ->getPastInitiatives();
+                ->getPastInitiatives($q);
     
             return $this->render('Category/past.html.twig', [
                 'initiatives' => $initiatives,
@@ -109,16 +131,24 @@ class CategoryController extends BaseController
         $category = $em->getRepository(Category::class)->find($id);
 
         if ($type === 'program') {
-            return $this->render('Category/category.html.twig', [
+            $initiatives = $em->getRepository(Category::class)
+                ->getInitiatives($category, InitiativeEnum::TYPE_PROGRAM);
+
+            return $this->render('Category/program.html.twig', [
                 'category' => $category,
                 'type' => $type,
-                'alias' => 'adopted votes'
+                'alias' => 'adopted votes',
+                'initiatives' => $initiatives,
             ]);
         } elseif ($type === 'past') {
-            return $this->render('Category/category.html.twig', [
-                "category" => $category,
-                "type" => $type,
-                'alias' => 'unsuccessful votes'
+            $initiatives = $em->getRepository(Category::class)
+                ->getInitiatives($category, InitiativeEnum::TYPE_PAST);
+
+            return $this->render('Category/past.html.twig', [
+                'category' => $category,
+                'type' => $type,
+                'alias' => 'unsuccessful votes',
+                'initiatives' => $initiatives,
             ]);
         } elseif ($type === 'current') {
             

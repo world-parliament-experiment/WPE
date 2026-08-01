@@ -223,9 +223,14 @@ class DefaultController extends BaseController
      */
     public function assemblyAction(Request $request)
     {
-        // replace this example code with whatever you need
-        return $this->render('default/assembly.html.twig', [
+        $em = $this->managerRegistry->getManager();
+        $q = $request->query->get('q');
+        
+        $users = $em->getRepository(User::class)->assemblySearch($q ?? '', [['username', 'asc']], true);
 
+        return $this->render('default/assembly.html.twig', [
+            'users' => $users,
+            'q' => $q,
         ]);
     }
 

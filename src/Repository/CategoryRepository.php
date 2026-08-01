@@ -65,7 +65,7 @@ class CategoryRepository extends EntityRepository
             ->execute();
     }
 
-    public function getFutureInitiativesByUser(string $countryCode = null)
+    public function getFutureInitiativesByUser(string $countryCode = null, string $searchQuery = null)
     {
         $qb = $this->createQueryBuilder('category')
             ->select(['category', 'initiative'])
@@ -89,16 +89,23 @@ class CategoryRepository extends EntityRepository
         } else {
             $qb->andWhere('category.type = :globalType')
                 ->setParameter('globalType', \App\Enum\CategoryEnum::TYPE_GLOBAL);
+        }
+
+        if ($searchQuery) {
+            $qb->leftJoin('initiative.createdBy', 'creator')
+               ->andWhere('LOWER(initiative.title) LIKE :searchQuery OR LOWER(creator.username) LIKE :searchQuery')
+               ->setParameter('searchQuery', '%' . strtolower($searchQuery) . '%');
         }
 
         $qb->setParameter('initiativeType', InitiativeEnum::TYPE_FUTURE)
             ->addOrderBy('category.type', 'asc')
-            ->addOrderBy('initiative.createdAt', 'desc');
+            ->addOrderBy('initiative.createdAt', 'desc')
+            ->setMaxResults(500);
 
         return $qb->getQuery()->getResult();
     }
 
-    public function getCurrentInitiativesByUser(string $countryCode = null)
+    public function getCurrentInitiativesByUser(string $countryCode = null, string $searchQuery = null)
     {
         $qb = $this->createQueryBuilder('category')
             ->select(['category', 'initiative'])
@@ -124,9 +131,16 @@ class CategoryRepository extends EntityRepository
                 ->setParameter('globalType', \App\Enum\CategoryEnum::TYPE_GLOBAL);
         }
 
+        if ($searchQuery) {
+            $qb->leftJoin('initiative.createdBy', 'creator')
+               ->andWhere('LOWER(initiative.title) LIKE :searchQuery OR LOWER(creator.username) LIKE :searchQuery')
+               ->setParameter('searchQuery', '%' . strtolower($searchQuery) . '%');
+        }
+
         $qb->setParameter('initiativeType', InitiativeEnum::TYPE_CURRENT)
             ->addOrderBy('category.type', 'asc')
-            ->addOrderBy('initiative.createdAt', 'desc');
+            ->addOrderBy('initiative.createdAt', 'desc')
+            ->setMaxResults(500);
 
         return $qb->getQuery()->getResult();
     }
@@ -145,36 +159,44 @@ class CategoryRepository extends EntityRepository
             ->execute();
     }
 
-    public function getPastInitiatives()
+    public function getPastInitiatives(string $searchQuery = null)
     {
-        return $this->createQueryBuilder('category')
+        $qb = $this->createQueryBuilder('category')
             ->select(['category', 'initiative'])
             ->leftJoin('category.initiatives', 'initiative')
             ->andWhere('initiative.type = 2')
-            ->andWhere('initiative.state = 2')
-//            ->andWhere('initiative.state > 1')
-//            ->andWhere('initiative.state < 4')
-            ->addOrderBy('category.type', 'asc')
+            ->andWhere('initiative.state = 2');
+
+        if ($searchQuery) {
+            $qb->leftJoin('initiative.createdBy', 'creator')
+               ->andWhere('LOWER(initiative.title) LIKE :searchQuery OR LOWER(creator.username) LIKE :searchQuery')
+               ->setParameter('searchQuery', '%' . strtolower($searchQuery) . '%');
+        }
+
+        return $qb->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
+            ->setMaxResults(500)
             ->getQuery()
             ->execute();
     }
 
-    public function getProgramInitiatives()
+    public function getProgramInitiatives(string $searchQuery = null)
     {
-
-
-
-        return $this->createQueryBuilder('category')
-
+        $qb = $this->createQueryBuilder('category')
             ->select(['category', 'initiative'])
             ->leftJoin('category.initiatives', 'initiative')
             ->andWhere('initiative.type = 3')
-//            ->andWhere('initiative.state > 1')
-//            ->andWhere('initiative.state < 4')
-            ->andWhere('initiative.state = 2')
-            ->addOrderBy('category.type', 'asc')
+            ->andWhere('initiative.state = 2');
+
+        if ($searchQuery) {
+            $qb->leftJoin('initiative.createdBy', 'creator')
+               ->andWhere('LOWER(initiative.title) LIKE :searchQuery OR LOWER(creator.username) LIKE :searchQuery')
+               ->setParameter('searchQuery', '%' . strtolower($searchQuery) . '%');
+        }
+
+        return $qb->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
+            ->setMaxResults(500)
             ->getQuery()
             ->execute();
     }

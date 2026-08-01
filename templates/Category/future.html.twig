@@ -14,76 +14,167 @@
                     <div class="default-content bg-white mb-30 p-30 box-shadow">
                         <!-- Section Title -->
                         <div class="section-heading">
-                            <h6>Proposals</h6>
+                            {% if category is defined and category %}
+                                <h5>Agenda Setting - {{ category.name }}</h5>
+                            {% else %}
+                                <h6>Proposals</h6>
+                            {% endif %}
                         </div> 
-                            <table class="table table-categories table-striped table-bordered" style="width:100%">
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Creator</th>
-                                    <th>Category</th>
-                                    <th>Date</th>
-                                    <th>Views</th>
-                                    <th>Comments</th>
-                                    <th>Supporters</th>
-                                </tr>
-                                </thead>
-                                <tbody>                  
-                                {% if app.user %}
-                                    {% for category in initiatives %}
-                                        {% if app.user.country == category.description or category.description|length > 2 %}
-                                            {% for initiative in category.initiatives %}
-                                                <tr>
-                                                    <td>
-                                                        <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
-                                                    </td>
-                                                    <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
-                                                    <td>{{ category.name }}</td>
-                                                    <td>{{ initiative.createdAt|date('Y-m-d') }}</td>
-                                                    <td>{{ initiative.views }}</td>
-                                                    <td>{{ initiative.countComments }}</td>
-                                                    <td class="text-center">
-                                                        {% if initiative.voteStatus == 'now' %}
-                                                            {{ initiative.getFutureVoting.getVotesTotal() }}
-                                                            {# <span class="badge badge-danger"> NOW </span> #}
-                                                        {% elseif initiative.voteStatus == 'soon' %}
-                                                            <span class="badge badge-warning"> STARTING SOON </span>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                                {% else %}                              
-                                    {% for category in initiatives %}
-                                        {% if category.description|length > 2 %}
-                                            {% for initiative in category.initiatives %}
-                                                <tr>
-                                                    <td>
-                                                        <p><a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}">{{ initiative.title }}</a></p>
-                                                    </td>
-                                                    <td><a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}"><img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-2">{{ initiative.createdBy }}</a></td>
-                                                    <td>{{ category.name }}</td>
-                                                    <td>{{ initiative.createdAt|date('Y-m-d') }}</td>
-                                                    <td>{{ initiative.views }}</td>
-                                                    <td>{{ initiative.countComments }}</td>
-                                                    <td class="text-center">
-                                                        {% if initiative.voteStatus == 'now' %}
-                                                            {{ initiative.getFutureVoting.getVotesTotal() }}
-                                                            {# <span class="badge badge-danger"> NOW </span> #}
-                                                        {% elseif initiative.voteStatus == 'soon' %}
-                                                            <span class="badge badge-warning"> STARTING SOON </span>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    </tbody>
-                                {% endif %}
-                         </table>  
+
+                        <!-- Search & Filter Controls -->
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-right-0" style="border-radius: 8px 0 0 8px; border-color: #ced4da;">
+                                            <i class="fa fa-search text-muted"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" id="initiative-search" class="form-control border-left-0 pl-0" placeholder="Search proposals or creators..." style="border-radius: 0 8px 8px 0; height: 45px; box-shadow: none; border-color: #ced4da;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-right-0" style="border-radius: 8px 0 0 8px; border-color: #ced4da;">
+                                            <i class="fa fa-filter text-muted"></i>
+                                        </span>
+                                    </div>
+                                    <select id="category-filter" class="form-control border-left-0 pl-0" style="border-radius: 0 8px 8px 0; height: 45px; box-shadow: none; border-color: #ced4da;">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Multi-Column Desktop Grid -->
+                        <div class="row" id="initiative-grid">
+                            {% if app.user %}
+                                {% for category in initiatives %}
+                                    {% if app.user.country == category.description or category.description|length > 2 %}
+                                        {% for initiative in category.initiatives %}
+                                            <div class="col-12 col-md-6 col-lg-4 mb-4 initiative-card-container" 
+                                                 data-title="{{ initiative.title|e('html_attr') }}" 
+                                                 data-category="{{ category.name|e('html_attr') }}"
+                                                 data-creator="{{ initiative.createdBy|e('html_attr') }}">
+                                                <div class="card h-100 shadow-sm border-light card-hover-effect">
+                                                    <div class="card-body p-3 d-flex flex-column justify-content-between">
+                                                        <div>
+                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                <span class="badge badge-secondary" style="font-size: 85%;">{{ category.name }}</span>
+                                                                {% if initiative.voteStatus == 'now' %}
+                                                                    <span class="badge badge-success" title="Supporters"><i class="fa fa-thumbs-up"></i> {{ initiative.getFutureVoting.getVotesTotal() }} Supporters</span>
+                                                                {% elseif initiative.voteStatus == 'soon' %}
+                                                                    <span class="badge badge-warning"> STARTING SOON </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <h5 style="font-size: 1.1rem; line-height: 1.4;" class="mb-3">
+                                                                <a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}" class="text-dark font-weight-bold">
+                                                                    {{ initiative.title }}
+                                                                </a>
+                                                            </h5>
+                                                        </div>
+                                                        <div>
+                                                            <hr class="my-2">
+                                                            <div class="d-flex justify-content-between align-items-center text-muted small">
+                                                                <div>
+                                                                    <a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}" class="text-muted">
+                                                                        <img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-1" style="width: 20px; height: 20px; border-radius: 50%;">
+                                                                        {{ initiative.createdBy }}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="text-nowrap">
+                                                                    <span class="mr-2" title="Views"><i class="fa fa-eye"></i> {{ initiative.views }}</span>
+                                                                    <span class="mr-2" title="Comments"><i class="fa fa-comment"></i> {{ initiative.countComments }}</span>
+                                                                    <span class="text-nowrap" title="Date"><i class="fa fa-calendar"></i> {{ initiative.createdAt|date('Y-m-d') }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                {% for category in initiatives %}
+                                    {% if category.description|length > 2 %}
+                                        {% for initiative in category.initiatives %}
+                                            <div class="col-12 col-md-6 col-lg-4 mb-4 initiative-card-container" 
+                                                 data-title="{{ initiative.title|e('html_attr') }}" 
+                                                 data-category="{{ category.name|e('html_attr') }}"
+                                                 data-creator="{{ initiative.createdBy|e('html_attr') }}">
+                                                <div class="card h-100 shadow-sm border-light card-hover-effect">
+                                                    <div class="card-body p-3 d-flex flex-column justify-content-between">
+                                                        <div>
+                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                <span class="badge badge-secondary" style="font-size: 85%;">{{ category.name }}</span>
+                                                                {% if initiative.voteStatus == 'now' %}
+                                                                    <span class="badge badge-success" title="Supporters"><i class="fa fa-thumbs-up"></i> {{ initiative.getFutureVoting.getVotesTotal() }} Supporters</span>
+                                                                {% elseif initiative.voteStatus == 'soon' %}
+                                                                    <span class="badge badge-warning"> STARTING SOON </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <h5 style="font-size: 1.1rem; line-height: 1.4;" class="mb-3">
+                                                                <a href="{{ path('initiative_show', { 'id': initiative.id, 'slug': initiative.slug }) }}" class="text-dark font-weight-bold">
+                                                                    {{ initiative.title }}
+                                                                </a>
+                                                            </h5>
+                                                        </div>
+                                                        <div>
+                                                            <hr class="my-2">
+                                                            <div class="d-flex justify-content-between align-items-center text-muted small">
+                                                                <div>
+                                                                    <a href="{{ path('user_profile_show', { 'id': initiative.createdBy.id }) }}" class="text-muted">
+                                                                        <img src="{{ path('user_profile_avatar', { 'id': initiative.createdBy.id }) }}" class="small-user-avatar mr-1" style="width: 20px; height: 20px; border-radius: 50%;">
+                                                                        {{ initiative.createdBy }}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="text-nowrap">
+                                                                    <span class="mr-2" title="Views"><i class="fa fa-eye"></i> {{ initiative.views }}</span>
+                                                                    <span class="mr-2" title="Comments"><i class="fa fa-comment"></i> {{ initiative.countComments }}</span>
+                                                                    <span class="text-nowrap" title="Date"><i class="fa fa-calendar"></i> {{ initiative.createdAt|date('Y-m-d') }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- No Results / Server Fallback Container -->
+                            <div class="col-12 text-center py-5" id="no-local-results" style="display: none;">
+                                <h5 class="text-muted mb-3">No local matches found.</h5>
+                                <a href="#" id="server-search-fallback-btn" class="btn btn-primary" style="border-radius: 8px; padding: 10px 20px;">
+                                    <i class="fa fa-database"></i> Search entire database
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Client-Side Pagination UI -->
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex justify-content-center">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination" id="grid-pagination" style="display: none; gap: 4px;">
+                                        <li class="page-item" id="page-prev">
+                                            <a class="page-link" href="#" aria-label="Previous" style="border-radius: 8px;">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <!-- Dynamic Page Numbers -->
+                                        <li class="page-item" id="page-next">
+                                            <a class="page-link" href="#" aria-label="Next" style="border-radius: 8px;">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -94,39 +185,216 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" type="text/css" href="/assets/plugins/DataTables/datatables.min.css"/>
+    <style>
+        .card-hover-effect {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-radius: 8px;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
+        }
+        .small-user-avatar {
+            object-fit: cover;
+            border: 1px solid #dee2e6;
+        }
+        /* Custom Pagination Styling */
+        .pagination .page-item .page-link {
+            border: 1px solid #dee2e6;
+            color: #495057;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="text/javascript" src="/assets/plugins/DataTables/datatables.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
-            var table = $('.table-categories').DataTable({
-                initComplete: function () {
-                    this.api().order( [[ 3, 'desc' ], [ 4, 'desc' ], [ 5, 'desc' ]] )
-                    this.api().draw()
-                    this.api().columns([2]).every( function () {
-                        var column = this;
-                        var select = $('<select><option value=""></option></select>')
-                            .appendTo( $(column.header()) )
-                            .on( 'change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
-                                );
-        
-                                column
-                                    .search( val ? '^'+val+'$' : '', true, false )
-                                    .draw();
-                            } );
-        
-                        column.data().unique().sort().each( function ( d, j ) {
-                            select.append( '<option value="'+d+'">'+d+'</option>' )
-                        } );
-                    } );           
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('initiative-search');
+            const categoryFilter = document.getElementById('category-filter');
+            const cards = document.querySelectorAll('.initiative-card-container');
+            const gridPagination = document.getElementById('grid-pagination');
+            const prevBtn = document.getElementById('page-prev');
+            const nextBtn = document.getElementById('page-next');
+            const noResultsContainer = document.getElementById('no-local-results');
+            const fallbackBtn = document.getElementById('server-search-fallback-btn');
+
+            const cardsPerPage = 24;
+            let currentPage = 1;
+            let filteredCards = Array.from(cards);
+
+            // Read initial ?q= parameter if any
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialQuery = urlParams.get('q');
+            if (initialQuery && searchInput) {
+                searchInput.value = initialQuery;
+            }
+
+            // Dynamically populate category dropdown based on available cards
+            if (categoryFilter) {
+                const categories = new Set();
+                cards.forEach(card => {
+                    const category = card.getAttribute('data-category');
+                    if (category) {
+                        categories.add(category);
+                    }
+                });
+                
+                // Sort categories and append to dropdown
+                Array.from(categories).sort().forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            function renderPagination() {
+                // Clear old page numbers
+                const pageItems = gridPagination.querySelectorAll('.page-number');
+                pageItems.forEach(item => item.remove());
+
+                const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+
+                if (totalPages <= 1) {
+                    gridPagination.style.display = 'none';
+                    return;
                 }
-            });
+
+                gridPagination.style.display = 'flex';
+
+                // Prev active/disabled
+                if (currentPage === 1) {
+                    prevBtn.classList.add('disabled');
+                } else {
+                    prevBtn.classList.remove('disabled');
+                }
+
+                // Next active/disabled
+                if (currentPage === totalPages) {
+                    nextBtn.classList.add('disabled');
+                } else {
+                    nextBtn.classList.remove('disabled');
+                }
+
+                // Create page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement('li');
+                    li.className = `page-item page-number ${currentPage === i ? 'active' : ''}`;
+                    li.style.margin = '0 2px';
+                    
+                    const a = document.createElement('a');
+                    a.className = 'page-link';
+                    a.href = '#';
+                    a.textContent = i;
+                    a.style.borderRadius = '8px';
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage = i;
+                        displayPage();
+                    });
+
+                    li.appendChild(a);
+                    nextBtn.parentNode.insertBefore(li, nextBtn);
+                }
+            }
+
+            function displayPage() {
+                // Hide all cards first
+                cards.forEach(card => card.style.display = 'none');
+
+                // Show cards belonging to current page
+                const start = (currentPage - 1) * cardsPerPage;
+                const end = start + cardsPerPage;
+                const pageCards = filteredCards.slice(start, end);
+
+                pageCards.forEach(card => {
+                    card.style.display = '';
+                });
+
+                renderPagination();
+            }
+
+            function filterCards() {
+                const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                const selectedCategory = categoryFilter ? categoryFilter.value.toLowerCase() : '';
+
+                // Filter original cards pool
+                filteredCards = Array.from(cards).filter(card => {
+                    const title = (card.getAttribute('data-title') || '').toLowerCase();
+                    const category = (card.getAttribute('data-category') || '').toLowerCase();
+                    const creator = (card.getAttribute('data-creator') || '').toLowerCase();
+
+                    const matchesSearch = title.includes(searchTerm) || creator.includes(searchTerm);
+                    const matchesCategory = !selectedCategory || category === selectedCategory;
+
+                    return matchesSearch && matchesCategory;
+                });
+
+                // Toggle No Results + Server Fallback Link
+                if (filteredCards.length === 0 && searchTerm !== '') {
+                    if (noResultsContainer) {
+                        noResultsContainer.style.display = 'block';
+                        if (fallbackBtn) {
+                            fallbackBtn.href = '?q=' + encodeURIComponent(searchTerm);
+                            fallbackBtn.innerHTML = `<i class="fa fa-database"></i> Search entire database for "${searchTerm}"`;
+                        }
+                    }
+                } else {
+                    if (noResultsContainer) {
+                        noResultsContainer.style.display = 'none';
+                    }
+                }
+
+                currentPage = 1;
+                displayPage();
+            }
+
+            // Prev Button Event Listener
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayPage();
+                    }
+                });
+            }
+
+            // Next Button Event Listener
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayPage();
+                    }
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', filterCards);
+            }
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', filterCards);
+            }
+
+            // Run filter initial
+            filterCards();
         });
     </script>
-
 {% endblock %}
