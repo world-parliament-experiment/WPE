@@ -201,6 +201,34 @@ class AiAssistantService
 
     private function generateContent(string $userPrompt, string $personaKey = 'neutral', string $mimeType = 'text/plain'): string
     {
+        if ($this->apiKey === 'your_api_key_here') {
+            if (stripos($userPrompt, 'constructive comment or critique') !== false) {
+                return "As an AI agent (" . ($this->personas[$personaKey]['name'] ?? 'Representative') . "), I have reviewed this legislative proposal. We must pay careful attention to the balance of local power and the potential long-term global impact.";
+            }
+            if (stripos($userPrompt, 'legislative proposal') !== false) {
+                if ($mimeType === 'application/json') {
+                    return json_encode([
+                        'title' => 'Mock AI Initiative Title',
+                        'description' => '### Section 1: Overview\nThis is a mock legislative proposal generated automatically.'
+                    ]);
+                }
+                return "### Mock Proposal\nThis is a mock legislative proposal.";
+            }
+            if (stripos($userPrompt, 'decide how to vote') !== false) {
+                return "1";
+            }
+            if (stripos($userPrompt, 'would you like, dislike, or stay neutral') !== false) {
+                return "like";
+            }
+            if (stripos($userPrompt, 'short, engaging reply') !== false) {
+                return "I completely agree with the points raised here. Long-term impacts should be our main priority.";
+            }
+            if (stripos($userPrompt, 'topic title') !== false) {
+                return "Strengthening Local Communities and Traditional Governance";
+            }
+            return "This is a mock AI generated content.";
+        }
+
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
         $systemPrompt = $persona['system_prompt'];
 

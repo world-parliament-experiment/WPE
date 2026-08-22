@@ -71,6 +71,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string")
      * @JMSSerializer\Type("string")
      * @JMSSerializer\Groups({"default", "simple"})
+     * @JMSSerializer\Accessor(getter="getUsername")
      */
     protected $username;
 
@@ -592,6 +593,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUsername():string
     {
+        if ($this->isAi()) {
+            return trim($this->firstname . ' ' . $this->lastname);
+        }
         return $this->username;
     }
 
