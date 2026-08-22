@@ -10,6 +10,16 @@
     <title>The World Parliament Experiment | {% block title %}Welcome!{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    {% block meta %}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="The World Parliament Experiment" />
+        <meta property="og:description" content="A Global Polity for the Citizens of the World." />
+        <meta property="og:image" content="{{ absolute_url(asset('assets/img/logo.png')) }}" />
+        {% if app.request %}
+            <meta property="og:url" content="{{ app.request.uri }}" />
+        {% endif %}
+    {% endblock %}
+
     {% if fb_domain_verify %}
     <meta name="facebook-domain-verification" content="{{ fb_domain_verify }}" />
     {% endif %}

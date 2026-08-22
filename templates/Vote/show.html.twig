@@ -2,6 +2,23 @@
 
 {% import 'Widget/macros.html.twig' as m %}
 
+{% block title %}{{ initiative.title }}{% endblock %}
+
+{% block meta %}
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{ initiative.title }}" />
+    <meta property="og:description" content="{{ initiative.description|striptags|slice(0, 250)|trim }}..." />
+    <meta property="og:image" content="{{ absolute_url(asset(category.image)) }}" />
+    {% if app.request %}
+        <meta property="og:url" content="{{ app.request.uri }}" />
+    {% endif %}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ initiative.title }}" />
+    <meta name="twitter:description" content="{{ initiative.description|striptags|slice(0, 250)|trim }}..." />
+    <meta name="twitter:image" content="{{ absolute_url(asset(category.image)) }}" />
+{% endblock %}
+
 {% block body %}
 
     {{ include ('Widget/_breadcrumb.html.twig', {title: type|capitalize, background: asset(category.image)}, with_context = false) }}

@@ -73,19 +73,8 @@ class SocialmediaPoster
             // Path to the local category background image
             $localFilePath = $this->projectDir . '/public/assets/img/category/K_' . $category->getId() . '_small.jpg';
 
-            // Generate absolute pictureUrl
-            $pictureUrl = null;
-            $parsedUrl = parse_url($source);
-            if (isset($parsedUrl['scheme'], $parsedUrl['host'])) {
-                $baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
-                if (isset($parsedUrl['port'])) {
-                    $baseUrl .= ':' . $parsedUrl['port'];
-                }
-                $pictureUrl = $baseUrl . '/assets/img/category/K_' . $category->getId() . '_small.jpg';
-            }
-
             $this->postLinkedInUpdate($message, $source, $title, $localFilePath);
-            $this->postFacebookUpdate($message, $source, $title, $pictureUrl);
+            $this->postFacebookUpdate($message, $source, $title);
         }
     }
 
@@ -172,7 +161,7 @@ class SocialmediaPoster
         } 
     }
     
-    public function postFacebookUpdate($message, $source, $title, $pictureUrl = null)
+    public function postFacebookUpdate($message, $source, $title)
     {
         if (empty($this->fb_token) || empty($this->fb_site)) {
             error_log("Facebook tokens not configured, skipping post.");
@@ -185,9 +174,8 @@ class SocialmediaPoster
                 'message' => $fullMessage,
                 'access_token' => $this->fb_token,
             ];
-            if ($pictureUrl) {
+            if ($source) {
                 $formParams['link'] = $source;
-                $formParams['picture'] = $pictureUrl;
             }
 
             $response = $this->client->request('POST', "https://graph.facebook.com/{$this->fb_site}/feed", [    
