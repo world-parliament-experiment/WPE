@@ -1,77 +1,110 @@
+#!/usr/bin/env python3
+"""
+List UN General Assembly resolution XML files from GitHub and extract metadata.
+
+Uses the GitHub REST API to discover Akoma Ntoso XML assets for a GA session,
+parses doc titles and numbers, and prints a flat Python list (title, UN doc URL).
+
+Dependencies: lxml, requests, urllib3
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
 import requests
 import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from lxml import etree
 
-session = 79
-output = []
-# GitHub API URL to list files in the repository
-api_url = "https://api.github.com/repos/UNxml/GAresolutions/contents/"+str(session)+"session/English"
+SESSION = 79
+GITHUB_API_URL = (
+    f"https://api.github.com/repos/UNxml/GAresolutions/contents/{SESSION}session/English"
+)
+REQUEST_TIMEOUT = 30
 
-# Headers with your GitHub token (optional, if you're hitting rate limits)
-headers = {
-    "Accept": "application/vnd.github.v3+json",
-    # "Authorization": "token YOUR_GITHUB_TOKEN"  # Uncomment and add your token if needed
-}
+AKN_NS = {"akn": "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"}
 
-def get_file_urls(api_url):
-    """Fetches URLs for XML files from the GitHub API."""
-    response = requests.get(api_url, headers=headers, verify=False)
+
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+def list_xml_download_urls() -> list[str]:
+    headers = {"Accept": "application/vnd.github.v3+json"}
+    response = requests.get(
+        GITHUB_API_URL,
+        headers=headers,
+        verify=False,
+        timeout=REQUEST_TIMEOUT,
+    )
     response.raise_for_status()
-    
-    # List of XML file URLs
-    file_urls = [
+    payload: Any = response.json()
+    if not isinstance(payload, list):
+        return []
+    return [
         item["download_url"]
-        for item in response.json()
-        if item["name"].endswith(".xml")
+        for item in payload
+        if isinstance(item, dict)
+        and str(item.get("name", "")).endswith(".xml")
+        and item.get("download_url")
     ]
-    
-    return file_urls
 
-def parse_xml_from_url(url):
-    """Fetches and parses XML data from a URL."""
-    response = requests.get(url, verify=False)
-    response.raise_for_status()
 
+def parse_resolution_entry(xml_bytes: bytes) -> tuple[str, str] | None:
     try:
-        # Parse the XML content with lxml
-        root = etree.fromstring(response.content)
-        
-        # Define namespaces if present (Akoma Ntoso namespace in this case)
-        namespaces = {'akn': 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'}
-        
-        # Use XPath to find <span> within <docTitle> with namespaces
-        title = root.xpath(".//akn:docTitle/akn:span[@class='bold']/text()", namespaces=namespaces)
+        root = etree.fromstring(xml_bytes)
+    except etree.XMLSyntaxError:
+        return None
 
-                # Use XPath to find <span> within <docTitle> with namespaces
-        pdf = root.xpath(".//akn:docNumber/text()", namespaces=namespaces)
-        
-        # Print each extracted text
-        for text in title:
-            title = text.strip()
-        output.append(title)
-        
-        for text in pdf:
-            pdf = text.rstrip(".")
-        if any(ch.isdigit() for ch in pdf):
-            desc = 'United Nations General Assembly Resolution\nhttps://docs.un.org/A/RES/'+pdf
-            output.append(desc)
-        else:    
-            output.pop()
-            
-    except etree.XMLSyntaxError as e:
-        print(f"Error parsing XML: {e}")
-        return
+    title_nodes = root.xpath(
+        ".//akn:docTitle/akn:span[@class='bold']/text()",
+        namespaces=AKN_NS,
+    )
+    number_nodes = root.xpath(".//akn:docNumber/text()", namespaces=AKN_NS)
 
-def main():
-    # Get the list of XML file URLs
-    xml_file_urls = get_file_urls(api_url)
-    
-    # Process each XML file
-    for url in xml_file_urls:
+    title_text = title_nodes[-1].strip() if title_nodes else ""
+    if not title_text:
+        return None
 
-        parse_xml_from_url(url)
+    doc_number = number_nodes[-1].rstrip(".") if number_nodes else ""
+    if doc_number and any(ch.isdigit() for ch in doc_number):
+        desc = (
+            "United Nations General Assembly Resolution\n"
+            f"https://docs.un.org/A/RES/{doc_number}"
+        )
+        return title_text, desc
 
-# Run the main function
-main()
-print(output)
+    return None
+
+
+def scrape_ga_resolutions() -> list[str]:
+    _disable_insecure_request_warnings()
+    output: list[str] = []
+
+    for download_url in list_xml_download_urls():
+        try:
+            response = requests.get(
+                download_url,
+                verify=False,
+                timeout=REQUEST_TIMEOUT,
+            )
+            response.raise_for_status()
+        except requests.RequestException:
+            continue
+
+        parsed = parse_resolution_entry(response.content)
+        if not parsed:
+            continue
+        title_text, desc = parsed
+        output.append(title_text)
+        output.append(desc)
+
+    return output
+
+
+def main() -> None:
+    print(scrape_ga_resolutions())
+
+
+if __name__ == "__main__":
+    main()

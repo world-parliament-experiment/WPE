@@ -1,80 +1,117 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Scrape Mexico-related legislative news via Google News RSS (primary + fallback).
+
+Keyword-filters items for relevance, normalizes titles, and prints JSON
+(UTF-8 preserved).
+
+Dependencies: beautifulsoup4, requests, urllib3
+"""
+
+from __future__ import annotations
+
 import json
+
 import requests
-import datetime
-import ssl
-from bs4 import BeautifulSoup
-import warnings
 import urllib3
+from bs4 import BeautifulSoup
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+PRIMARY_RSS = (
+    "https://news.google.com/rss/search?q=iniciativas+ley+mexico+congreso+gaceta"
+    "&hl=es-419&gl=MX&ceid=MX:es-419"
+)
+FALLBACK_RSS = (
+    "https://news.google.com/rss/search?q=gaceta+parlamentaria+mexico+iniciativas"
+    "&hl=es-419&gl=MX&ceid=MX:es-419"
+)
+REQUEST_TIMEOUT = 15
+MAX_TITLE_LEN = 250
 
-# Ignore SSL certificate warnings
-warnings.filterwarnings("ignore", category=requests.packages.urllib3.exceptions.InsecureRequestWarning)
+KEYWORDS = [
+    "iniciativa",
+    "ley",
+    "congreso",
+    "senado",
+    "diputados",
+    "gaceta",
+    "reforma",
+    "decreto",
+]
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
 
-output = {}
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Google News RSS workaround for Mexican legislative initiatives
-# Searching specifically for initiatives in the Mexican Congress
-url = "https://news.google.com/rss/search?q=iniciativas+ley+mexico+congreso+gaceta&hl=es-419&gl=MX&ceid=MX:es-419"
 
-header = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-}
+def _normalize_google_title(raw: str) -> str:
+    title = raw.strip()
+    if " - " in title:
+        title = title.rsplit(" - ", 1)[0]
+    if len(title) > MAX_TITLE_LEN:
+        title = title[: MAX_TITLE_LEN - 3] + "..."
+    return title
 
-keywords = ["iniciativa", "ley", "congreso", "senado", "diputados", "gaceta", "reforma", "decreto"]
 
-try:
-    response = requests.get(url, headers=header, timeout=15, verify=False)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, features="xml")
-        items = soup.find_all("item")
-        
-        for item in items:
-            title_raw = item.find("title").text if item.find("title") else ""
-            link = item.find("link").text if item.find("link") else ""
-            pub_date = item.find("pubDate").text if item.find("pubDate") else ""
-            
-            title = title_raw.strip()
-            
-            # Filter for relevance to ensure we get legislation-related news
-            is_relevant = any(kw in title.lower() for kw in keywords)
-            
-            if is_relevant:
-                # Clean up title (remove source name at the end usually "- Source")
-                if " - " in title:
-                    title = title.rsplit(" - ", 1)[0]
-                
-                if len(title) > 250:
-                    title = title[:247] + "..."
-                
-                desc = f"{title}\nFecha: {pub_date}\nSource: {link}"
-                
-                output[title] = desc
+def _fetch_rss_items(url: str, headers: dict[str, str]) -> list:
+    response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT, verify=False)
+    if response.status_code != 200:
+        return []
+    soup = BeautifulSoup(response.content, features="xml")
+    return soup.find_all("item")
 
-except Exception:
-    pass
 
-# If Google News failed or returned nothing, we try a more generic search
-if not output:
+def scrape_mx_news() -> dict[str, str]:
+    _disable_insecure_request_warnings()
+    output: dict[str, str] = {}
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        )
+    }
+
     try:
-        url_alt = "https://news.google.com/rss/search?q=gaceta+parlamentaria+mexico+iniciativas&hl=es-419&gl=MX&ceid=MX:es-419"
-        response = requests.get(url_alt, headers=header, timeout=15, verify=False)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, features="xml")
-            items = soup.find_all("item")
-            for item in items:
-                title = item.find("title").text if item.find("title") else ""
-                link = item.find("link").text if item.find("link") else ""
-                if " - " in title: title = title.rsplit(" - ", 1)[0]
-                if len(title) > 250: title = title[:247] + "..."
-                output[title] = f"{title}\nSource: {link}"
-    except:
+        for item in _fetch_rss_items(PRIMARY_RSS, headers):
+            title_el = item.find("title")
+            link_el = item.find("link")
+            pub_el = item.find("pubDate")
+            if not title_el or not link_el:
+                continue
+            title_raw = title_el.text or ""
+            link = link_el.text or ""
+            pub_date = pub_el.text if pub_el and pub_el.text else ""
+
+            title = title_raw.strip()
+            if not any(kw in title.lower() for kw in KEYWORDS):
+                continue
+
+            title = _normalize_google_title(title)
+            desc = f"{title}\nFecha: {pub_date}\nSource: {link}"
+            output[title] = desc
+    except requests.RequestException:
         pass
 
-print(json.dumps(output, ensure_ascii=False))
+    if output:
+        return output
+
+    try:
+        for item in _fetch_rss_items(FALLBACK_RSS, headers):
+            title_el = item.find("title")
+            link_el = item.find("link")
+            if not title_el or not link_el:
+                continue
+            title = _normalize_google_title(title_el.text or "")
+            link = link_el.text or ""
+            output[title] = f"{title}\nSource: {link}"
+    except requests.RequestException:
+        pass
+
+    return output
+
+
+def main() -> None:
+    print(json.dumps(scrape_mx_news(), ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()
