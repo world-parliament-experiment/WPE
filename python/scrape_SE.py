@@ -1,67 +1,58 @@
-#!/usr/bin/env python
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+#!/usr/bin/env python3
+"""
+Scrape Swedish Riksdag committee proposals from the public RSS document list.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Prints a flat list: title, link+date line, per item.
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import ssl
-import sys
+Dependencies: beautifulsoup4, requests, urllib3
+"""
+
+from __future__ import annotations
+
 import requests
 import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import re
-#import numpy as np
+from bs4 import BeautifulSoup
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-
-output = []
-
-# URl needs to be dynamic
-import datetime
-today = datetime.datetime.now()
-year = today.year
-errorcount = 0
-# Read the XML file
-url = 'https://data.riksdagen.se/dokumentlista/?avd=dokument&doktyp=bet&utskforslag=1&sort=debattdag&sortorder=asc&utformat=rss'
-xml = requests.get(url, verify=False)
-soup = BeautifulSoup(xml.content, features='xml')
-items = soup.find_all("item")
-for item in items:
-    title = item.find("title").getText()
-    link = item.find("link").getText()
-    desc = item.find("description").getText().strip()
-    date = desc[-10:]
-    desc = link + "\n" + date
-    output.append(title)
-    output.append(desc) 
-
-print(output)
-
-#print(topicno)
-#print(status)
-#print(url)
-#print(uzeit) 
-#list_of_contents.remove("\n")
-#list_of_contents.remove(" ")
+RSS_URL = (
+    "https://data.riksdagen.se/dokumentlista/?avd=dokument&doktyp=bet&"
+    "utskforslag=1&sort=debattdag&sortorder=asc&utformat=rss"
+)
+REQUEST_TIMEOUT = 30
 
 
-#print(list_of_contents)
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-#print(topiclist)
 
-#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in output))
-#f.close
+def fetch_riksdag_rss() -> list[str]:
+    """Return flattened entries from the Riksdagen RSS feed."""
+    _disable_insecure_request_warnings()
+    response = requests.get(RSS_URL, timeout=REQUEST_TIMEOUT, verify=False)
+    response.raise_for_status()
 
-#f = open('BT_Tagesordnung.txt', 'a')
-#f.write("\n".join(str(item) for item in url))
-#f.close
+    soup = BeautifulSoup(response.content, features="xml")
+    output: list[str] = []
+
+    for item in soup.find_all("item"):
+        title_el = item.find("title")
+        link_el = item.find("link")
+        desc_el = item.find("description")
+        if not title_el or not link_el or not desc_el:
+            continue
+        title = title_el.getText()
+        link = link_el.getText()
+        description = desc_el.getText().strip()
+        date = description[-10:]
+        desc = link + "\n" + date
+        output.append(title)
+        output.append(desc)
+
+    return output
+
+
+def main() -> None:
+    print(fetch_riksdag_rss())
+
+
+if __name__ == "__main__":
+    main()

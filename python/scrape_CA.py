@@ -1,70 +1,60 @@
-#!/usr/bin/env python
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+#!/usr/bin/env python3
+"""
+Scrape Canadian Parliament bill metadata from the LegisINFO XML feed.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Builds a JSON object keyed by short title (falling back to long title) with
+description including the long title and public bill URL.
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import ssl
-import sys
-import requests
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import re
-#import numpy as np
+Dependencies: beautifulsoup4, requests, urllib3
+"""
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+from __future__ import annotations
 
 import json
 
-# ... (keep existing imports and setup)
+import requests
+import urllib3
+from bs4 import BeautifulSoup, Tag
 
-output = {}
-
-# Read the XML file
-url = 'https://www.parl.ca/legisinfo/en/bills/xml'
-xml = requests.get(url, verify=False)
-soup = BeautifulSoup(xml.content, features='xml')
-bills = soup.find_all("Bill")
-for bill in bills:
-    title = bill.find("ShortTitleEn").getText()
-    desc = bill.find("LongTitleEn").getText()
-    session = bill.find("ParlSessionCode").getText()
-    code = bill.find("BillNumberFormatted").getText()
-
-    link = "https://www.parl.ca/legisinfo/en/bill/"+session+"/"+code
-    
-    if title == '\n':
-        title = desc
-    desc = desc + "\n" + link 
-    output[title] = desc
-
-print(json.dumps(output))
-
-#print(topicno)
-#print(status)
-#print(url)
-#print(uzeit) 
-#list_of_contents.remove("\n")
-#list_of_contents.remove(" ")
+XML_URL = "https://www.parl.ca/legisinfo/en/bills/xml"
+REQUEST_TIMEOUT = 30
 
 
-#print(list_of_contents)
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-#print(topiclist)
 
-#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in output))
-#f.close
+def _text(el: Tag | None) -> str:
+    return el.getText() if el else ""
 
-#f = open('BT_Tagesordnung.txt', 'a')
-#f.write("\n".join(str(item) for item in url))
-#f.close
+
+def scrape_parl_ca_bills() -> dict[str, str]:
+    _disable_insecure_request_warnings()
+    output: dict[str, str] = {}
+
+    response = requests.get(XML_URL, timeout=REQUEST_TIMEOUT, verify=False)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, features="xml")
+    for bill in soup.find_all("Bill"):
+        title = _text(bill.find("ShortTitleEn"))
+        desc = _text(bill.find("LongTitleEn"))
+        session = _text(bill.find("ParlSessionCode"))
+        code = _text(bill.find("BillNumberFormatted"))
+        link = f"https://www.parl.ca/legisinfo/en/bill/{session}/{code}"
+
+        if title == "\n":
+            title = desc
+
+        desc = desc + "\n" + link
+        output[title] = desc
+
+    return output
+
+
+def main() -> None:
+    print(json.dumps(scrape_parl_ca_bills()))
+
+
+if __name__ == "__main__":
+    main()

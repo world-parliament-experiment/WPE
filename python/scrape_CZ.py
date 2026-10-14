@@ -1,45 +1,79 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Scrape Czech Chamber of Deputies print (tisk) RSS, decoded as Windows-1250.
+
+Filters items heuristically for primary bills and prints JSON (UTF-8 preserved).
+
+Dependencies: beautifulsoup4, requests, urllib3
+"""
+
+from __future__ import annotations
+
 import json
-import requests
-from bs4 import BeautifulSoup
-import warnings
-import urllib3
 import re
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-warnings.filterwarnings("ignore", category=urllib3.exceptions.InsecureRequestWarning)
+import requests
+import urllib3
+from bs4 import BeautifulSoup
 
-output = {}
-url = "https://www.psp.cz/rss/tisky.rss"
-header = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-}
+RSS_URL = "https://www.psp.cz/rss/tisky.rss"
+REQUEST_TIMEOUT = 15
+MAX_TITLE_LEN = 250
 
-try:
-    response = requests.get(url, headers=header, timeout=15, verify=False)
-    if response.status_code == 200:
-        # Decode from windows-1250/cp1250
-        content_text = response.content.decode('cp1250', errors='replace')
-        
-        # Remove the XML declaration that says windows-1250 to avoid confusing parsers
-        content_text = re.sub(r'<\?xml.*?\?>', '', content_text)
-        
-        soup = BeautifulSoup(content_text, "xml")
-        items = soup.find_all("item")
-        
-        for item in items:
-            title = item.find("title").get_text().strip() if item.find("title") else ""
-            desc = item.find("description").get_text().strip() if item.find("description") else ""
-            link = item.find("link").get_text().strip() if item.find("link") else ""
-            
-            # Filter for primary bills
-            if "/0" in title or "Návrh" in title or "Novela" in title:
-                if len(title) > 250:
-                    title = title[:247] + "..."
-                
-                output[title] = f"{desc}\nSource: {link}"
 
-except Exception:
-    pass
+def _disable_insecure_request_warnings() -> None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-print(json.dumps(output, ensure_ascii=False))
+
+def scrape_psp_rss() -> dict[str, str]:
+    _disable_insecure_request_warnings()
+    output: dict[str, str] = {}
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        )
+    }
+
+    try:
+        response = requests.get(
+            RSS_URL,
+            headers=headers,
+            timeout=REQUEST_TIMEOUT,
+            verify=False,
+        )
+    except requests.RequestException:
+        return output
+
+    if response.status_code != 200:
+        return output
+
+    content_text = response.content.decode("cp1250", errors="replace")
+    content_text = re.sub(r"<\?xml.*?\?>", "", content_text)
+
+    soup = BeautifulSoup(content_text, "xml")
+    for item in soup.find_all("item"):
+        title_el = item.find("title")
+        desc_el = item.find("description")
+        link_el = item.find("link")
+        title = title_el.get_text().strip() if title_el else ""
+        desc = desc_el.get_text().strip() if desc_el else ""
+        link = link_el.get_text().strip() if link_el else ""
+
+        if "/0" not in title and "Návrh" not in title and "Novela" not in title:
+            continue
+
+        if len(title) > MAX_TITLE_LEN:
+            title = title[: MAX_TITLE_LEN - 3] + "..."
+
+        output[title] = f"{desc}\nSource: {link}"
+
+    return output
+
+
+def main() -> None:
+    print(json.dumps(scrape_psp_rss(), ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

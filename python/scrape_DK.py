@@ -1,88 +1,94 @@
-#!/usr/bin/env python
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+#!/usr/bin/env python3
+"""
+Scrape Danish Folketinget (Ft.dk) bill index pages by bill number.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Determines session year from the calendar (Sep–May session), walks bill ids,
+and prints a flat list of title and index URL pairs.
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import ssl
-import sys
-#import numpy as np
+Dependencies: beautifulsoup4
+"""
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+from __future__ import annotations
 
-output = []
-
-# URl needs to be dynamic
 import datetime
-today = datetime.datetime.now()
-if  today.month <= 8:       #voting period is Sep - May 
-    year = today.year - 1
-else:
-    year = today.year
-stop = False
-start = 50
-errorcount = 0
-while not stop:
-    #url = 'https://www.ft.dk/samling/20201/beslutningsforslag/b'+str(start)+'/index.htm'
-    url = 'https://www.ft.dk/samling/'+str(year)+'1/lovforslag/l'+str(start)+'/index.htm'
-    try:
-        html = urllib.request.urlopen(url, context=ctx).read()
-    except urllib.error.HTTPError as e:
-            errorcount += 1
-            start += 1
-            if errorcount == 5:
+import ssl
+import urllib.error
+import urllib.request
+from bs4 import BeautifulSoup
+
+START_BILL = 50
+MAX_CONSECUTIVE_FAILURES = 5
+SAMPLING_PREFIX = "https://www.ft.dk/samling/"
+
+
+def create_unverified_ssl_context() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def session_year(today: datetime.date | None = None) -> int:
+    """Return Folketinget session start year (Sep–May cycle)."""
+    today = today or datetime.date.today()
+    if today.month <= 8:
+        return today.year - 1
+    return today.year
+
+
+def bill_url(year: int, bill_num: int) -> str:
+    return f"{SAMPLING_PREFIX}{year}1/lovforslag/l{bill_num}/index.htm"
+
+
+def scrape_ft_bills() -> list[str]:
+    ctx = create_unverified_ssl_context()
+    year = session_year()
+    output: list[str] = []
+    bill_num = START_BILL
+    consecutive_failures = 0
+    stop = False
+
+    while not stop:
+        url = bill_url(year, bill_num)
+        try:
+            with urllib.request.urlopen(url, context=ctx) as response:
+                html = response.read()
+        except urllib.error.HTTPError:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
                 stop = True
             continue
 
-    soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, "html.parser")
+        section = soup.find("div", {"class": "tingdok"})
+        if not section:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                stop = True
+            continue
 
-    section = soup.find("div", {'class': 'tingdok'})
-    if not section:
-        errorcount += 1
-        start += 1
-        if errorcount == 5:
-            stop = True
-        continue
-    
-    title = ""
-    desc = ""
+        heading = soup.find("h1", {"class": "tingdok-heading"})
+        if not heading:
+            consecutive_failures += 1
+            bill_num += 1
+            if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                stop = True
+            continue
 
-    title = soup.find("h1", {'class': 'tingdok-heading'}).getText().strip()
-    desc = 'https://www.ft.dk/samling/'+str(year)+'1/lovforslag/l'+str(start)+'/index.htm'
+        title = heading.getText().strip()
+        desc = bill_url(year, bill_num)
+        output.append(title)
+        output.append(desc)
+        bill_num += 1
 
-    output.append(title)
-    output.append(desc) 
-    #print(start)   
-
-    start = start + 1
-
-print(output)
-
-#print(topicno)
-#print(status)
-#print(url)
-#print(uzeit) 
-#list_of_contents.remove("\n")
-#list_of_contents.remove(" ")
+    return output
 
 
-#print(list_of_contents)
+def main() -> None:
+    print(scrape_ft_bills())
 
-#print(topiclist)
 
-#f = open('BT_Tagesordnung.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in output))
-#f.close
-
-#f = open('BT_Tagesordnung.txt', 'a')
-#f.write("\n".join(str(item) for item in url))
-#f.close
+if __name__ == "__main__":
+    main()

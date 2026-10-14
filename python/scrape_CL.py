@@ -1,69 +1,82 @@
 #!/usr/bin/env python3
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+"""
+Scrape Chile Cámara de Diputados promoted law projects listing.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Parses the HTML table until encountering a row older than one year, and prints
+a flat list of title and description pairs.
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
+Dependencies: beautifulsoup4
+"""
+
+from __future__ import annotations
+
 import ssl
-from datetime import datetime
-from datetime import timedelta
+import urllib.request
+from datetime import datetime, timedelta
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+from bs4 import BeautifulSoup
 
-today = datetime.now()
-output = []
+LIST_URL = "https://www.camara.cl/legislacion/ProyectosDeLey/leyes_promulgadas.aspx"
+DOC_BASE = "https://www.camara.cl/legislacion/ProyectosDeLey/"
 
-url = 'https://www.camara.cl/legislacion/ProyectosDeLey/leyes_promulgadas.aspx'
-docurl = 'https://www.camara.cl/legislacion/ProyectosDeLey/'
-html = urllib.request.urlopen(url, context=ctx).read()
 
-soup = BeautifulSoup(html, 'html.parser')
+def create_unverified_ssl_context() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
 
-section = soup.find("div", {'class': 'grid-12 lista-proyectos aleft'})
-trs = section.findAll('tr')
 
-for tr in trs:
-    tds = tr.findAll('td')
-    title = []
-    contents = []
-    for id, td in enumerate(tds):          
-            if td.find('a') is not None and id == 0: 
-                contents.append(td.find('a').get('href'))
+def scrape_camara_cl_promulgadas() -> list[str]:
+    ctx = create_unverified_ssl_context()
+    with urllib.request.urlopen(LIST_URL, context=ctx) as response:
+        html = response.read()
+
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.find("div", {"class": "grid-12 lista-proyectos aleft"})
+    if not section:
+        return []
+
+    output: list[str] = []
+    cutoff = datetime.now() - timedelta(days=365)
+
+    for row in section.find_all("tr"):
+        cells = row.find_all("td")
+        contents: list[str] = []
+        for col_idx, cell in enumerate(cells):
+            anchor = cell.find("a")
+            if anchor is not None and col_idx == 0:
+                href = anchor.get("href")
+                contents.append(href or "")
             else:
-                contents.append(td.getText().split("\n")[0])
-    
-    if contents:
-        title = contents[3].replace(u'\xa0', u' ')
-        title = title.replace("'", " ")
-        link = docurl + contents[0]
+                parts = cell.getText().split("\n")
+                contents.append(parts[0] if parts else "")
+
+        if not contents or len(contents) < 6:
+            continue
+
+        title = contents[3].replace("\xa0", " ").replace("'", " ")
+        link = DOC_BASE + contents[0]
         desc = contents[5] + " \n" + link
         desc = desc.replace("'", " ")
-        date = datetime.strptime(contents[5], "%d-%m-%Y")
-        if date < (datetime.now() - timedelta(days=365)):
+
+        try:
+            row_date = datetime.strptime(contents[5], "%d-%m-%Y")
+        except ValueError:
+            continue
+
+        if row_date < cutoff:
             break
 
         output.append(title)
         output.append(desc)
 
-#print(refs)
-#list_of_contents.reverse()
+    return output
 
-#headings = list_of_contents[0::4]
-#URL = list_of_contents[2::4]
 
-print(output)
-#print(headings)
-#print(URL)
+def main() -> None:
+    print(scrape_camara_cl_promulgadas())
 
-#f = open('UNSC.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in list_of_contents))
-#f.close
+
+if __name__ == "__main__":
+    main()

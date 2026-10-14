@@ -1,80 +1,92 @@
 #!/usr/bin/env python3
-# To run this, you can install BeautifulSoup
-# https://pypi.python.org/pypi/beautifulsoup4
+"""
+Scrape UN Security Council adopted resolutions listings for two year pages.
 
-# Or download the file
-# http://www.py4e.com/code3/bs4.zip
-# and unzip it in the same directory as this file
+Fetches the current and next calendar year index pages from un.org, parses the
+main table, and prints a flat list of title and description pairs.
 
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import ssl
+Dependencies: beautifulsoup4
+"""
+
+from __future__ import annotations
+
 import datetime
+import urllib.error
+import urllib.request
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+from bs4 import BeautifulSoup
 
-today = datetime.datetime.now()
-output = []
+USER_AGENT = "Mozilla/5.0"
+YEARS_TO_FETCH = 2
+LIST_PATH = (
+    "https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-"
+)
 
-count = 0
-while count < 2:
-    year = today.year + count
+
+def fetch_year_page(year: int) -> bytes | None:
     req = urllib.request.Request(
-        url='https://www.un.org/securitycouncil/content/resolutions-adopted-security-council-'+str(year), 
-        headers={'User-Agent': 'Mozilla/5.0'}
+        url=f"{LIST_PATH}{year}",
+        headers={"User-Agent": USER_AGENT},
     )
     try:
-        html = urllib.request.urlopen(req).read()
-    except urllib.error.HTTPError as e:
-        if e.getcode() == 404: # check the return code
-            count = count + 1
-            continue
-        raise # if other than 404, raise the error
+        with urllib.request.urlopen(req) as response:
+            return response.read()
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise
 
-    soup = BeautifulSoup(html, 'html.parser')
 
-    section = soup.find("div", {'class': 'field-items'})
-    trs = section.findAll('tr')
+def parse_resolution_rows(html: bytes) -> list[str]:
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.find("div", {"class": "field-items"})
+    if not section:
+        return []
 
-    for tr in trs:
-        tds = tr.findAll('td')
-        title = []
-        contents = []
-        for id, td in enumerate(tds):          
-                if td.find('a') is not None and id == 0: 
-                    contents.append(td.getText().strip())
-                    contents.append(td.find('a').get('href'))
-                else:
-                    contents.append(td.getText().split("\n")[0])
+    output: list[str] = []
+    for row in section.find_all("tr"):
+        cells = row.find_all("td")
+        contents: list[str] = []
+        for col_idx, cell in enumerate(cells):
+            anchor = cell.find("a")
+            if anchor is not None and col_idx == 0:
+                contents.append(cell.getText().strip())
+                contents.append(anchor.get("href") or "")
+            else:
+                parts = cell.getText().split("\n")
+                contents.append(parts[0] if parts else "")
+
         contents.reverse()
-        
-        if contents:
-            title = contents[0].replace(u'\xa0', u' ')
-            title = title.replace("'", " ")
-            title = contents[3] + " - " + title
-            desc = contents[0] + " \n" + contents[2] + " \n" + contents[1]
-            desc = desc.replace("'", " ")
+        if not contents:
+            continue
 
-            output.append(title)
-            output.append(desc)
+        title = contents[0].replace("\xa0", " ").replace("'", " ")
+        title = contents[3] + " - " + title
+        desc = contents[0] + " \n" + contents[2] + " \n" + contents[1]
+        desc = desc.replace("'", " ")
+        output.append(title)
+        output.append(desc)
 
-    count = count + 1
+    return output
 
-#print(refs)
-#list_of_contents.reverse()
 
-#headings = list_of_contents[0::4]
-#URL = list_of_contents[2::4]
+def scrape_unsc_resolutions() -> list[str]:
+    today = datetime.datetime.now()
+    combined: list[str] = []
 
-print(output)
-#print(headings)
-#print(URL)
+    for offset in range(YEARS_TO_FETCH):
+        year = today.year + offset
+        html = fetch_year_page(year)
+        if html is None:
+            continue
+        combined.extend(parse_resolution_rows(html))
 
-#f = open('UNSC.txt', 'w', encoding='utf-8', errors='replace')
-#f.write("\n".join(str(item) for item in list_of_contents))
-#f.close
+    return combined
+
+
+def main() -> None:
+    print(scrape_unsc_resolutions())
+
+
+if __name__ == "__main__":
+    main()
