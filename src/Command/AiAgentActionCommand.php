@@ -43,11 +43,12 @@ class AiAgentActionCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Triggers AI agents to perform autonomous actions (drafting, commenting, replying, reacting, or voting)')
-            ->addArgument('action', InputArgument::REQUIRED, 'Action to perform: "draft", "comment", "reply", "react", or "vote"')
+            ->setDescription('Triggers AI agents to perform autonomous actions (drafting, commenting, replying, reacting, voting, or counter-proposals)')
+            ->addArgument('action', InputArgument::REQUIRED, 'Action to perform: "draft", "comment", "reply", "react", "vote", or "counter-proposal"')
             ->addOption('persona', 'p', InputOption::VALUE_REQUIRED, 'Target a specific persona (if omitted, a random AI agent is chosen)')
             ->addOption('topic', 't', InputOption::VALUE_REQUIRED, 'Topic for drafting (if omitted, the agent will invent one)')
             ->addOption('category', 'c', InputOption::VALUE_REQUIRED, 'Category name for drafting (if omitted, a random Type 0 category is chosen)')
+            ->addOption('initiative', 'i', InputOption::VALUE_REQUIRED, 'Target specific initiative ID for counter-proposals or comments')
         ;
     }
 
@@ -87,9 +88,11 @@ class AiAgentActionCommand extends Command
             return $this->handleReact($io, $agent);
         } elseif ($action === 'vote') {
             return $this->handleVote($io, $agent);
+        } elseif ($action === 'counter-proposal' || $action === 'counter' || $action === 'draft-response') {
+            return $this->handleCounterProposal($input, $io, $agent);
         }
 
-        $io->error('Invalid action. Use "draft", "comment", "reply", "react", or "vote".');
+        $io->error('Invalid action. Use "draft", "comment", "reply", "react", "vote", or "counter-proposal".');
         return Command::FAILURE;
     }
 
@@ -471,6 +474,155 @@ class AiAgentActionCommand extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $io->error('Failed to generate reply: ' . $e->getMessage());
+            return Command::FAILURE;
+        }
+    }
+
+    private function handleCounterProposal(InputInterface $input, SymfonyStyle $io, User $agent): int
+    {
+        $initiativeId = $input->getOption('initiative');
+        /** @var Initiative|null $target */
+        $target = null;
+
+        if ($initiativeId) {
+            $target = $this->entityManager->getRepository(Initiative::class)->find($initiativeId);
+            if (!$target) {
+                $io->error(sprintf('Initiative with ID "%s" not found.', $initiativeId));
+                return Command::FAILURE;
+            }
+        } else {
+            // Find candidate active global initiatives created by others or any active initiative
+            $qb = $this->entityManager->createQueryBuilder();
+            $initiatives = $qb->select('i')
+                ->from(Initiative::class, 'i')
+                ->join('i.category', 'c')
+                ->where('c.type = 0')
+                ->andWhere('i.state = :state')
+                ->andWhere('i.createdBy != :agent')
+                ->setParameter('state', InitiativeEnum::STATE_ACTIVE)
+                ->setParameter('agent', $agent)
+                ->orderBy('i.createdAt', 'DESC')
+                ->setMaxResults(20)
+                ->getQuery()
+                ->getResult();
+
+            if (empty($initiatives)) {
+                // Fallback: any active global initiative
+                $initiatives = $this->entityManager->createQueryBuilder()
+                    ->select('i')
+                    ->from(Initiative::class, 'i')
+                    ->join('i.category', 'c')
+                    ->where('c.type = 0')
+                    ->andWhere('i.state = :state')
+                    ->setParameter('state', InitiativeEnum::STATE_ACTIVE)
+                    ->orderBy('i.createdAt', 'DESC')
+                    ->setMaxResults(20)
+                    ->getQuery()
+                    ->getResult();
+            }
+
+            if (empty($initiatives)) {
+                $io->warning('No active global initiatives found to create a counter-proposal for.');
+                return Command::SUCCESS;
+            }
+
+            $target = $initiatives[array_rand($initiatives)];
+        }
+
+        $io->info(sprintf('Drafting counter-proposal in response to initiative: %s (ID: %d)', $target->getTitle(), $target->getId()));
+
+        try {
+            // Step 1: Agent generates a comment/critique on the target initiative
+            $commentText = $this->aiAssistant->generateComment(
+                $target->getTitle(),
+                $target->getDescription(),
+                $agent->getAiPersona()
+            );
+
+            $comment = new Comment();
+            $comment->setInitiative($target);
+            $comment->setMessage($commentText);
+            $comment->setCreatedBy($agent);
+            $comment->setState(CommentEnum::STATE_OPEN);
+            $comment->setLiked(0);
+            $comment->setDisliked(0);
+            $comment->setReported(0);
+            $comment->setCreatedAt(new DateTime());
+            $comment->setUpdatedAt(new DateTime());
+
+            $this->entityManager->persist($comment);
+            $this->entityManager->flush();
+
+            $io->info(sprintf('Comment posted on target initiative (ID: %d). Now drafting new proposal...', $target->getId()));
+
+            // Step 2: Agent drafts a new proposal spawned off this comment
+            $draft = $this->aiAssistant->draftCounterProposal(
+                $target->getTitle(),
+                $target->getDescription(),
+                $commentText,
+                $agent->getAiPersona()
+            );
+
+            $slugger = new AsciiSlugger();
+            $initiative = new Initiative();
+            $voting = new Voting();
+
+            $now = new DateTime();
+            $initiative->setCategory($target->getCategory());
+            $initiative->setTitle($draft['title']);
+
+            // Add reference to original proposal in description if not present
+            $description = $draft['description'];
+            if (!str_contains($description, 'Original Proposal')) {
+                $refHtml = sprintf(
+                    '<p><em>Response to proposal <a href="/en/proposal/%s">%s</a> (ID: %d).</em></p><hr/>',
+                    $target->getSlug() ?? $target->getId(),
+                    htmlspecialchars($target->getTitle()),
+                    $target->getId()
+                );
+                $description = $refHtml . $description;
+            }
+            $initiative->setDescription($description);
+            $initiative->setCreatedBy($agent);
+            $initiative->setDuration("7");
+            $initiative->setPublishedAt($now);
+            $initiative->setCreatedAt($now);
+            $initiative->setUpdatedAt($now);
+            $initiative->setSlug($slugger);
+            $initiative->setType(InitiativeEnum::TYPE_FUTURE);
+            $initiative->setState(InitiativeEnum::STATE_ACTIVE);
+
+            $voting->setStartdate($now);
+            $enddate = (clone $now)->modify('+6 months');
+            $voting->setEnddate($enddate);
+            $voting->setState(VotingEnum::STATE_WAITING);
+            $voting->setType(VotingEnum::TYPE_FUTURE);
+            $voting->setInitiative($initiative);
+
+            $this->entityManager->persist($initiative);
+            $this->entityManager->persist($voting);
+            $this->entityManager->flush();
+
+            // Step 3: Update original comment to link to the newly spawned proposal
+            $updatedCommentMessage = $commentText . sprintf(
+                "\n\n*(I have drafted a new proposal in response: Proposal #%d - %s)*",
+                $initiative->getId(),
+                $initiative->getTitle()
+            );
+            $comment->setMessage($updatedCommentMessage);
+            $this->entityManager->flush();
+
+            $io->success(sprintf(
+                'New counter-proposal created: "%s" (ID: %d), spawned from comment on proposal "%s" (ID: %d)',
+                $initiative->getTitle(),
+                $initiative->getId(),
+                $target->getTitle(),
+                $target->getId()
+            ));
+
+            return Command::SUCCESS;
+        } catch (\Exception $e) {
+            $io->error('Failed to create counter-proposal: ' . $e->getMessage());
             return Command::FAILURE;
         }
     }

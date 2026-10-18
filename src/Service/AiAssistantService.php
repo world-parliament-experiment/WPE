@@ -102,6 +102,53 @@ class AiAssistantService
         return $data;
     }
 
+    public function draftCounterProposal(
+        string $originalTitle,
+        string $originalDescription,
+        string $commentText,
+        string $personaKey = 'neutral'
+    ): array {
+        $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
+        $prompt = sprintf(
+            "Based on your persona as %s, you previously reviewed this legislative proposal for the World Parliament:
+            Original Title: %s
+            Original Text: %s
+
+            Your Comment/Critique was:
+            '%s'
+
+            Now, draft a NEW full legislative proposal for the World Parliament that directly responds to the original proposal and implements your comment/critique as a standalone counter-proposal or revised initiative.
+            You MUST respond with a JSON object.
+            Structure:
+            {
+              \"title\": \"A concise title for your counter-proposal\",
+              \"description\": \"The full legal text using Markdown (headers, bold, etc.) detailing your revised proposal\"
+            }
+            IMPORTANT: The response MUST be in the same language as the original proposal. Return ONLY the raw JSON.",
+            $persona['name'],
+            $originalTitle,
+            $originalDescription,
+            $commentText
+        );
+
+        $result = $this->generateContent($prompt, $personaKey, 'application/json');
+
+        $jsonString = $this->cleanJson($result);
+        $data = json_decode($jsonString, true);
+
+        if (!$data || !isset($data['title']) || !isset($data['description'])) {
+            error_log("AI Counter-Proposal JSON Decode Failed. Raw: " . $result);
+            return [
+                'title' => 'Counter-Proposal: ' . mb_substr($originalTitle, 0, 50),
+                'description' => $this->markdownToHtml($result)
+            ];
+        }
+
+        $data['description'] = $this->markdownToHtml($data['description']);
+
+        return $data;
+    }
+
     public function generateComment(string $initiativeTitle, string $initiativeDescription, string $personaKey = 'neutral'): string
     {
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
