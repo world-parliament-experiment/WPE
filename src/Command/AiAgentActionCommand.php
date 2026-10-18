@@ -7,6 +7,7 @@ use App\Entity\Initiative;
 use App\Entity\User;
 use App\Entity\Category;
 use App\Entity\Voting;
+use App\Entity\Vote;
 use App\Enum\InitiativeEnum;
 use App\Enum\VotingEnum;
 use App\Enum\CommentEnum;
@@ -428,6 +429,7 @@ class AiAgentActionCommand extends Command
             ->where('c.type = 0')
             ->andWhere('i.state = :state')
             ->setParameter('state', InitiativeEnum::STATE_ACTIVE)
+            ->orderBy('i.createdAt', 'DESC')
             ->setMaxResults(100)
             ->getQuery()
             ->getResult();
@@ -437,67 +439,195 @@ class AiAgentActionCommand extends Command
             return Command::SUCCESS;
         }
 
-        // Shuffle initiatives to pick one randomly
-        shuffle($initiatives);
+        $ownProposals = [];
+        $otherProposals = [];
+        $ownOngoingVotes = [];
+        $otherOngoingVotes = [];
 
         foreach ($initiatives as $initiative) {
-            // Check if it's in official vote or support stage
-            $voting = null;
-            $isOfficial = false;
+            $ongoingVoting = null;
+            $proposalVoting = null;
 
-            if ($v = $initiative->getCurrentVoting()) {
-                if ($v->getState() === VotingEnum::STATE_OPEN) {
-                    $voting = $v;
-                    $isOfficial = true;
-                }
-            } elseif ($v = $initiative->getFutureVoting()) {
-                if ($v->getState() === VotingEnum::STATE_OPEN) {
-                    $voting = $v;
-                    $isOfficial = false;
+            if (($cv = $initiative->getCurrentVoting()) instanceof Voting) {
+                if ($cv->getState() === VotingEnum::STATE_OPEN || ($cv->getState() === VotingEnum::STATE_WAITING && ($cv->getStartdate() === null || $cv->getStartdate() <= new DateTime()))) {
+                    $ongoingVoting = $cv;
                 }
             }
 
-            if (!$voting) continue;
+            if (!$ongoingVoting && ($fv = $initiative->getFutureVoting()) instanceof Voting) {
+                if ($fv->getState() === VotingEnum::STATE_OPEN || ($fv->getState() === VotingEnum::STATE_WAITING && ($fv->getStartdate() === null || $fv->getStartdate() <= new DateTime()))) {
+                    $proposalVoting = $fv;
+                }
+            }
 
-            // Check if agent already voted
-            $existingVote = $this->entityManager->getRepository(\App\Entity\Vote::class)->findOneBy([
-                'user' => $agent,
-                'voting' => $voting
-            ]);
+            $isOwn = $this->isOwnInitiative($initiative, $agent);
 
-            if ($existingVote) continue;
+            if ($proposalVoting) {
+                $existingVote = $this->entityManager->getRepository(Vote::class)->findOneBy([
+                    'user' => $agent,
+                    'voting' => $proposalVoting
+                ]);
 
-            $io->info(sprintf('Voting on %s initiative: %s', 
-                $isOfficial ? 'OFFICIAL' : 'PROPOSAL',
-                $initiative->getTitle()
-            ));
+                if (!$existingVote) {
+                    if ($proposalVoting->getState() === VotingEnum::STATE_WAITING) {
+                        $proposalVoting->setState(VotingEnum::STATE_OPEN);
+                        $this->entityManager->persist($proposalVoting);
+                    }
+
+                    if ($isOwn) {
+                        $ownProposals[] = ['initiative' => $initiative, 'voting' => $proposalVoting];
+                    } else {
+                        $otherProposals[] = ['initiative' => $initiative, 'voting' => $proposalVoting];
+                    }
+                }
+            } elseif ($ongoingVoting) {
+                $existingVote = $this->entityManager->getRepository(Vote::class)->findOneBy([
+                    'user' => $agent,
+                    'voting' => $ongoingVoting
+                ]);
+
+                if (!$existingVote) {
+                    if ($ongoingVoting->getState() === VotingEnum::STATE_WAITING) {
+                        $ongoingVoting->setState(VotingEnum::STATE_OPEN);
+                        $this->entityManager->persist($ongoingVoting);
+                    }
+
+                    if ($isOwn) {
+                        $ownOngoingVotes[] = ['initiative' => $initiative, 'voting' => $ongoingVoting];
+                    } else {
+                        $otherOngoingVotes[] = ['initiative' => $initiative, 'voting' => $ongoingVoting];
+                    }
+                }
+            }
+        }
+
+        $votedProposal = false;
+        $votedOngoing = false;
+
+        // 1. Vote on ONE proposal: Own proposals first, then others
+        if (!empty($ownProposals)) {
+            usort($ownProposals, function ($a, $b) {
+                $timeA = $a['initiative']->getCreatedAt() ? $a['initiative']->getCreatedAt()->getTimestamp() : 0;
+                $timeB = $b['initiative']->getCreatedAt() ? $b['initiative']->getCreatedAt()->getTimestamp() : 0;
+                return $timeB <=> $timeA;
+            });
+
+            $target = $ownProposals[0];
+            /** @var Initiative $initiative */
+            $initiative = $target['initiative'];
+            /** @var Voting $voting */
+            $voting = $target['voting'];
+
+            $io->info(sprintf('Voting on own proposal: %s', $initiative->getTitle()));
+            $this->castVote($agent, $voting, 1);
+            $io->success('Voted: 1 (Supported own proposal)');
+            $votedProposal = true;
+        } elseif (!empty($otherProposals)) {
+            shuffle($otherProposals);
+
+            foreach ($otherProposals as $target) {
+                /** @var Initiative $initiative */
+                $initiative = $target['initiative'];
+                /** @var Voting $voting */
+                $voting = $target['voting'];
+
+                $io->info(sprintf('Evaluating proposal: %s', $initiative->getTitle()));
+
+                $value = $this->aiAssistant->decideVote(
+                    $initiative->getTitle(),
+                    $initiative->getDescription(),
+                    $agent->getAiPersona(),
+                    false
+                );
+
+                if ($value === 1) {
+                    $this->castVote($agent, $voting, 1);
+                    $io->success('Voted: 1 (Supported proposal)');
+                    $votedProposal = true;
+                    break;
+                } else {
+                    $io->info('Decided not to support.');
+                }
+            }
+
+            if (!$votedProposal) {
+                $io->info('No candidate proposals were supported in this round.');
+            }
+        } else {
+            $io->info('No proposals available for this agent to vote on.');
+        }
+
+        // 2. Vote on ONE ongoing vote: Own ongoing votes first, then others (if available)
+        if (!empty($ownOngoingVotes)) {
+            usort($ownOngoingVotes, function ($a, $b) {
+                $timeA = $a['initiative']->getCreatedAt() ? $a['initiative']->getCreatedAt()->getTimestamp() : 0;
+                $timeB = $b['initiative']->getCreatedAt() ? $b['initiative']->getCreatedAt()->getTimestamp() : 0;
+                return $timeB <=> $timeA;
+            });
+
+            $target = $ownOngoingVotes[0];
+            /** @var Initiative $initiative */
+            $initiative = $target['initiative'];
+            /** @var Voting $voting */
+            $voting = $target['voting'];
+
+            $io->info(sprintf('Voting on own ongoing vote: %s', $initiative->getTitle()));
+            $this->castVote($agent, $voting, 1);
+            $io->success('Voted: 1 (Voted YES on own ongoing vote)');
+            $votedOngoing = true;
+        } elseif (!empty($otherOngoingVotes)) {
+            shuffle($otherOngoingVotes);
+
+            $target = $otherOngoingVotes[0];
+            /** @var Initiative $initiative */
+            $initiative = $target['initiative'];
+            /** @var Voting $voting */
+            $voting = $target['voting'];
+
+            $io->info(sprintf('Voting on official ongoing vote: %s', $initiative->getTitle()));
 
             $value = $this->aiAssistant->decideVote(
                 $initiative->getTitle(),
                 $initiative->getDescription(),
                 $agent->getAiPersona(),
-                $isOfficial
+                true
             );
-
-            if ($value === 0 && !$isOfficial) {
-                $io->info('Decided not to support.');
-                // For proposals, 0 means no action. We can break and try another or just end.
-                continue; 
-            }
 
             $this->castVote($agent, $voting, $value);
             $io->success(sprintf('Voted: %d', $value));
-            
-            return Command::SUCCESS;
+            $votedOngoing = true;
+        } else {
+            $io->info('No ongoing votes available for this agent to vote on.');
         }
 
-        $io->info('No new initiatives found for this agent to vote on.');
+        if (!$votedProposal && !$votedOngoing) {
+            $io->info('No votes cast by this agent in this round.');
+        }
+
         return Command::SUCCESS;
+    }
+
+    private function isOwnInitiative(Initiative $initiative, User $agent): bool
+    {
+        $creator = $initiative->getCreatedBy();
+        if (!$creator) {
+            return false;
+        }
+
+        if ($creator === $agent) {
+            return true;
+        }
+
+        if ($agent->getId() !== null && $creator->getId() !== null) {
+            return $creator->getId() === $agent->getId();
+        }
+
+        return false;
     }
 
     private function castVote(User $user, Voting $voting, int $value): void
     {
-        $vote = new \App\Entity\Vote();
+        $vote = new Vote();
         $vote->setUser($user);
         $vote->setVoting($voting);
         $vote->setValue($this->voteEncryptionService->encrypt($value));
