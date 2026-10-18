@@ -49,6 +49,7 @@ class AiAgentActionCommand extends Command
             ->addOption('topic', 't', InputOption::VALUE_REQUIRED, 'Topic for drafting (if omitted, the agent will invent one)')
             ->addOption('category', 'c', InputOption::VALUE_REQUIRED, 'Category name for drafting (if omitted, a random Type 0 category is chosen)')
             ->addOption('initiative', 'i', InputOption::VALUE_REQUIRED, 'Target specific initiative ID for counter-proposals or comments')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force submission even if flagged as semantic duplicate')
         ;
     }
 
@@ -100,6 +101,7 @@ class AiAgentActionCommand extends Command
     {
         $topic = $input->getOption('topic');
         $categoryName = $input->getOption('category');
+        $force = (bool)$input->getOption('force');
         $category = null;
 
         // 1. Resolve Category
@@ -119,28 +121,117 @@ class AiAgentActionCommand extends Command
             $category = $globalCategories[array_rand($globalCategories)];
         }
 
-        // 2. Resolve Topic (Autonomous Invention if missing)
-        if (!$topic) {
-            $io->info('No topic provided. Asking agent to invent one...');
-            try {
-                $topic = $this->aiAssistant->inventTopic($agent->getAiPersona(), $category->getName());
-                $io->info(sprintf('Agent invented topic: "%s"', $topic));
-            } catch (\Exception $e) {
-                $io->error('Failed to invent topic: ' . $e->getMessage());
-                return Command::FAILURE;
-            }
-        }
-
         if ($category->getType() !== 0) {
             $io->error('AI agents can only draft in Type 0 categories.');
             return Command::FAILURE;
         }
 
-        $io->info(sprintf('Drafting proposal about "%s" in category "%s"...', $topic, $category->getName()));
+        // Fetch existing non-deleted proposals in this category for context and duplicate checking
+        $qb = $this->entityManager->createQueryBuilder();
+        $existingInitiatives = $qb->select('i.id, i.title, i.description')
+            ->from(Initiative::class, 'i')
+            ->where('i.category = :category')
+            ->andWhere('i.state != :deletedState')
+            ->setParameter('category', $category)
+            ->setParameter('deletedState', InitiativeEnum::STATE_DELETED)
+            ->orderBy('i.id', 'DESC')
+            ->setMaxResults(50)
+            ->getQuery()
+            ->getArrayResult();
+
+        $existingTitles = array_column($existingInitiatives, 'title');
+
+        $draft = null;
+
+        // 2. Resolve Topic & Draft Proposal
+        if ($topic) {
+            $io->info(sprintf('Drafting proposal about "%s" in category "%s"...', $topic, $category->getName()));
+            try {
+                $candidateDraft = $this->aiAssistant->draftFullInitiative($topic, $agent->getAiPersona());
+
+                if (!empty($existingInitiatives) && !$force) {
+                    $io->info('Checking for semantic duplicates against existing proposals...');
+                    $dupCheck = $this->aiAssistant->checkSemanticDuplicate(
+                        $candidateDraft['title'],
+                        $candidateDraft['description'],
+                        $existingInitiatives,
+                        $agent->getAiPersona(),
+                        $category->getName()
+                    );
+
+                    if ($dupCheck['is_duplicate']) {
+                        $io->error(sprintf(
+                            'Proposal not submitted: Draft "%s" is a semantic duplicate of existing proposal #%d: %s (Use --force to override)',
+                            $candidateDraft['title'],
+                            $dupCheck['duplicate_of_id'] ?? 0,
+                            $dupCheck['reason'] ?: 'Same meaning behind the proposal'
+                        ));
+                        return Command::FAILURE;
+                    }
+                }
+
+                $draft = $candidateDraft;
+            } catch (\Exception $e) {
+                $io->error('Failed to draft initiative: ' . $e->getMessage());
+                return Command::FAILURE;
+            }
+        } else {
+            $maxAttempts = 3;
+            $rejectedTopics = [];
+
+            for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+                $io->info(sprintf('Autonomous drafting attempt %d/%d for category "%s"...', $attempt, $maxAttempts, $category->getName()));
+
+                try {
+                    $allExcludedTitles = array_merge($existingTitles, $rejectedTopics);
+                    $inventedTopic = $this->aiAssistant->inventTopic($agent->getAiPersona(), $category->getName(), $allExcludedTitles);
+                    $io->info(sprintf('Agent invented topic: "%s"', $inventedTopic));
+
+                    $io->info(sprintf('Drafting proposal about "%s"...', $inventedTopic));
+                    $candidateDraft = $this->aiAssistant->draftFullInitiative($inventedTopic, $agent->getAiPersona());
+
+                    if (!empty($existingInitiatives) && !$force) {
+                        $io->info('Checking for semantic duplicates against existing proposals...');
+                        $dupCheck = $this->aiAssistant->checkSemanticDuplicate(
+                            $candidateDraft['title'],
+                            $candidateDraft['description'],
+                            $existingInitiatives,
+                            $agent->getAiPersona(),
+                            $category->getName()
+                        );
+
+                        if ($dupCheck['is_duplicate']) {
+                            $io->warning(sprintf(
+                                'Draft "%s" is a semantic duplicate of proposal #%d: %s. Retrying with a new topic...',
+                                $candidateDraft['title'],
+                                $dupCheck['duplicate_of_id'] ?? 0,
+                                $dupCheck['reason'] ?: 'Same meaning behind the proposal'
+                            ));
+                            $rejectedTopics[] = $inventedTopic;
+                            $rejectedTopics[] = $candidateDraft['title'];
+                            continue;
+                        }
+                    }
+
+                    $draft = $candidateDraft;
+                    break;
+                } catch (\Exception $e) {
+                    $io->error('Failed during drafting attempt: ' . $e->getMessage());
+                    return Command::FAILURE;
+                }
+            }
+
+            if (!$draft) {
+                $io->error(sprintf(
+                    'Could not generate a unique proposal after %d attempts in category "%s". Aborting submission to prevent duplicate.',
+                    $maxAttempts,
+                    $category->getName()
+                ));
+                return Command::FAILURE;
+            }
+        }
 
         try {
-            $draft = $this->aiAssistant->draftFullInitiative($topic, $agent->getAiPersona());
-            
             $slugger = new AsciiSlugger();
             $initiative = new Initiative();
             $voting = new Voting();
@@ -562,6 +653,42 @@ class AiAgentActionCommand extends Command
                 $commentText,
                 $agent->getAiPersona()
             );
+
+            // Check for semantic duplicates against existing proposals in category (excluding target)
+            $qb = $this->entityManager->createQueryBuilder();
+            $existingInitiatives = $qb->select('i.id, i.title, i.description')
+                ->from(Initiative::class, 'i')
+                ->where('i.category = :category')
+                ->andWhere('i.state != :deletedState')
+                ->andWhere('i.id != :targetId')
+                ->setParameter('category', $target->getCategory())
+                ->setParameter('deletedState', InitiativeEnum::STATE_DELETED)
+                ->setParameter('targetId', $target->getId())
+                ->orderBy('i.id', 'DESC')
+                ->setMaxResults(50)
+                ->getQuery()
+                ->getArrayResult();
+
+            if (!empty($existingInitiatives) && !$input->getOption('force')) {
+                $io->info('Checking for semantic duplicates against existing proposals...');
+                $dupCheck = $this->aiAssistant->checkSemanticDuplicate(
+                    $draft['title'],
+                    $draft['description'],
+                    $existingInitiatives,
+                    $agent->getAiPersona(),
+                    $target->getCategory() ? $target->getCategory()->getName() : ''
+                );
+
+                if ($dupCheck['is_duplicate']) {
+                    $io->error(sprintf(
+                        'Counter-proposal not submitted: Draft "%s" is a semantic duplicate of existing proposal #%d: %s (Use --force to override)',
+                        $draft['title'],
+                        $dupCheck['duplicate_of_id'] ?? 0,
+                        $dupCheck['reason'] ?: 'Same meaning behind the proposal'
+                    ));
+                    return Command::FAILURE;
+                }
+            }
 
             $slugger = new AsciiSlugger();
             $initiative = new Initiative();

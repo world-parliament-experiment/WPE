@@ -37,14 +37,25 @@ class AiAssistantService
         return $this->personas;
     }
 
-    public function inventTopic(string $personaKey, string $categoryName): string
+    public function inventTopic(string $personaKey, string $categoryName, array $existingTitles = []): string
     {
         $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
+
+        $exclusionPrompt = '';
+        if (!empty($existingTitles)) {
+            $formattedExisting = implode("\n", array_map(fn($t) => '- ' . $t, array_slice($existingTitles, 0, 30)));
+            $exclusionPrompt = sprintf(
+                "\nCRITICAL REQUIREMENT: The following proposals already exist in this category. You MUST NOT repeat, rephrase, or propose something with the same meaning or intent as any of these:\n%s\nPropose a completely fresh, distinct topic.\n",
+                $formattedExisting
+            );
+        }
+
         $prompt = sprintf(
-            "You are %s. Think of one pressing global issue or a legislative proposal that you would want to introduce in the World Parliament under the category '%s'.
+            "You are %s. Think of one pressing global issue or a legislative proposal that you would want to introduce in the World Parliament under the category '%s'.%s
             Respond with ONLY the topic title (max 10 words).",
             $persona['name'],
-            $categoryName
+            $categoryName,
+            $exclusionPrompt
         );
 
         return trim($this->generateContent($prompt, $personaKey));
@@ -147,6 +158,122 @@ class AiAssistantService
         $data['description'] = $this->markdownToHtml($data['description']);
 
         return $data;
+    }
+
+    /**
+     * Checks whether a new proposal is semantically duplicate of any existing proposals.
+     *
+     * @param string $newTitle The title of the candidate proposal
+     * @param string $newDescription The description of the candidate proposal
+     * @param array $existingProposals List of existing proposals (Initiative objects or arrays with id, title, description)
+     * @param string $personaKey
+     * @param string $categoryName
+     * @return array ['is_duplicate' => bool, 'duplicate_of_id' => ?int, 'reason' => string]
+     */
+    public function checkSemanticDuplicate(
+        string $newTitle,
+        string $newDescription,
+        array $existingProposals,
+        string $personaKey = 'neutral',
+        string $categoryName = ''
+    ): array {
+        if (empty($existingProposals)) {
+            return [
+                'is_duplicate' => false,
+                'duplicate_of_id' => null,
+                'reason' => 'No existing proposals in this category to compare against.'
+            ];
+        }
+
+        $persona = $this->personas[$personaKey] ?? $this->personas['neutral'];
+
+        $existingList = [];
+        foreach ($existingProposals as $proposal) {
+            if ($proposal instanceof \App\Entity\Initiative) {
+                $id = $proposal->getId();
+                $title = $proposal->getTitle();
+                $desc = $proposal->getDescription();
+            } elseif (is_array($proposal)) {
+                $id = $proposal['id'] ?? null;
+                $title = $proposal['title'] ?? '';
+                $desc = $proposal['description'] ?? '';
+            } else {
+                continue;
+            }
+
+            $cleanDesc = trim(preg_replace('/\s+/', ' ', strip_tags((string)$desc)));
+            if (mb_strlen($cleanDesc) > 150) {
+                $cleanDesc = mb_substr($cleanDesc, 0, 150) . '...';
+            }
+
+            $existingList[] = sprintf("- [ID: %s] \"%s\": %s", $id ?? 'N/A', $title, $cleanDesc ?: 'No description');
+        }
+
+        if (empty($existingList)) {
+            return [
+                'is_duplicate' => false,
+                'duplicate_of_id' => null,
+                'reason' => 'No valid existing proposals to compare against.'
+            ];
+        }
+
+        // Limit to 50 proposals to keep context concise
+        $existingText = implode("\n", array_slice($existingList, 0, 50));
+
+        $cleanNewDesc = trim(preg_replace('/\s+/', ' ', strip_tags($newDescription)));
+        if (mb_strlen($cleanNewDesc) > 300) {
+            $cleanNewDesc = mb_substr($cleanNewDesc, 0, 300) . '...';
+        }
+
+        $categoryContext = $categoryName ? sprintf(" in category '%s'", $categoryName) : '';
+
+        $prompt = sprintf(
+            "You are a legislative analyst and parliamentary clerk for the World Parliament reviewing proposals%s.
+An AI representative (%s) is proposing a new legislative initiative:
+Title: \"%s\"
+Summary/Text: \"%s\"
+
+Existing proposals already submitted in this category:
+%s
+
+TASK:
+Determine whether this new proposal is a semantic duplicate of ANY of the existing proposals above.
+CRITERIA:
+- DUPLICATE (true): The new proposal replicates an existing proposal in terms of fundamental meaning, policy objective, or substantive legislative goal, even if worded or structured differently (e.g. \"Global Carbon Tax\" vs \"International Carbon Pricing Framework\").
+- NOT A DUPLICATE (false): The new proposal introduces a meaningfully different policy, distinct mechanism, or tackles a different issue.
+
+You MUST respond with a JSON object.
+Structure:
+{
+  \"is_duplicate\": true or false,
+  \"duplicate_of_id\": <integer ID of the matching proposal or null if not duplicate>,
+  \"reason\": \"<concise explanation>\"
+}
+IMPORTANT: Return ONLY the raw JSON.",
+            $categoryContext,
+            $persona['name'],
+            $newTitle,
+            $cleanNewDesc,
+            $existingText
+        );
+
+        $result = $this->generateContent($prompt, $personaKey, 'application/json');
+        $jsonString = $this->cleanJson($result);
+        $data = json_decode($jsonString, true);
+
+        if (!is_array($data) || !isset($data['is_duplicate'])) {
+            return [
+                'is_duplicate' => false,
+                'duplicate_of_id' => null,
+                'reason' => 'Could not determine duplicate status from AI output.'
+            ];
+        }
+
+        return [
+            'is_duplicate' => (bool)$data['is_duplicate'],
+            'duplicate_of_id' => isset($data['duplicate_of_id']) && is_numeric($data['duplicate_of_id']) ? (int)$data['duplicate_of_id'] : null,
+            'reason' => (string)($data['reason'] ?? '')
+        ];
     }
 
     public function generateComment(string $initiativeTitle, string $initiativeDescription, string $personaKey = 'neutral'): string
@@ -252,6 +379,22 @@ class AiAssistantService
             if (stripos($userPrompt, 'constructive comment or critique') !== false) {
                 return "As an AI agent (" . ($this->personas[$personaKey]['name'] ?? 'Representative') . "), I have reviewed this legislative proposal. We must pay careful attention to the balance of local power and the potential long-term global impact.";
             }
+            if (stripos($userPrompt, 'semantic duplicate') !== false) {
+                if ($mimeType === 'application/json') {
+                    if (stripos($userPrompt, 'Duplicate Test') !== false || stripos($userPrompt, 'Mock Duplicate') !== false) {
+                        return json_encode([
+                            'is_duplicate' => true,
+                            'duplicate_of_id' => 999,
+                            'reason' => 'Mock semantic duplicate detected.'
+                        ]);
+                    }
+                    return json_encode([
+                        'is_duplicate' => false,
+                        'duplicate_of_id' => null,
+                        'reason' => 'No duplicate found in mock analysis.'
+                    ]);
+                }
+            }
             if (stripos($userPrompt, 'legislative proposal') !== false) {
                 if ($mimeType === 'application/json') {
                     return json_encode([
@@ -271,6 +414,9 @@ class AiAssistantService
                 return "I completely agree with the points raised here. Long-term impacts should be our main priority.";
             }
             if (stripos($userPrompt, 'topic title') !== false) {
+                if (stripos($userPrompt, 'Strengthening Local Communities and Traditional Governance') !== false) {
+                    return "Global Framework for Ocean Plastic Reclamation";
+                }
                 return "Strengthening Local Communities and Traditional Governance";
             }
             return "This is a mock AI generated content.";
