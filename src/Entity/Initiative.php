@@ -700,6 +700,64 @@ class Initiative
         $this->views = $this->views + 1;
     }
 
+    public function isFinished(): bool
+    {
+        return $this->getState() === InitiativeEnum::STATE_FINISHED;
+    }
+
+    public function isAccepted(): bool
+    {
+        if ($this->getType() === InitiativeEnum::TYPE_PROGRAM) {
+            return true;
+        }
+
+        $currentVoting = $this->getCurrentVoting();
+        if ($currentVoting && $currentVoting->getAccepted()) {
+            return true;
+        }
+
+        $futureVoting = $this->getFutureVoting();
+        if (!$currentVoting && $futureVoting && $futureVoting->getAccepted()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isRejected(): bool
+    {
+        if ($this->getType() === InitiativeEnum::TYPE_PAST) {
+            return true;
+        }
+
+        $currentVoting = $this->getCurrentVoting();
+        if ($currentVoting && $currentVoting->getRejected()) {
+            return true;
+        }
+
+        $futureVoting = $this->getFutureVoting();
+        if (!$currentVoting && $futureVoting && $futureVoting->getRejected()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getDecisionDate(): ?\DateTimeInterface
+    {
+        $currentVoting = $this->getCurrentVoting();
+        if ($currentVoting && $currentVoting->getEnddate()) {
+            return $currentVoting->getEnddate();
+        }
+
+        $futureVoting = $this->getFutureVoting();
+        if ($futureVoting && $futureVoting->getEnddate()) {
+            return $futureVoting->getEnddate();
+        }
+
+        return $this->updatedAt ?? $this->createdAt;
+    }
+
     private function _truncString($string, $limit, $break=".", $pad="...")
     {
         // return with no change if string is shorter than $limit

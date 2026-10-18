@@ -17,17 +17,53 @@
 
                     <div class="vote_area clearfix bg-white mb-30 p-30 box-shadow">
 
-                        {% if future.state is defined and future.state == 2 %}
-                            <div class="section-heading">
+                        <div class="mb-4">
+                            <h4><a href="{{ path('initiative_show', {'id': initiative.id, 'slug': initiative.slug}) }}">{{ initiative.title }}</a></h4>
+                            {% if initiative.finished %}
+                                <div class="mt-2">
+                                    {% if initiative.accepted %}
+                                        <span class="badge badge-success p-2 text-white" style="font-size: 1rem;">
+                                            <i class="fas fa-check-circle"></i> Accepted on {{ (initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}
+                                        </span>
+                                    {% elseif initiative.rejected %}
+                                        <span class="badge badge-danger p-2 text-white" style="font-size: 1rem;">
+                                            <i class="fas fa-times-circle"></i> Rejected on {{ (initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% set hasFutureChart = future and future.state is defined and future.state == 2 %}
+                        {% set hasCurrentChart = current and current.state is defined and current.state == 2 %}
+
+                        {% if not hasFutureChart and not hasCurrentChart %}
+                            <div class="alert alert-light border text-center my-4 p-4" role="alert">
+                                <p class="text-muted mb-0"><i class="fas fa-info-circle mr-1"></i> No detailed voting breakdown chart is available for this initiative.</p>
+                            </div>
+                        {% endif %}
+
+                        {% if hasFutureChart %}
+                            <div class="section-heading d-flex justify-content-between align-items-center">
                                 <h5>Proposal Stage</h5>
+                                {% if future.accepted %}
+                                    <span class="badge badge-success text-white p-2"><i class="fas fa-check-circle"></i> Accepted on {{ (future.enddate ?? initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</span>
+                                {% elseif future.rejected or (initiative.rejected and not hasCurrentChart) %}
+                                    <span class="badge badge-danger text-white p-2"><i class="fas fa-times-circle"></i> Rejected on {{ (future.enddate ?? initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</span>
+                                {% endif %}
                             </div>
 
                             <div id="chartdiv_future" style="width: 100%; height: 400px;"></div>
                         {% endif %}
 
-                        {% if current.state is defined and current.state == 2 %}
-                            <div class="section-heading">
+                        {% if hasCurrentChart %}
+                            <div class="section-heading d-flex justify-content-between align-items-center">
                                 <h5>Vote Stage</h5>
+                                {% if current.accepted or initiative.accepted %}
+                                    <span class="badge badge-success text-white p-2"><i class="fas fa-check-circle"></i> Accepted on {{ (current.enddate ?? initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</span>
+                                {% elseif current.rejected or initiative.rejected %}
+                                    <span class="badge badge-danger text-white p-2"><i class="fas fa-times-circle"></i> Rejected on {{ (current.enddate ?? initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</span>
+                                {% endif %}
                             </div>
 
                             <div id="chartdiv_current" style="width: 100%; height: 400px;"></div>

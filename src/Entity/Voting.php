@@ -488,4 +488,19 @@ class Voting
         $this->eligibleVoters = $eligibleVoters;
     }
 
+    public function isFinished(): bool
+    {
+        return $this->state === VotingEnum::STATE_FINISHED;
+    }
+
+    public function isAccepted(): bool
+    {
+        return (bool) $this->accepted;
+    }
+
+    public function isRejected(): bool
+    {
+        return (bool) $this->rejected;
+    }
+
 }

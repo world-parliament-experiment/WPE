@@ -74,7 +74,7 @@ class InitiativeVoter extends Voter
 
         if (!$user instanceof User) {
 
-            if ($user == 'anon.' && $attribute == self::VIEW) {
+            if ($attribute == self::VIEW) {
                 return $this->canViewAnonym($initiative);
             }
 

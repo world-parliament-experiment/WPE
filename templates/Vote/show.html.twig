@@ -37,6 +37,13 @@
                                 <b>Initiative&nbsp;&#35;{{ initiative.id }}&nbsp;&ndash;&nbsp;</b>
                                 <b>{{ initiative.createdAt|date('F j, Y') }}</b>
                                 <b>{{ initiative.category.name }}</b>
+                                {% if initiative.finished %}
+                                    {% if initiative.accepted %}
+                                        <span class="badge badge-success text-white ml-2"><i class="fas fa-check-circle"></i> Accepted on {{ (initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</span>
+                                    {% elseif initiative.rejected %}
+                                        <span class="badge badge-danger text-white ml-2"><i class="fas fa-times-circle"></i> Rejected on {{ (initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</span>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                             <h4 class="post-title">{{ initiative.title }}</h4>
                             <!-- Post Meta -->
@@ -64,10 +71,21 @@
                                         <h5>VOTE</h5>
                                     </div>
 
-                                    <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
-                                        data-slug="{{ initiative.slug }}"></div>
-                                    {% if initiative.type == 1 and  initiative.state == 1 %}
-                                        <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted in either direction, the vote will end and the results will be evaluated immediately.</p><p>You can see the support result history of this initiative <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
+                                    {% if initiative.finished %}
+                                        <div class="text-center py-2">
+                                            {% if initiative.accepted %}
+                                                <h4 class="text-success mb-2"><i class="fas fa-check-circle"></i> Accepted on {{ (initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</h4>
+                                            {% elseif initiative.rejected %}
+                                                <h4 class="text-danger mb-2"><i class="fas fa-times-circle"></i> Rejected on {{ (initiative.decisionDate ?? initiative.createdAt)|date('F j, Y') }}</h4>
+                                            {% endif %}
+                                            <p class="mb-0">The votings are already finished. You can see the results <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}">here</a>.</p>
+                                        </div>
+                                    {% else %}
+                                        <div class="js-vote-area text-center" data-id="{{ initiative.id }}"
+                                            data-slug="{{ initiative.slug }}"></div>
+                                        {% if initiative.type == 1 and  initiative.state == 1 %}
+                                            <div class="text-center" style="margin-top: 1rem;"><p>If an absolute majority of eligible voters already voted in either direction, the vote will end and the results will be evaluated immediately.</p><p>You can see the support result history of this initiative <a href="{{ path('initiative_result', {'id': initiative.id, 'slug': initiative.slug}) }}"> here </a></p></div>
+                                        {% endif %}
                                     {% endif %}
 
                                 </div>

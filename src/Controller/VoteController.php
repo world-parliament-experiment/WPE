@@ -315,23 +315,22 @@ class VoteController extends BaseController
 
         $this->denyAccessUnlessGranted("view", $initiative);
 
-        /** @var Voting $future */
+        /** @var Voting|false $future */
         $future = $initiative->getFutureVoting();
-        /** @var Voting $current */
+        /** @var Voting|false $current */
         $current = $initiative->getCurrentVoting();
 
-        if ($future === false OR $future->getState() !== VotingEnum::STATE_FINISHED) {
+        $hasFinishedVoting = ($future && $future->getState() === VotingEnum::STATE_FINISHED) ||
+                             ($current && $current->getState() === VotingEnum::STATE_FINISHED);
+
+        if (!$initiative->isFinished() && !$hasFinishedVoting) {
             throw $this->createNotFoundException('The result not exist');
         }
-
-//        if ($current === false OR $current->getState() !== VotingEnum::STATE_FINISHED) {
-//            throw $this->createNotFoundException('The result not exist');
-//        }
 
         return $this->render('Vote/result.html.twig', array(
             'initiative' => $initiative,
             'future' => $future,
-            'current' => $initiative->getCurrentVoting(),
+            'current' => $current,
         ));
 
     }
@@ -606,12 +605,14 @@ class VoteController extends BaseController
              */
         } elseif ($initiative->getType() == InitiativeEnum::TYPE_PAST) {
             if ($initiative->getState() == InitiativeEnum::STATE_FINISHED) {
+                $date = $initiative->getDecisionDate() ?? $initiative->getCreatedAt();
+                $dateStr = $date ? ' on ' . $date->format('F j, Y') : '';
                 return $this->createApiResponse([
                     'success' => true,
                     'message' => 'Votings are already finished!',
                     'data' => [
                         'type' => 'message',
-                        'content' => 'The votings are already finished. You can see the results <a href="' . $this->generateUrl('initiative_result', ['id' => $initiative->getId(), 'slug' => $initiative->getSlug()]) . '"> here </a>.'
+                        'content' => 'The voting was <strong>rejected' . $dateStr . '</strong>. You can see the results <a href="' . $this->generateUrl('initiative_result', ['id' => $initiative->getId(), 'slug' => $initiative->getSlug()]) . '"> here </a>.'
                     ]
                 ]);
             }
@@ -620,12 +621,14 @@ class VoteController extends BaseController
              */
         } elseif ($initiative->getType() == InitiativeEnum::TYPE_PROGRAM) {
             if ($initiative->getState() == InitiativeEnum::STATE_FINISHED) {
+                $date = $initiative->getDecisionDate() ?? $initiative->getCreatedAt();
+                $dateStr = $date ? ' on ' . $date->format('F j, Y') : '';
                 return $this->createApiResponse([
                     'success' => true,
                     'message' => 'Votings are already finished!',
                     'data' => [
                         'type' => 'message',
-                        'content' => 'The votings are already finished. You can see the results <a href="' . $this->generateUrl('initiative_result', ['id' => $initiative->getId(), 'slug' => $initiative->getSlug()]) . '"> here </a>.'
+                        'content' => 'The voting was <strong>accepted' . $dateStr . '</strong>. You can see the results <a href="' . $this->generateUrl('initiative_result', ['id' => $initiative->getId(), 'slug' => $initiative->getSlug()]) . '"> here </a>.'
                     ]
                 ]);
             }
