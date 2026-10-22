@@ -1,7 +1,7 @@
 The World Parliament Experiment
 ==============================
 
-This distribution is based on Symfony Version 5.4. It was developed to run under PHP 8.1
+This distribution is based on Symfony Version 5.4. It was developed to run under PHP 8.4
 
 The BETA version is currently running [**here**][1].
 
