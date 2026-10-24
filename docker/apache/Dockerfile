@@ -1,5 +1,5 @@
 
-FROM php:8.1-apache
+FROM php:8.4-apache
 ARG TIMEZONE=Europe/Paris
 
 RUN a2enmod rewrite

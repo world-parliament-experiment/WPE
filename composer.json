@@ -19,7 +19,6 @@
         "guzzlehttp/guzzle": "^7.8",
         "incenteev/composer-parameter-handler": "^2.1",
         "jms/serializer-bundle": "^5.2",
-        "joshtronic/php-loremipsum": "^2.1",
         "knplabs/knp-menu-bundle": "^3.2",
         "league/iso3166": "^4.2",
         "phpdocumentor/reflection-docblock": "^5.3",
