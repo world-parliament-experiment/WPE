@@ -17,6 +17,8 @@
     </section>
     <!-- ##### Breadcrumb Area End ##### -->
 
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
     <!-- ##### Login Area Start ##### -->
     <div class="mag-login-area py-5">
         <div class="container">

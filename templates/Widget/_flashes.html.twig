@@ -3,18 +3,18 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-8">
-                    <div class="flash-content bg-success p-30 box-shadow">
-                        <ul>
-                            {% for label, messages in flashes %}
+                    {% for label, messages in flashes %}
+                        <div class="flash-content bg-{{ label == 'danger' or label == 'error' ? 'danger' : 'success' }} p-30 box-shadow mb-3">
+                            <ul>
                                 {% for message in messages %}
                                     <li class="d-block">
-                                        <span class="form-flash-icon badge badge-success text-uppercase">{{ label }}</span>
+                                        <span class="form-flash-icon badge badge-{{ label == 'danger' or label == 'error' ? 'danger' : 'success' }} text-uppercase">{{ label }}</span>
                                         <span class="form-flash-message">{{ message|trans }}</span>
                                     </li>
                                 {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    </div>
+                            </ul>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

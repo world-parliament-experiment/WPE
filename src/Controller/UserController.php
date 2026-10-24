@@ -20,6 +20,7 @@ use App\Form\InitiativeUserForm;
 use DateTime;
 
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Exception;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -489,14 +490,14 @@ class UserController extends BaseController
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('user_initiative_delete', array("id" => $initiative->getId(), "slug" => $initiative->getSlug())))
-            ->setMethod('DELETE')
+            ->setMethod('POST')
             ->getForm();
     }
 
     /**
      * Deletes a initiative entity.
      *
-     * @Route("/initiative/{id}/{slug}/delete", requirements={"id" = "\d+"}, name="user_initiative_delete", methods={"DELETE"})
+     * @Route("/initiative/{id}/{slug}/delete", requirements={"id" = "\d+"}, name="user_initiative_delete", methods={"POST"})
      * @param Request $request
      * @param Initiative $initiative
      * @return RedirectResponse
@@ -510,14 +511,30 @@ class UserController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->managerRegistry->getManager();
-            $em->remove($initiative);
-            $em->flush();
+            if (!$initiative->getVotings()->isEmpty()) {
+                $this->addFlash(
+                    'danger',
+                    'initiative.flash.voting_exists'
+                );
 
-            $this->addFlash(
-                'success',
-                'initiative.flash.delete'
-            );
+                return $this->redirectToRoute('user_initiative_index');
+            }
+
+            try {
+                $em = $this->managerRegistry->getManager();
+                $em->remove($initiative);
+                $em->flush();
+
+                $this->addFlash(
+                    'success',
+                    'initiative.flash.delete'
+                );
+            } catch (ForeignKeyConstraintViolationException $e) {
+                $this->addFlash(
+                    'danger',
+                    'initiative.flash.voting_exists'
+                );
+            }
 
         }
 

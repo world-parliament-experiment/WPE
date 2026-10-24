@@ -7,6 +7,7 @@ use App\Entity\Category;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -135,8 +136,7 @@ class CategoryAdminController extends AbstractController
     /**
      * Deletes a category entity.
      *
-     * @Route("/{id}/delete", name="admin_category_delete")
-     * #[HttpMethod("DELETE")]
+     * @Route("/{id}/delete", name="admin_category_delete", methods={"POST"})
      * @param Request $request
      * @param Category $category
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -145,19 +145,29 @@ class CategoryAdminController extends AbstractController
     {
         $em = $this->managerRegistry->getManager();
         $category = $em->getRepository(Category::class)->find($id);
+
+        if (!$category) {
+            throw $this->createNotFoundException('Category not found');
+        }
+
         $form = $this->createDeleteForm($category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            $em->remove($category);
-            $em->flush();
+            try {
+                $em->remove($category);
+                $em->flush();
 
-            $this->addFlash(
-                'success',
-                'category.flash.delete'
-            );
-
+                $this->addFlash(
+                    'success',
+                    'category.flash.delete'
+                );
+            } catch (ForeignKeyConstraintViolationException $e) {
+                $this->addFlash(
+                    'danger',
+                    'category.flash.foreign_key_constraint'
+                );
+            }
         }
 
         return $this->redirectToRoute('admin_category_index');
@@ -174,7 +184,7 @@ class CategoryAdminController extends AbstractController
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('admin_category_delete', ['id' => $category->getId()]))
-            ->setMethod('DELETE')
+            ->setMethod('POST')
             ->getForm();
     }
 }

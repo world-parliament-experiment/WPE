@@ -9,6 +9,7 @@ use App\Form\CommentAdminForm;
 use App\Entity\Comment;
 use App\Entity\Initiative;
 use App\Controller\BaseController;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
@@ -125,8 +126,7 @@ class CommentAdminController extends BaseController
     /**
      * Deletes a comment entity.
      *
-     * @Route("/{id}/delete", name="admin_comment_delete")
-     * #[HttpMethod("DELETE")]
+     * @Route("/{id}/delete", name="admin_comment_delete", methods={"POST"})
      * @param Request $request
      * @param Comment $comment
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -137,15 +137,21 @@ class CommentAdminController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->managerRegistry->getManager();
-            $em->remove($comment);
-            $em->flush();
+            try {
+                $em = $this->managerRegistry->getManager();
+                $em->remove($comment);
+                $em->flush();
 
-            $this->addFlash(
-                'success',
-                'comment.flash.delete'
-            );
-
+                $this->addFlash(
+                    'success',
+                    'comment.flash.delete'
+                );
+            } catch (ForeignKeyConstraintViolationException $e) {
+                $this->addFlash(
+                    'danger',
+                    'comment.flash.foreign_key_constraint'
+                );
+            }
         }
 
         return $this->redirectToRoute('admin_comment_index');
@@ -162,7 +168,7 @@ class CommentAdminController extends BaseController
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('admin_comment_delete', array('id' => $comment->getId())))
-            ->setMethod('DELETE')
+            ->setMethod('POST')
             ->getForm()
             ;
     }

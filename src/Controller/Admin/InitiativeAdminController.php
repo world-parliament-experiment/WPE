@@ -8,6 +8,7 @@ use App\Enum\InitiativeEnum;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -168,7 +169,7 @@ class InitiativeAdminController extends BaseController
     /**
      * Deletes a initiative entity.
      *
-     * @Route("/{id}/delete", name="admin_initiative_delete", methods={"DELETE"})
+     * @Route("/{id}/delete", name="admin_initiative_delete", methods={"POST"})
      * @param Request $request
      * @param Initiative $initiative
      * @return RedirectResponse
@@ -177,17 +178,38 @@ class InitiativeAdminController extends BaseController
     {
         $em = $this->managerRegistry->getManager();
         $initiative = $em->getRepository(Initiative::class)->find($id);
+
+        if (!$initiative) {
+            throw $this->createNotFoundException('Initiative not found');
+        }
+
         $form = $this->createDeleteForm($initiative);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->remove($initiative);
-            $em->flush();
+            if (!$initiative->getVotings()->isEmpty()) {
+                $this->addFlash(
+                    'danger',
+                    'initiative.flash.voting_exists'
+                );
 
-            $this->addFlash(
-                'success',
-                'initiative.flash.delete'
-            );
+                return $this->redirectToRoute('admin_initiative_index');
+            }
+
+            try {
+                $em->remove($initiative);
+                $em->flush();
+
+                $this->addFlash(
+                    'success',
+                    'initiative.flash.delete'
+                );
+            } catch (ForeignKeyConstraintViolationException $e) {
+                $this->addFlash(
+                    'danger',
+                    'initiative.flash.voting_exists'
+                );
+            }
 
         }
 
@@ -224,7 +246,7 @@ class InitiativeAdminController extends BaseController
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('admin_initiative_delete', array('id' => $initiative->getId())))
-            ->setMethod('DELETE')
+            ->setMethod('POST')
             ->getForm()
             ;
     }

@@ -40,6 +40,7 @@ initiative:
         publish: Your proposal is published now
         draft: Your proposal is successfully saved as draft
         delete: Your proposal is successfully deleted
+        voting_exists: Voting has already started on this initiative, the initiative cannot be deleted
 
 comment:
     edit:
@@ -55,6 +56,10 @@ comment:
         submit: Save Comment
         overview: Overview
         delete: Delete Comment
+    flash:
+        edit: Comment successfully updated
+        delete: Comment successfully deleted
+        foreign_key_constraint: This comment is still referenced by other records and cannot be deleted.
     notify:
         subject: 'You have a new comment on your World Parliament Experiment initiative'
         message: |
@@ -84,6 +89,10 @@ category:
     button:
         delete: Delete Category
         overview: Overview
+    flash:
+        edit: Category successfully updated
+        delete: Category successfully deleted
+        foreign_key_constraint: This category is still referenced by other records (such as initiatives or delegations) and cannot be deleted.
     new:
         name: Delete Category
         description: Overview
@@ -103,6 +112,10 @@ user:
         delete: Delete
         overview: Overview
         save: Save
+    flash:
+        delete: User successfully deleted
+        update: User successfully updated
+        foreign_key_constraint: This user is still referenced by other records (such as initiatives, comments, or votes) and cannot be deleted.
 
     label:
         roles: All roles

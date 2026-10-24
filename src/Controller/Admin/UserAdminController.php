@@ -8,6 +8,7 @@ use JMS\Serializer\SerializerInterface;
 use App\Entity\User;
 use App\Entity\Category;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\UserBundle\FOSUserEvents;
@@ -82,8 +83,7 @@ class UserAdminController extends BaseController
     /**
      * Deletes a product entity.
      *
-     * @Route("/{id}/delete", name="admin_user_delete")
-     * #[HttpMethod("DELETE")]
+     * @Route("/{id}/delete", name="admin_user_delete", methods={"POST"})
      * @param Request $request
      * @param User $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -93,17 +93,28 @@ class UserAdminController extends BaseController
         $em = $this->managerRegistry->getManager();
         $user = $em->getRepository(User::class)->find($id);
 
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+
         $form = $this->createDeleteForm($user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->remove($user);
-            $em->flush();
+            try {
+                $em->remove($user);
+                $em->flush();
 
-            $this->addFlash(
-                'success',
-                'user.flash.delete'
-            );
+                $this->addFlash(
+                    'success',
+                    'user.flash.delete'
+                );
+            } catch (ForeignKeyConstraintViolationException $e) {
+                $this->addFlash(
+                    'danger',
+                    'user.flash.foreign_key_constraint'
+                );
+            }
         }
 
         return $this->redirectToRoute('admin_user_index');
@@ -120,7 +131,7 @@ class UserAdminController extends BaseController
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('admin_user_delete', array('id' => $user->getId())))
-            ->setMethod('DELETE')
+            ->setMethod('POST')
             ->getForm();
     }
 

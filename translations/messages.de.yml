@@ -6,9 +6,24 @@ initiative:
         future: Vorschlag
         current: Abstimmung
         article: Artikel
+    flash:
+        edit: Ihr Vorschlag wurde erfolgreich aktualisiert
+        publish: Ihr Vorschlag ist jetzt veröffentlicht
+        draft: Ihr Vorschlag wurde erfolgreich als Entwurf gespeichert
+        delete: Ihr Vorschlag wurde erfolgreich gelöscht
+        voting_exists: Für diesen Vorschlag wurde bereits eine Abstimmung gestartet, er kann nicht gelöscht werden
+comment:
+    flash:
+        edit: Kommentar erfolgreich aktualisiert
+        delete: Kommentar erfolgreich gelöscht
+        foreign_key_constraint: Dieser Kommentar wird noch von anderen Datensätzen referenziert und kann nicht gelöscht werden.
 category:
     edit:
         submit: Kategorie Speichern
+    flash:
+        edit: Kategorie erfolgreich aktualisiert
+        delete: Kategorie erfolgreich gelöscht
+        foreign_key_constraint: Diese Kategorie wird noch von anderen Datensätzen (wie Vorschlägen oder Delegationen) referenziert und kann nicht gelöscht werden.
 menu:
     user:
         customize_feed: Feed anpassen
@@ -32,3 +47,7 @@ user:
         categories: Verfügbare Kategorien
         submit: Einstellungen speichern
         success: Ihre Feed-Einstellungen wurden gespeichert.
+    flash:
+        update: Benutzer erfolgreich aktualisiert
+        delete: Benutzer erfolgreich gelöscht
+        foreign_key_constraint: Dieser Benutzer wird noch von anderen Datensätzen (wie Vorschlägen, Kommentaren oder Stimmen) referenziert und kann nicht gelöscht werden.

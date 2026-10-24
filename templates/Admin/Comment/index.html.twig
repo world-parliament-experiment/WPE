@@ -17,6 +17,9 @@
     </section>
     <!-- ##### Breadcrumb Area End ##### -->
     {{ apy_breadcrumb_trail_render() }}
+
+    {{ include ('Widget/_flashes.html.twig', {flashes: app.flashes}, with_context = false) }}
+
     <!-- ##### Login Area Start ##### -->
     <div class="admin-area">
         <div class="container">
