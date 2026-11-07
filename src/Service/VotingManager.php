@@ -219,6 +219,7 @@ class VotingManager
 
                     $initiative->setType(InitiativeEnum::TYPE_PAST);
                     $initiative->setState(InitiativeEnum::STATE_FINISHED);
+                    $initiative->setDecidedAt(new DateTime());
 
                     $em->persist($initiative);
 
@@ -273,11 +274,13 @@ class VotingManager
                         $voting->setState(VotingEnum::STATE_FINISHED);
                         $initiative->setType(InitiativeEnum::TYPE_PROGRAM);
                         $initiative->setState(InitiativeEnum::STATE_FINISHED);
+                        $initiative->setDecidedAt(new DateTime());
                         break;
                     case 2:
                         $voting->setState(VotingEnum::STATE_FINISHED);
                         $initiative->setType(InitiativeEnum::TYPE_PAST);
                         $initiative->setState(InitiativeEnum::STATE_FINISHED);
+                        $initiative->setDecidedAt(new DateTime());
                         break;
                     case 0:
                         //do nothing, leave initiative open

@@ -119,4 +119,20 @@ class InitiativeStatusTest extends TestCase
 
         $this->assertSame($currentEnd, $initiative->getDecisionDate());
     }
+
+    public function testDecisionDatePrioritizesDecidedAt(): void
+    {
+        $initiative = new Initiative();
+        $decidedAt = new DateTime('2026-05-01 15:00:00');
+        $currentEnd = new DateTime('2026-04-01 18:00:00');
+
+        $currentVoting = new Voting();
+        $currentVoting->setType(VotingEnum::TYPE_CURRENT);
+        $currentVoting->setEnddate($currentEnd);
+        $initiative->setVotings(new ArrayCollection([$currentVoting]));
+
+        $initiative->setDecidedAt($decidedAt);
+
+        $this->assertSame($decidedAt, $initiative->getDecisionDate());
+    }
 }

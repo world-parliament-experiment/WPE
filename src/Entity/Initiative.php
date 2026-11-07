@@ -199,6 +199,18 @@ class Initiative
     protected $publishedAt;
 
     /**
+     *
+     * @var DateTime $decidedAt
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @JMSSerializer\Expose
+     * @JMSSerializer\SerializedName("decidedAt")
+     * @JMSSerializer\Type("DateTime<'Y-m-d H:i'>")
+     * @JMSSerializer\Groups({"default", "simple"})
+     */
+    protected $decidedAt;
+
+    /**
      * @ORM\Column(type="string", unique=true)
      * @Gedmo\Slug(fields={"title"})
      * @JMSSerializer\Expose
@@ -743,8 +755,23 @@ class Initiative
         return false;
     }
 
+    public function getDecidedAt(): ?\DateTimeInterface
+    {
+        return $this->decidedAt;
+    }
+
+    public function setDecidedAt(?\DateTimeInterface $decidedAt): self
+    {
+        $this->decidedAt = $decidedAt;
+        return $this;
+    }
+
     public function getDecisionDate(): ?\DateTimeInterface
     {
+        if ($this->decidedAt) {
+            return $this->decidedAt;
+        }
+
         $currentVoting = $this->getCurrentVoting();
         if ($currentVoting && $currentVoting->getEnddate()) {
             return $currentVoting->getEnddate();
