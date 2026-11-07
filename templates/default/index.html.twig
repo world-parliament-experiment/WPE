@@ -166,6 +166,20 @@
                     <div class="single-sidebar-widget p-30 m-b-30 w-initiatives">
                         {{ render(controller('App\\Controller\\WidgetController::MostInitiativesAction')) }}
                     </div>
+
+                    {# QR Code Widget for Mobile Scroll Feed #}
+                    <div class="single-sidebar-widget p-30 m-b-30 text-center" style="flex: 0 0 100%; max-width: 100%; width: 100%;">
+                        <div class="section-heading text-center">
+                            <h5 class="text-dark">world-parliament.org</h5>
+                        </div>
+                        <div class="widget-content-bg bg-white p-30 box-shadow d-flex flex-column align-items-center justify-content-center" style="background-image: none !important; background-color: #f8f9fa;">
+                            <p class="text-dark mb-3" style="font-size: 14px; font-weight: 600;">Scan QR Code to visit world-parliament.org</p>
+                            <a href="https://world-parliament.org" target="_blank">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://world-parliament.org" alt="QR Code world-parliament.org" class="img-fluid" style="border-radius: 8px; max-width: 150px; height: auto;">
+                            </a>
+                            <p class="mt-2 mb-0"><a href="https://world-parliament.org" target="_blank" class="text-danger" style="font-weight: bold; text-decoration: underline;">world-parliament.org</a></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
