@@ -78,9 +78,11 @@ class InitiativeRepository extends EntityRepository
     {
         return $this->createQueryBuilder('initiative')
             ->leftJoin('initiative.category', 'c')
+            ->leftJoin('initiative.createdBy', 'creator')
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state = 1')
             ->setMaxResults(10)
+            ->orderBy('creator.isai', 'ASC')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
@@ -590,6 +592,7 @@ class InitiativeRepository extends EntityRepository
             ->select('initiative', 'c')
             ->addSelect('(CASE WHEN initiative.publishedAt IS NOT NULL THEN initiative.publishedAt ELSE initiative.createdAt END) AS HIDDEN sortDate')
             ->leftJoin('initiative.category', 'c')
+            ->leftJoin('initiative.createdBy', 'creator')
             ->andWhere('initiative.state = :state')
             ->andWhere('initiative.type IN (:types)')
             ->setParameters([
@@ -606,7 +609,8 @@ class InitiativeRepository extends EntityRepository
         }
 
         return $qb->setMaxResults($maxResults)
-            ->orderBy('sortDate', 'DESC')
+            ->orderBy('creator.isai', 'ASC')
+            ->addOrderBy('sortDate', 'DESC')
             ->getQuery()
             ->execute();
     }

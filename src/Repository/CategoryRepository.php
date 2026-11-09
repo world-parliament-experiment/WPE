@@ -56,9 +56,11 @@ class CategoryRepository extends EntityRepository
         return $this->createQueryBuilder('category')
             ->select(['category', 'initiative'])
             ->leftJoin('category.initiatives', 'initiative')
+            ->leftJoin('initiative.createdBy', 'creator')
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state > 0')
             ->andWhere('initiative.state < 3')
+            ->addOrderBy('creator.isai', 'asc')
             ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
@@ -70,6 +72,7 @@ class CategoryRepository extends EntityRepository
         $qb = $this->createQueryBuilder('category')
             ->select(['category', 'initiative'])
             ->leftJoin('category.initiatives', 'initiative')
+            ->leftJoin('initiative.createdBy', 'creator')
             ->where('initiative.type = :initiativeType')
             ->andWhere('initiative.state > 0 AND initiative.state < 3');
 
@@ -92,12 +95,12 @@ class CategoryRepository extends EntityRepository
         }
 
         if ($searchQuery) {
-            $qb->leftJoin('initiative.createdBy', 'creator')
-               ->andWhere('LOWER(initiative.title) LIKE :searchQuery OR LOWER(creator.username) LIKE :searchQuery')
+            $qb->andWhere('LOWER(initiative.title) LIKE :searchQuery OR LOWER(creator.username) LIKE :searchQuery')
                ->setParameter('searchQuery', '%' . strtolower($searchQuery) . '%');
         }
 
         $qb->setParameter('initiativeType', InitiativeEnum::TYPE_FUTURE)
+            ->addOrderBy('creator.isai', 'asc')
             ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->setMaxResults(500);
