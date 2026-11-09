@@ -82,7 +82,7 @@ class InitiativeRepository extends EntityRepository
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state = 1')
             ->setMaxResults(10)
-            ->orderBy('creator.isai', 'ASC')
+            ->orderBy('creator.isAi', 'ASC')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
             ->execute();
@@ -609,7 +609,7 @@ class InitiativeRepository extends EntityRepository
         }
 
         return $qb->setMaxResults($maxResults)
-            ->orderBy('creator.isai', 'ASC')
+            ->orderBy('creator.isAi', 'ASC')
             ->addOrderBy('sortDate', 'DESC')
             ->getQuery()
             ->execute();

@@ -60,7 +60,7 @@ class CategoryRepository extends EntityRepository
             ->andWhere('initiative.type = 0')
             ->andWhere('initiative.state > 0')
             ->andWhere('initiative.state < 3')
-            ->addOrderBy('creator.isai', 'asc')
+            ->addOrderBy('creator.isAi', 'asc')
             ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->getQuery()
@@ -100,7 +100,7 @@ class CategoryRepository extends EntityRepository
         }
 
         $qb->setParameter('initiativeType', InitiativeEnum::TYPE_FUTURE)
-            ->addOrderBy('creator.isai', 'asc')
+            ->addOrderBy('creator.isAi', 'asc')
             ->addOrderBy('category.type', 'asc')
             ->addOrderBy('initiative.createdAt', 'desc')
             ->setMaxResults(500);
