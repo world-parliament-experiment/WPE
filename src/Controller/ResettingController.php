@@ -61,7 +61,6 @@ class ResettingController extends AbstractController
                 ]);
         }
 
-        $user->setEnabled(false);
         if (null === $user->getConfirmationToken()) {
             $user->setConfirmationToken($user->generateToken());
         }
